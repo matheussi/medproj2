@@ -1,0 +1,65 @@
+﻿   html              { height:100%; overflow:auto; }
+   body              { font-family: Tahoma, Century Gothic, Trebuchet MS, Verdana, Helvetica; font-size:12px !important; }
+   table             { font-family: Tahoma, Century Gothic, Trebuchet MS, Verdana, Helvetica; font-size:12px !important; }
+   td                { font-family: Tahoma, Century Gothic, Trebuchet MS, Verdana, Helvetica; font-size:12px !important; }
+   p                 { font-family: Tahoma, Century Gothic, Trebuchet MS, Verdana, Helvetica; font-size:12px !important; }
+   
+  .fonte11            { font-size:11px; font-weight:bold; color:#353535;}
+  .fonte11:link       { font-size:11px; font-weight:bold; color:#353535;}
+  .fonte11:visited    { font-size:11px; font-weight:bold; color:#353535;}
+  .fonte11:active     { font-size:11px; font-weight:bold; color:#353535;}
+  .fonte11:hover      { font-size:11px; font-weight:bold; color:#353535;}
+  a.fonte11           { font-size:11px; font-weight:bold; color:#353535;}
+  a.fonte11:hover     { font-size:11px; font-weight:bold; color:#353535;}
+  
+  
+  .fonte12            { font-size:12px; font-weight:bold; color:#353535;}
+  .fonte12:link       { font-size:12px; font-weight:bold; color:#353535;}
+  .fonte12:visited    { font-size:12px; font-weight:bold; color:#353535;}
+  .fonte12:active     { font-size:12px; font-weight:bold; color:#353535;}
+  .fonte12:hover      { font-size:12px; font-weight:bold; color:#353535;}
+  a.fonte12           { font-size:12px; font-weight:bold; color:#353535;}
+  a.fonte12:hover     { font-size:12px; font-weight:bold; color:#353535;}
+  
+     
+  .fonte20            { font-size:20px; font-weight:bold; color:#353535;}
+  .fonte20:link       { font-size:20px; font-weight:bold; color:#353535;}
+  .fonte20:visited    { font-size:20px; font-weight:bold; color:#353535;}
+  .fonte20:active     { font-size:20px; font-weight:bold; color:#353535;}
+  .fonte20:hover      { font-size:20px; font-weight:bold; color:#353535;}
+  a.fonte20           { font-size:20px; font-weight:bold; color:#353535;}
+  a.fonte20:hover     { font-size:20px; font-weight:bold; color:#353535;}
+  
+  .TableBorder    { border-top:1px solid #000; border-right:1px solid #000; }
+   .TableBorder td { border-left:1px solid #000; border-bottom:1px solid #000;}
+   .TableBorder li { list-style-type:square;}
+   
+   .Green { background:#a6ce39; }
+   .Gray { background:#f3f3f3; }
+
+  
+  .itemAnexo
+  {
+      color:#a6c639;
+      font-weight:bold;
+  }
+  
+  /*p:first-letter {
+   margin-left:0px;
+  }*/
+   
+  h4 {
+   color:#a6c639;
+   margin-left:0px;
+  }
+
+.grid-proposta th
+{
+    background:#dedede;
+    padding:5px; border:1px solid #808080;
+}
+
+.grid-proposta td
+{
+    padding:5px; border:1px solid #808080;
+}

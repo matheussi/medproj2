@@ -1,0 +1,76 @@
+﻿Logging
+http://stackoverflow.com/questions/25383781/listen-for-object-changes-from-the-outside-in-c-sharp
+
+
+DUVIDAS:
+
+1) Pagamento em dinheiro do atendimento
+
+	a. Na geração de arquivos para repasse aos prestadores, esses atendimentos deverão ser ignorados?
+	b. Devemos criar uma tela para ver somente os atendimentos com pagto em dinheiro?
+
+
+http://www.postsharp.net/
+
+https://github.com/ExcelDataReader/ExcelDataReader
+
+
+De acordo com o levantamento prévio efetuado, o sistema SisPagSaude a ser desenvolvido terá três  módulos a serem construídos:
+
+especialidade => contrato => prestador
+
+
+ Credenciamento  Onde estão todos os contratos / negociações de prestadores de serviços ligados ao atendimento do clube de benefícios, 
+bem como todo o rol de procedimentos do produto
+o Rotinas Envolvidas:
+§ Cadastro de Prestadores (Médicos e Clínicas/Hospitais/Laboratórios) 
+§ Especialidades por Prestador
+§ Grupo de Benefícios x Rol de Procedimentos (voando)
+§ Negociações  Procedimentos com seus respectivos Preços a serem relacionados aos credenciados (duvida)
+§ Reajustes na tabela de negociações
+
+
+ Controle Cartão Pré-Pago  Onde será feito o controle de carga e recarga dos cartões para pagamento de despesas dos conveniados ao clube.
+o Rotinas Envolvidas:
+§ Controle de Conta Corrente Pré Pago
+§ Emissão de Boleto para carga do cartão
+§ Baixa bancária com crédito na conta do cliente
+§ Elegibilidade de Clientes (Serviço via web ou WebService)  Validar a solicitação do prestador para o determinado cartão
+§ Contas à Pagar Benefícios  Onde será feito o repasse da utilização dos pagamentos com o cartão com base nas negociações atreladas ao prestador.
+§ Integração Sistema de Cobrança/Clientes 
+
+
+ Desenvolvimento em Portal Web:
+o Cliente
+§ Orientador  Pesquisa rede credenciada x procedimentos x Localidade
+§ Histórico de Carga e Recarga de créditos
+§ Utilização da rede
+o Credenciados
+§ Elegibilidade de Clientes
+§ Repasses Pagos 
+§ Histórico de utilização 
+
+As entregas serão feitas por módulos após homologação, sendo a previsão do 1º módulo Credenciamento em 2 meses após validação do protótipo 
+do sistema com a definição das rotinas dos demais módulos, sendo o cadastro de beneficiários já existente atende as necessidades precisando 
+definir a integração entre as bases.
+
+Prazo Estimado: Entre 4 (quatro) à 6 (seis) meses a partir da autorização do contrato.
+
+Valor: R$ 20.000,00 (vinte mil reais) mensais pelos serviços de consultoria técnica e desenvolvimento.
+
+Observação: Custos pertinentes a manutenção e desenvolvimento e compra de hardware e/ou software não estão inclusos no valor desta proposta.
+
+Atenciosamente,
+
+_____________________________
+
+
+
+
+clientes amarrados as entidades (pro futuro)
+
+
+tabela (fator de multiplicacao)
+	procedimentos
+
+https://lemosfilho.wordpress.com/2012/04/15/desativar-submit-duplicado-ao-pressionar-f5/

@@ -1,0 +1,1 @@
+﻿<%@ Page Language="C#" Theme="" AutoEventWireup="true" CodeBehind="view.aspx.cs" Inherits="MedProj.www.atendimento.view" %>

@@ -1,0 +1,142 @@
+﻿truncate table contrato
+truncate table beneficiario
+truncate table contrato_beneficiario
+truncate table endereco
+truncate table numero_contrato
+
+truncate table exportacaoCartao_log
+truncate table exportacaoCartao
+
+truncate table importacao_log
+truncate table importacao
+truncate table exportacaoKit_log
+truncate table exportacaoKit
+SELECT MAX(numerocontrato_id) FROM numero_contrato
+
+--select * from arquivo_baixa_item
+--select * from arquivo_baixa
+
+delete from atendimentoCred
+truncate table atendimentoCred_procedimento
+
+truncate table Banco
+
+truncate table cobranca
+
+
+select * from numero_contrato
+
+delete from usuarios where Unidade_ID is not null
+delete from Prestador
+delete from prestador_unidade
+delete from unidade_especialidade
+delete from unidade_procedimento
+
+truncate table contrato_saldo
+
+
+
+---------------------------------------------
+/*
+
+
+
+update importacao set importacao_dataConclusao = null where importacao_id=3
+
+select * from prestador
+select * from prestador_unidade  
+select * from unidade_especialidade
+
+select * from usuarios
+
+
+select * FROM tipo_contrato
+
+contrato_beneficiario
+
+select * from endereco
+
+-- truncate table exportacaoCartao_log
+update exportacaoKit set exportacao_dataConclusao=null
+
+update contrato set contrato_rascunho=0
+
+
+select * from exportacaoCartao_log
+select contrato_numero,contrato_rascunho, * from contrato
+
+
+select * from exportacaoKit
+update exportacaoKit set exportacao_dataConclusao=null
+truncate table exportacaoKit_log
+
+select * from beneficiario
+
+select * from numero_contrato (nolock)
+select * from beneficiario
+delete from numero_contrato where numerocontrato_id >= 23
+
+6370870002849218
+6370870002849218085
+6370870008892212452
+6370  00
+
+
+delete from contrato where contrato_id >= 78031
+delete from beneficiario where beneficiario_id >= 12
+delete from contrato_beneficiario where contratobeneficiario_beneficiarioid >= 12
+delete from endereco where endereco_id >= 94293
+
+
+select * from procedimento
+select * from tabela_procedimento
+-- delete from procedimento
+select * from segmento
+
+
+select * from prestador
+select * from prestador_unidade
+select * from unidade_procedimento
+select * from procedimento where id in (652,1092,688)
+------------------------------------------------------------------------
+-- DBCC CHECKIDENT('procedimento', RESEED, 1)
+
+exec sp_spaceused
+DBCC ShrinkDatabase('dados_791')
+
+ALTER DATABASE dados_791 SET RECOVERY SIMPLE
+GO
+
+DBCC SHRINKFILE (dados_791_Log, 5)
+GO
+
+ALTER DATABASE dados_791 SET RECOVERY FULL
+GO
+---------------------------------------------------------------------------------
+
+ALTER DATABASE dados_791
+SET ALLOW_SNAPSHOT_ISOLATION ON
+
+ALTER DATABASE dados_791
+SET READ_COMMITTED_SNAPSHOT ON
+
+*/
+
+
+update contrato set contrato_kitSolicitado=0 where contrato_kitSolicitado=1
+update contrato set contrato_kitSolicitado=0,contrato_cartaoSolicitado=0
+
+update importacao set importacao_dataconclusao=null
+update importacao set importacao_arquivo='20141022183843_1929906_1aCARGA_OAB_SC.csv'
+
+select (count(*)-135) from  contrato (nolock)
+select * from importacao_log (nolock) where importacaolog_agendaId = 2
+select * from importacao
+select * from endereco
+select * from importacao_log nolock
+select * from estipulante
+select * from exportacaoCartao
+
+select contrato_senha,contrato_numero from contrato order by contrato_numero
+
+select * from numero_contrato

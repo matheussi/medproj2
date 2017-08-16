@@ -1,0 +1,17 @@
+﻿insert into procedimento (Codigo,nome,ch,porte,tabela_id) 
+select Codigo,nome,ch,porte,3 from procedimento2
+
+insert into especialidade (Codigo,nome,Descricao) 
+select Codigo,nome,Descricao from especialidade2
+
+
+
+ApiKey GeoLoc: AIzaSyCI2Z8-minvOdUC7OGN4Q1haBp4V38BBhA
+https://console.developers.google.com/apis/credentials?project=dazzling-skill-119114
+
+https://maps.googleapis.com/maps/api/geocode/json?address=357+Lins+de+Vasconcelos,+S%C3%A3o+Paulo,+SP&key=AIzaSyCI2Z8-minvOdUC7OGN4Q1haBp4V38BBhA&langua=pt-Br&output=xml
+https://developers.google.com/maps/documentation/geocoding/intro#GeocodingRequests
+https://developers.google.com/maps/documentation/geocoding/get-api-key
+http://stackoverflow.com/questions/14354867/c-sharp-how-to-find-latitude-and-longitude-using-c-sharp
+http://maps.google.com/maps/api/geocode/json?address=-23.5674545,-46.6215974&sensor=false
+https://maps.googleapis.com/maps/api/geocode/xml?address=357+Lins+de+Vasconcelos,+S%C3%A3o+Paulo,+SP&key=AIzaSyCI2Z8-minvOdUC7OGN4Q1haBp4V38BBhA&langua=pt-Br&output=xml

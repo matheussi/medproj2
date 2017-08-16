@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3BA32F09-7D38-4243-AB35-2381B2C556DE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LC.Web.PadraoSeguros.Entity</RootNamespace>
+    <AssemblyName>LC.Web.PadraoSeguros.Entity</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="LC.Framework.BusinessLayer">
+      <HintPath>..\..\..\src\Framework\BusinessLayer\bin\Debug\LC.Framework.BusinessLayer.dll</HintPath>
+    </Reference>
+    <Reference Include="LC.Framework.DataUtil">
+      <HintPath>..\..\..\src\Framework\DataUtil\bin\Debug\LC.Framework.DataUtil.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbastractArqTransacionalConf.cs" />
+    <Compile Include="Adicional.cs" />
+    <Compile Include="AdicionalBeneficiario.cs" />
+    <Compile Include="AdicionalRegra.cs" />
+    <Compile Include="AgendaRelatorio.cs" />
+    <Compile Include="Agente.cs" />
+    <Compile Include="AgregadoRegra.cs" />
+    <Compile Include="AlmoxContratoImpresso.cs" />
+    <Compile Include="AlmoxMovimentacao.cs" />
+    <Compile Include="AlmoxProduto.cs" />
+    <Compile Include="AlmoxTipoProduto.cs" />
+    <Compile Include="ArqTransacional.cs" />
+    <Compile Include="ArqTransacionalConf.cs" />
+    <Compile Include="ArquivoAvisoCobranca.cs" />
+    <Compile Include="Beneficiario.cs" />
+    <Compile Include="CalendarioAdmissaoVigencia.cs" />
+    <Compile Include="CalendarioRecebimento.cs" />
+    <Compile Include="Categoria.cs" />
+    <Compile Include="CheckList.cs" />
+    <Compile Include="Cobranca.cs" />
+    <Compile Include="CobrancaMotivoBaixa.cs" />
+    <Compile Include="CobrancaTemp.cs" />
+    <Compile Include="Comissionamento.cs" />
+    <Compile Include="ComissionamentoOperadora.cs" />
+    <Compile Include="ComissionamentoUsuario.cs" />
+    <Compile Include="Conferencia.cs" />
+    <Compile Include="ConferenciaItemSaude.cs" />
+    <Compile Include="ContaCorrente.cs" />
+    <Compile Include="Contato.cs" />
+    <Compile Include="Contrato.cs" />
+    <Compile Include="ContratoADM.cs" />
+    <Compile Include="ContratoADMPlanoAdicional.cs" />
+    <Compile Include="ContratoBeneficiario.cs" />
+    <Compile Include="ContratoPlano.cs" />
+    <Compile Include="Atendimento.cs" />
+    <Compile Include="AtendimentoItem.cs" />
+    <Compile Include="ContratoStatus.cs" />
+    <Compile Include="Endereco.cs" />
+    <Compile Include="EntityBase.cs" />
+    <Compile Include="EstadoCivil.cs" />
+    <Compile Include="DeclaracaoSaude.cs" />
+    <Compile Include="Estipulante.cs" />
+    <Compile Include="Filial.cs" />
+    <Compile Include="Filtro\ComissaoProducaoFiltro.cs" />
+    <Compile Include="Filtro\Filtro.cs" />
+    <Compile Include="FinancialReportBase.cs" />
+    <Compile Include="GrupoDeVenda.cs" />
+    <Compile Include="ImportacaoProposta.cs" />
+    <Compile Include="LayoutCustomizadoArquivo.cs" />
+    <Compile Include="NumeroContrato.cs" />
+    <Compile Include="Operadora.cs" />
+    <Compile Include="Parentesco.cs" />
+    <Compile Include="Perfil.cs" />
+    <Compile Include="Plano.cs" />
+    <Compile Include="ContratoAdmParentescoAgregado.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SuperiorSubordinado.cs" />
+    <Compile Include="TabelaReajuste.cs" />
+    <Compile Include="TabelaValor.cs" />
+    <Compile Include="Taxa.cs" />
+    <Compile Include="TipoContrato.cs" />
+    <Compile Include="Untyped.cs" />
+    <Compile Include="Usuario.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="diagram_geral_explod.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Framework\Phantom\Phantom.csproj">
+      <Project>{908b8f25-63f7-4495-bde3-8e89a0c4c471}</Project>
+      <Name>Phantom</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

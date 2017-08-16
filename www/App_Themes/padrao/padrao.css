@@ -1,0 +1,552 @@
+﻿   html              { height:100%; }
+   body              { font-family: Arial, Trebuchet MS, Verdana, Helvetica; color:#353535; margin:0px; height:100%; text-decoration:none; background:#f5f5f5;}
+   
+   a:link            { text-decoration:none; color:#000000; }
+   a:visited         { text-decoration:none; color:#000000; }
+   a:active          { text-decoration:none; color:#000000; }
+   a:hover           { text-decoration:none; color:#b8b8b8; }
+   
+   h1                { color:#353535; text-decoration:none; display:inline; }
+   h2                { color:#353535; text-decoration:none; display:inline; }
+   h3                { color:#353535; text-decoration:none; display:inline; }
+   h4                { color:#353535; text-decoration:none; display:inline; }
+   h5                { color:#353535; text-decoration:none; display:inline; }
+   h6                { color:#353535; text-decoration:none; display:inline; }
+   h7                { color:#353535; text-decoration:none; display:inline; }
+                                                    
+  .fonte9            { font-size:9px; font-weight:normal; color:#000000; }
+  .fonte9:link       { font-size:9px; font-weight:normal; color:#000000; }
+  .fonte9:visited    { font-size:9px; font-weight:normal; color:#000000; }
+  .fonte9:active     { font-size:9px; font-weight:normal; color:#000000; }
+  .fonte9:hover      { font-size:9px; font-weight:normal; color:#000000; }
+  a.fonte9:hover     { font-size:9px; font-weight:normal; color:#000000; }
+  
+  .fonte10           { font-size:10px; font-weight:normal; color:#000000; }
+  .fonte10:link      { font-size:10px; font-weight:normal; color:#000000; }
+  .fonte10:visited   { font-size:10px; font-weight:normal; color:#000000; }
+  .fonte10:active    { font-size:10px; font-weight:normal; color:#000000; }
+  .fonte10:hover     { font-size:10px; font-weight:normal; color:#000000; }
+  a.fonte10:hover    { font-size:10px; font-weight:normal; color:#000000; }
+  
+  .fonte11           { font-size:11px; font-weight:normal; color:#000000; }
+  .fonte11:link      { font-size:11px; font-weight:normal; color:#000000; }
+  .fonte11:visited   { font-size:11px; font-weight:normal; color:#000000; }
+  .fonte11:active    { font-size:11px; font-weight:normal; color:#000000; }
+  .fonte11:hover     { font-size:11px; font-weight:normal; color:#000000; }
+  a.fonte11:hover    { font-size:11px; font-weight:normal; color:#000000; }
+  
+  .fonte12           { font-size:12px; font-weight:normal; color:#000000; }
+  .fonte12:link      { font-size:12px; font-weight:normal; color:#000000; }
+  .fonte12:visited   { font-size:12px; font-weight:normal; color:#000000; }
+  .fonte12:active    { font-size:12px; font-weight:normal; color:#000000; }
+  .fonte12:hover     { font-size:12px; font-weight:normal; color:#000000; }
+  a.fonte12:hover    { font-size:12px; font-weight:normal; color:#000000; }
+  
+  .fonte13           { font-size:13px; font-weight:normal; color:#000000; }
+  .fonte13:link      { font-size:13px; font-weight:normal; color:#000000; }
+  .fonte13:visited   { font-size:13px; font-weight:normal; color:#000000; }
+  .fonte13:active    { font-size:13px; font-weight:normal; color:#000000; }
+  .fonte13:hover     { font-size:13px; font-weight:normal; color:#000000; }
+  a.fonte13:hover    { font-size:13px; font-weight:normal; color:#000000; }
+  
+  .titulo            { font-size:14px; font-weight:normal; color:#353535; font-weight:bold; padding-left:5px;}
+  .titulo:link       { font-size:14px; font-weight:normal; color:#353535; font-weight:bold; padding-left:5px;}
+  .titulo:visited    { font-size:14px; font-weight:normal; color:#353535; font-weight:bold; padding-left:5px;}
+  .titulo:active     { font-size:14px; font-weight:normal; color:#353535; font-weight:bold; padding-left:5px;}
+  .titulo:hover      { font-size:14px; font-weight:normal; color:#353535; font-weight:bold; padding-left:5px;}
+  a.titulo:hover     { font-size:14px; font-weight:normal; color:#353535; font-weight:bold; padding-left:5px;}
+  
+  .paginador           { font-size:14px; font-weight:normal; color:#a9d21f; }
+  .paginador:link      { font-size:14px; font-weight:normal; color:#a9d21f; }
+  .paginador:visited   { font-size:14px; font-weight:normal; color:#a9d21f; }
+  .paginador:active    { font-size:14px; font-weight:normal; color:#a9d21f; }
+  .paginador:hover     { font-size:14px; font-weight:normal; color:#a9d21f; }
+  a.paginador:hover    { font-size:14px; font-weight:normal; color:#FFFFFF; }
+  
+  .navegador         { font-size:10px; font-weight:none; color:#b8b8b8; }
+  .navegador:link    { font-size:10px; font-weight:none; color:#b8b8b8; }
+  .navegador:visited { font-size:10px; font-weight:none; color:#b8b8b8; }
+  .navegador:active  { font-size:10px; font-weight:none; color:#b8b8b8; }
+  .navegador:hover   { font-size:10px; font-weight:none; color:#000000; }
+  a.navegador:hover  { font-size:10px; font-weight:none; color:#000000; }
+  
+  .menu_site         { font-size:12px; font-weight:none; color:#FFFFFF; }
+  .menu_site:link    { font-size:12px; font-weight:none; color:#FFFFFF; }
+  .menu_site:visited { font-size:12px; font-weight:none; color:#FFFFFF; }
+  .menu_site:active  { font-size:12px; font-weight:none; color:#FFFFFF; }
+  .menu_site:hover   { font-size:12px; font-weight:none; color:#FFFFFF; }
+  a.menu_site:hover  { font-size:12px; font-weight:none; color:#000000; }
+  
+  .rodape            { font-size:11px; font-weight:normal; color:#b8b8b8; }
+  .rodape:link       { font-size:11px; font-weight:normal; color:#b8b8b8; }
+  .rodape:active     { font-size:11px; font-weight:normal; color:#b8b8b8; }
+  .rodape:visited    { font-size:11px; font-weight:normal; color:#b8b8b8; }
+  .rodape:hover      { font-size:11px; font-weight:normal; color:#b8b8b8; }
+  a.rodape:hover     { font-size:11px; font-weight:normal; color:#b8b8b8; }
+
+  /*------------- Conteudo -------------*/
+
+.fundoTdConteudo { background-color:white }
+
+  /*------------- Topo -------------*/
+ 
+  #Topo {
+   background:url(../images/site/bgTopo.jpg);
+   height:76px;
+  }
+  
+  #LogoCliente {
+   width:224px;
+   text-align:center;
+   float:left;
+  }
+  
+  #Usuario {
+   color:white;
+   font-size:18px;
+   padding:20px 0px 0px 20px;
+   float:left;
+  }
+  
+  #LogoSmartSite {
+   float:right;
+  }
+  
+  /*------------- Menu -------------*/
+  
+  #Menu {
+   background:url(../images/site/bgMenu.gif);
+   height:38px; 
+  }
+  
+  .ItemMenu {
+   padding-top:5px;
+   margin-left:10px;
+   float:left;
+  }
+  
+  .ItemMenuText {
+   background:white;
+   float:left;
+   padding:9px;
+   font-weight:bold;
+   font-size:14px;
+  }
+  
+  .ItemMenuTextDefault {
+   float:left;
+   padding:9px;
+   font-weight:bold;
+   font-size:14px; 
+   color:white;
+  }
+  
+  #InputSearchHome  {
+   float:right;
+   padding-top:7px;
+  }
+  
+  #SelectSearchHome {
+   float:right;
+   padding-top:7px;
+   margin-right:5px;
+  }
+  
+  #Mensagem {
+   background:url(../images/site/bgMensagem.gif);
+   height:53px; 
+  }
+  
+  .Mensagem {
+   padding:20px 0px 0px 20px;
+   font-weight:bold;
+   font-size:14px;
+  }
+  
+  /*------------- Corpo -------------*/
+  
+  #Corpo {
+   width:100%;
+  }
+  
+  /*------------- Left -------------*/
+  
+  #ColLeft {
+   float:left;
+   margin-right:10px;
+  }
+  
+  .BgTituloLateral {
+   width:213px;
+   height:35px; 
+   background:url(../images/site/bgTituloLateral.gif);
+  }
+  
+  .LeftTextTitulo {
+   padding:10px;
+   font-size:14px;
+   font-weight:bold;
+   color:#353535;
+  }
+  
+  .MenuLateral {
+   background:white;
+   border-left:1px solid #e7e7e7;
+   border-right:1px solid #e7e7e7; 
+   border-bottom:1px solid #e7e7e7;
+   font-size:13px;
+   padding:12px;
+  }
+ 
+  /*------------- Content -------------*/
+  
+  #Content {
+   float:left;
+   background:red;
+   width:85%;
+  }
+  
+  .Titulo {
+   background:url(../images/site/bgTitulo.gif); 
+   width:100%;
+  }
+  
+  .TextTitulo {
+   padding:10px 10px 9px 10px;
+   font-size:14px;
+   font-weight:bold;
+   color:#353535;
+  }
+  
+  .Conteudo {
+   clear:left;
+   background:white;
+   border-left:1px solid #e7e7e7;
+   border-right:1px solid #e7e7e7; 
+   border-bottom:1px solid #e7e7e7;
+   font-size:13px;
+   padding:12px;
+   color:#353535;
+  }
+  
+  #contentResponse
+  {
+   background-color: #eaf6b2;
+   display: none;
+   height: 17px;
+   position: fixed;
+   left: 50%;
+   top: 0px;
+   margin-left: -200px;
+   width: 400px;
+   text-align:center;
+  }
+  
+  /*------------- Rodape -------------*/
+  
+  #Rodape {
+   margin:10px;
+   padding:10px 0px;
+   clear:left;
+   border-top:1px solid #e7e7e7;
+  }
+  
+  #TextRodape {
+   font-size:11px;
+   color:#353535;
+   margin:15px;
+   float:left;
+  }
+  
+  #LinksRodape {
+   float:right;
+   margin-top:10px;
+  }
+  
+  /*------------- Default -------------*/
+  
+  .Float {
+   float:left;
+  }
+  
+  .Right {
+   float:right;
+  }
+  
+  .Clear {
+   clear:left;
+  }
+  
+  .LabelForm {
+   padding:5px;
+   background:#f1f1f1;
+   border:1px solid #E2E2E2;
+   font-weight:bold;
+  }
+  
+  .DivInput {
+   padding:5px;
+  }
+  
+  .InputDefault {
+    border:1px solid #E2E2E2;
+    font-size:14px;
+    padding:4px;
+  }
+  
+  .TextAreaDefault {
+   border:1px solid #E2E2E2;
+    font-size:14px;
+    padding:4px;
+    height:120px;
+  }
+  
+  .BgBtns {
+   background:url(../images/bgBtns.gif) repeat-x;
+   height:37px;
+  }
+  
+  .TituloLists {
+   background:#f1f1f1;
+   border-top:1px solid #e2e2e2;
+   border-bottom:1px solid #e2e2e2;
+   padding:7px;     
+   font-size:12px;
+   font-weight:bold;
+   color:black;
+  }
+  
+  .BoxLists {
+   padding:7px;
+   border-bottom:1px solid #e2e2e2;
+  }
+  
+  .DefaultButtons {
+   background:url(img/bgMenu.gif) repeat-x;
+   border:1px solid transparent; 
+   margin:0px;
+   padding:5px 8px;
+   font-weight:bold;
+   font-size:12px;
+   color:#e2e2e2;
+   cursor:pointer;
+  }
+  
+  .DefaultButtons:hover {
+   color:white;
+  }
+  
+  /*------------------ "MESSAGES" ------------*/
+  
+  .overlay
+  {
+   width: 100%;
+  	height: 100%;
+  	background-color: black;
+  	position: fixed;
+  	z-index: 1608;
+  	top: 0px;
+  	left: 0px;
+  	opacity: 0.6;
+  	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(opacity=60)";
+   filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);
+  }
+  
+  #overlayMesage {
+   display:none;
+  }
+  
+  #overlayMesage2 {
+   display:none;
+  }
+  
+  .messageBody
+  {
+   width: 350px;
+  	height: 150px;
+  	background-color: white;
+  	border:3px solid #e2e2e2;
+  	position: fixed;
+  	z-index: 1608;
+  	top: 50%;
+  	left: 50%;
+  	margin-left:-175px;
+  	margin-top:-75px;
+  }
+  
+  .messageBody2
+  {
+   width: 550px;
+  	height: 350px;
+  	background-color: white;
+  	border:3px solid #e2e2e2;
+  	position: fixed;
+  	z-index: 1608;
+  	top: 50%;
+  	left: 50%;
+  	margin-left:-275px;
+  	margin-top:-175px;
+  }
+  
+  .messageText
+  {
+   width: 350px;
+   height: 150px;
+   text-align: center;
+   text-vertical-align: middle;
+   position: relative;
+  	z-index: 2000;
+  	top: 50%;
+  	left: 50%;
+  	margin-left:-175px;
+  	margin-top:-25px;
+  }
+  
+  .messageText2
+  {
+   width: 550px;
+   height: 350px;
+   text-align: center;
+   text-vertical-align: middle;
+   position: relative;
+  	z-index: 2000;
+  	top: 50%;
+  	left: 50%;
+  	margin-left:-275px;
+  	margin-top:-175px;
+  }
+  
+    
+  /*------------------ "Paginador" ------------*/
+    
+  .PaginadorDefault {
+   float:left;
+   font-size:14px;
+   color:#a9d21f;
+   padding:5px;
+  }
+  
+  .PaginadorActive {
+   float:left;
+   font-size:14px;
+   font-weight:bold;
+   color:white;
+   padding:5px;
+  }
+  
+  /* -------- Login -------- */
+  
+  #Table1 {
+ 		height:100%;
+ 	}
+  
+  .BgLogin {
+   background:url(img/bg.png) no-repeat center center; /*background:url(../images/login/bg.png) no-repeat center center;*/
+   padding:10px;
+  }
+  
+  .TopoLogin {
+   background:#f8fafa url(img/bgGradWhite.png) repeat-x top center;
+   padding-left:15px;
+  }
+  
+  .BgInputLogin {
+  }
+
+  .BgInputLogin input {
+      padding:5px;
+  }
+  
+  .bgFx {
+   background:url(img/bgFx.png) repeat-x bottom center; 
+  }
+  
+  
+  .bgButton {
+   background:#03619e url(img/bgGradWhite.png) repeat-x top center;
+   cursor:pointer;
+  }
+  
+  .ButtonDefault {
+   background:#7db900;
+   float:left;
+   cursor:pointer;
+  }
+  
+  .Padding8 {
+   padding:8px;
+  }
+  
+  /* --------------- NÃO REMOVER ESTE CÓDIGO ------------- */
+  #fotos_produto { list-style-type: none; margin: 0; padding: 0; }
+  #fotos_produto li { margin: 5px; float: left; width: 400px; height: 210px; border: 2px solid #dedede; background-color: white; }
+  /* --------------- NÃO REMOVER ESTE CÓDIGO ------------- */
+  
+  /* --------------- ITENS ------------- */
+  #list_item_tt    { list-style-type: none; background:#f1f1f1; border-top:1px solid #e2e2e2; padding:7px; font-size:12px; font-weight:bold; color:black; width:100%; height: 23px; }
+  #list_item_tt li { margin: 0px; float: left; width: 97%; }
+  
+  #list_item    { list-style-type: none; text-align:left; padding:7px; font-size:12px; width:100%; }
+  #list_item li { list-style-type: none; width: 97%; }
+  
+  .list_item    { list-style-type: none; text-align:left; padding:7px; font-size:12px; width:100%; }
+  .list_item li { list-style-type: none; width: 97%; }
+  /* --------------- ITENS ------------- */
+  
+  /* --------------- ÁLBUM - INTERNO ------------- */
+  #fotos_album    { list-style-type: none; margin: 0; padding: 0; }
+  #fotos_album li { margin: 5px; float: left; width: 336px; height: 110px; border: 2px solid #dedede; background-color: white; }
+  .foto_container { width:320px; height:104px; margin:3px; }
+  .foto_thumbnail { width:110px; height:104px; text-align:center; }
+  .foto_dados     { width:210px; height:104px; }
+  /* --------------- ÁLBUM - INTERNO ------------- */
+  
+  /* --------------- CATEGORIAS ------------- */
+  #list_categoria    { list-style-type: none; }
+  #list_categoria li { margin: 5px; float: left; width: 95%; }
+  /* --------------- CATEGORIAS ------------- */
+  
+  .BgBtnAdmin {
+   float:left;
+   background:url(../images/site/bgBtnAdmin.gif) repeat-x;
+   padding:2px;
+  }
+  
+  /* --------------- ARQUIVOS ------------- */
+  
+  .arquivos { list-style-type: none; margin: 0; padding: 0; }
+  .arquivos li { margin: 5px; float: left; width: 230px; height: 110px; border: 2px solid #dedede; background-color: white; }
+  
+  /* --------------- ARQUIVOS ------------- */
+
+
+
+
+
+  /*------------------ "Overlay" ------------*/
+  .OverlayBackground {
+   	width: 100%;
+   	height: 100%;
+   	background-color: black;
+   	position: fixed;
+   	z-index: 1608;
+   	top: 0px;
+   	left: 0px;
+   	opacity: 0.75;
+   	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(opacity=75)";
+   	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=75);
+   }
+
+   .Overlay {
+   	width: 100%;
+   	height: 100%;
+   	position: fixed;
+    text-align:center;
+    z-index:9998;
+   	//display:none;
+   }
+
+.padding10
+{
+    padding:10px;
+}

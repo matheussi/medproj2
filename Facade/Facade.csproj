@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{93710B14-B48C-411B-8F85-4E6A004490FF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LC.Web.PadraoSeguros.Facade</RootNamespace>
+    <AssemblyName>LC.Web.PadraoSeguros.Facade</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Boleto.Net">
+      <HintPath>..\www\dlls\Boleto.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\..\..\src\SmartTools\www2\bin\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="LC.Web.PadraoSeguros.Entity, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Entity\bin\Debug\LC.Web.PadraoSeguros.Entity.dll</HintPath>
+    </Reference>
+    <Reference Include="LinqKit">
+      <HintPath>..\..\..\src\SmartTools\www2\dlls\LinqKit.dll</HintPath>
+    </Reference>
+    <Reference Include="NextWay.Framework.PhantomV2, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\LCProjects\Framework\Phantom\bin\Debug\NextWay.Framework.PhantomV2.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\..\..\src\SmartTools\www2\bin\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AgendaAtribuicaoProcedimentoFacade.cs" />
+    <Compile Include="AgendaExportacaoCartaoFacade.cs" />
+    <Compile Include="AgendaExportacaoKitFacade.cs" />
+    <Compile Include="AgendaImportacaoFacade.cs" />
+    <Compile Include="AgendaPagamentoFacade.cs" />
+    <Compile Include="AlmoxMovimentacaoFacade.cs" />
+    <Compile Include="ArquivoBaixaFacade.cs" />
+    <Compile Include="AssociadoPJFacade.cs" />
+    <Compile Include="AtendimentoCredFacade.cs" />
+    <Compile Include="AtendimentoFacade.cs" />
+    <Compile Include="BancoFacade.cs" />
+    <Compile Include="BeneficiarioFacade.cs" />
+    <Compile Include="CobrancaFacade.cs" />
+    <Compile Include="ComissionamentoFacade.cs" />
+    <Compile Include="ConfigAdicionalFacade.cs" />
+    <Compile Include="ConfigEmailFacade.cs" />
+    <Compile Include="ContratoAdmFacade.cs" />
+    <Compile Include="ContratoFacade.cs" />
+    <Compile Include="CorretorFacade.cs" />
+    <Compile Include="EspecialidadeFacade.cs" />
+    <Compile Include="FacadeBase.cs" />
+    <Compile Include="FilialFacade.cs" />
+    <Compile Include="ImportFacade.cs" />
+    <Compile Include="NumeroCartaoFacade.cs" />
+    <Compile Include="OperadoraFacade.cs" />
+    <Compile Include="PlanoFacade.cs" />
+    <Compile Include="PrestadorFacade.cs" />
+    <Compile Include="PrestadorUnidadeFacade.cs" />
+    <Compile Include="ProcedimentoFacade.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegraComissaoFacade.cs" />
+    <Compile Include="RelatorioFacade.cs" />
+    <Compile Include="SegmentoFacade.cs" />
+    <Compile Include="TabelaCoberturaFacade.cs" />
+    <Compile Include="TabelaDeValorFacade.cs" />
+    <Compile Include="TabelaPrecoFacade.cs" />
+    <Compile Include="TabelaPrecoVigenciaFacade.cs" />
+    <Compile Include="TabelaProcedimentoFacade.cs" />
+    <Compile Include="UsuarioFacade.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Entidades\Entidades.csproj">
+      <Project>{1494ffee-eac6-4b6d-bb12-843d4ca872df}</Project>
+      <Name>Entidades</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Entity\Entity.csproj">
+      <Project>{3ba32f09-7d38-4243-ab35-2381b2c556de}</Project>
+      <Name>Entity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

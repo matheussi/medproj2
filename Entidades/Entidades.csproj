@@ -1,0 +1,243 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1494FFEE-EAC6-4B6D-BB12-843D4CA872DF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MedProj.Entidades</RootNamespace>
+    <AssemblyName>MedProj.Entidades</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CsvHelper">
+      <HintPath>..\packages\CsvHelper.2.13.5.0\lib\net40-client\CsvHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\..\..\src\SmartTools\www2\bin\FluentNHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="GoogleMaps.LocationServices">
+      <HintPath>..\packages\GoogleMaps.LocationServices.0.9.8.5\lib\net40\GoogleMaps.LocationServices.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\..\..\src\SmartTools\www2\bin\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AgendaAtribuicaoProcedimento.cs" />
+    <Compile Include="AgendaExportacaoCartao.cs" />
+    <Compile Include="AgendaExportacaoCartaoItem.cs" />
+    <Compile Include="AgendaExportacaoKit.cs" />
+    <Compile Include="AgendaImportacao.cs" />
+    <Compile Include="AgendaImportacaoItemLog.cs" />
+    <Compile Include="AgendaImportacaoKitItemLog.cs" />
+    <Compile Include="AgendaPagamento.cs" />
+    <Compile Include="AgendaPagamentoItem.cs" />
+    <Compile Include="ArquivoBaixa.cs" />
+    <Compile Include="ArquivoBaixaItem.cs" />
+    <Compile Include="AssociadoPJ.cs" />
+    <Compile Include="Atendimento.cs" />
+    <Compile Include="AtendimentoProcedimento.cs" />
+    <Compile Include="Banco.cs" />
+    <Compile Include="Beneficiario.cs" />
+    <Compile Include="Cobranca.cs" />
+    <Compile Include="ConfigAdicional.cs" />
+    <Compile Include="ConfigEmailAviso.cs" />
+    <Compile Include="Contexto.cs" />
+    <Compile Include="Contrato.cs" />
+    <Compile Include="ContratoADM.cs" />
+    <Compile Include="ContratoBeneficiario.cs" />
+    <Compile Include="Corretor.cs" />
+    <Compile Include="Endereco.cs" />
+    <Compile Include="EntidadeBase.cs" />
+    <Compile Include="Enuns.cs" />
+    <Compile Include="Especialidade.cs" />
+    <Compile Include="Filial.cs" />
+    <Compile Include="Map\NHibernate\AgendaAtribuicaoProcedimentoMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaPagamentoItemMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaPagamentoMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaExportacaoCartaoItemMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaExportacaoCartaoMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaExportacaoKitMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaImportacaoItemLogMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaExportacaoKitItemLogMap.cs" />
+    <Compile Include="Map\NHibernate\AgendaImportacaoMap.cs" />
+    <Compile Include="Map\NHibernate\ArquivoBaixaItemMap.cs" />
+    <Compile Include="Map\NHibernate\ArquivoBaixaMap.cs" />
+    <Compile Include="Map\NHibernate\AssociadoPJMap.cs" />
+    <Compile Include="Map\NHibernate\AtendimentoMap.cs" />
+    <Compile Include="Map\NHibernate\AtendimentoProcedimentoMap.cs" />
+    <Compile Include="Map\NHibernate\BancoMap.cs" />
+    <Compile Include="Map\NHibernate\BeneficiarioMap.cs" />
+    <Compile Include="Map\NHibernate\CobrancaMap.cs" />
+    <Compile Include="Map\NHibernate\ConfigAdicionalMap.cs" />
+    <Compile Include="Map\NHibernate\ConfigEmailAvisoMap.cs" />
+    <Compile Include="Map\NHibernate\ContratoADMMap.cs" />
+    <Compile Include="Map\NHibernate\ContratoBeneficiarioMap.cs" />
+    <Compile Include="Map\NHibernate\ContratoMap.cs" />
+    <Compile Include="Map\NHibernate\CorretorMap.cs" />
+    <Compile Include="Map\NHibernate\EnderecoMap.cs" />
+    <Compile Include="Map\NHibernate\EspecialidadeMap.cs" />
+    <Compile Include="Map\NHibernate\FilialMap.cs" />
+    <Compile Include="Map\NHibernate\NumeroCartaoMap.cs" />
+    <Compile Include="Map\NHibernate\OperadoraMap.cs" />
+    <Compile Include="Map\NHibernate\PlanoMap.cs" />
+    <Compile Include="Map\NHibernate\PrestadorMap.cs" />
+    <Compile Include="Map\NHibernate\PrestadorUnidadeMap.cs" />
+    <Compile Include="Map\NHibernate\ProcedimentoMap.cs" />
+    <Compile Include="Map\NHibernate\RegiaoMap.cs" />
+    <Compile Include="Map\NHibernate\RegraComissaoMap.cs" />
+    <Compile Include="Map\NHibernate\SaldoMap.cs" />
+    <Compile Include="Map\NHibernate\SegmentoMap.cs" />
+    <Compile Include="Map\NHibernate\TabelaCoberturaMap.cs" />
+    <Compile Include="Map\NHibernate\TabelaPrecoMap.cs" />
+    <Compile Include="Map\NHibernate\TabelaPrecoVigenciaMap.cs" />
+    <Compile Include="Map\NHibernate\TabelaProcedimentoMap.cs" />
+    <Compile Include="Map\NHibernate\UnidadeEspecialidadeMap.cs" />
+    <Compile Include="Map\NHibernate\UnidadeProcedimentoMap.cs" />
+    <Compile Include="Map\NHibernate\UsuarioMap.cs" />
+    <Compile Include="Migrations\201406051920165_initial.cs" />
+    <Compile Include="Migrations\201406051920165_initial.Designer.cs">
+      <DependentUpon>201406051920165_initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406051939489_M001.cs" />
+    <Compile Include="Migrations\201406051939489_M001.Designer.cs">
+      <DependentUpon>201406051939489_M001.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406052002451_M002.cs" />
+    <Compile Include="Migrations\201406052002451_M002.Designer.cs">
+      <DependentUpon>201406052002451_M002.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406052059218_M003.cs" />
+    <Compile Include="Migrations\201406052059218_M003.Designer.cs">
+      <DependentUpon>201406052059218_M003.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406061603281_M004.cs" />
+    <Compile Include="Migrations\201406061603281_M004.Designer.cs">
+      <DependentUpon>201406061603281_M004.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406061611587_M004b.cs" />
+    <Compile Include="Migrations\201406061611587_M004b.Designer.cs">
+      <DependentUpon>201406061611587_M004b.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406061700417_M005.cs" />
+    <Compile Include="Migrations\201406061700417_M005.Designer.cs">
+      <DependentUpon>201406061700417_M005.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406061724043_M006.cs" />
+    <Compile Include="Migrations\201406061724043_M006.Designer.cs">
+      <DependentUpon>201406061724043_M006.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406100117319_M007.cs" />
+    <Compile Include="Migrations\201406100117319_M007.Designer.cs">
+      <DependentUpon>201406100117319_M007.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="NumeroCartao.cs" />
+    <Compile Include="Operadora.cs" />
+    <Compile Include="Plano.cs" />
+    <Compile Include="Prestador.cs" />
+    <Compile Include="PrestadorUnidade.cs" />
+    <Compile Include="Procedimento.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Regiao.cs" />
+    <Compile Include="RegraComissao.cs" />
+    <Compile Include="Saldo.cs" />
+    <Compile Include="Segmento.cs" />
+    <Compile Include="TabelaCobertura.cs" />
+    <Compile Include="TabelaPreco.cs" />
+    <Compile Include="TabelaPrecoVigencia.cs" />
+    <Compile Include="TabelaProcedimento.cs" />
+    <Compile Include="UnidadeEspecialidade.cs" />
+    <Compile Include="UnidadeProcedimento.cs" />
+    <Compile Include="Usuario.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201406051920165_initial.resx">
+      <DependentUpon>201406051920165_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406051939489_M001.resx">
+      <DependentUpon>201406051939489_M001.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406052002451_M002.resx">
+      <DependentUpon>201406052002451_M002.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406052059218_M003.resx">
+      <DependentUpon>201406052059218_M003.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406061603281_M004.resx">
+      <DependentUpon>201406061603281_M004.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406061611587_M004b.resx">
+      <DependentUpon>201406061611587_M004b.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406061700417_M005.resx">
+      <DependentUpon>201406061700417_M005.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406061724043_M006.resx">
+      <DependentUpon>201406061724043_M006.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406100117319_M007.resx">
+      <DependentUpon>201406100117319_M007.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GoogleMaps.LocationServices.readme.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

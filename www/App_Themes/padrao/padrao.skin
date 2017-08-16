@@ -1,0 +1,50 @@
+﻿<asp:Image runat="server" SkinId="xGif" ImageUrl="img/x.gif" BorderWidth="0" />
+
+<asp:Image runat="server" SkinId="btnSuporteSkin" ImageUrl="img/btnSuporte.png" />
+<asp:ImageButton runat="server" SkinId="btnEntrarSkin" ImageUrl="img/btnEntrar.png" AlternateText="Entrar" BorderWidth="0" />
+<asp:Image runat="server" SkinId="LinkLoginSkin" ImageUrl="img/LinkLogin.png" AlternateText="Link e Cérebro" BorderWidth="0" />
+<asp:Image runat="server" SkinId="SmartLoginSkin" ImageUrl="img/SmartLogin.png" AlternateText="Smart Site" BorderWidth="0" />
+<asp:Image runat="server" SkinId="LogoLink2Skin" ImageUrl="img/LogoLink2.png" AlternateText="Link e Cérebro" BorderWidth="0" />
+
+<asp:TextBox runat="server" CssClass="form-control" SkinId="txtPadrao"/>
+
+<asp:GridView SkinId="gridPadrao" CssClass="table table-hover table-striped table-bordered" runat="server" AutoGenerateColumns="False">
+    <RowStyle HorizontalAlign="Left" />
+</asp:GridView>
+
+<asp:GridView SkinId="gridPadraoProp" CssClass="table table-bordered" runat="server" AutoGenerateColumns="False">
+    <RowStyle HorizontalAlign="Left" />
+</asp:GridView>
+
+<asp:GridView SkinId="gridPadrao2" CssClass="table table-striped table-bordered" runat="server" AutoGenerateColumns="False">
+    <RowStyle HorizontalAlign="Left" />
+</asp:GridView>
+
+<asp:Button runat="server" CssClass="btn btn-info" SkinId="botaoPadrao1" />  <%--<asp:Button runat="server" CssClass="btn btn-primary" SkinId="botaoPadrao1" />--%>
+
+
+<asp:Button runat="server" CssClass="btn btn-danger" SkinId="botaoPadraoDANGER"/>
+<asp:Button runat="server" CssClass="btn btn-danger btn-sm" SkinId="botaoPadraoDANGER_Small"/>
+
+<asp:Button runat="server" CssClass="btn btn-info" SkinId="botaoPadraoSUCCESS"/> <%--<asp:Button runat="server" CssClass="btn btn-success" SkinId="botaoPadraoSUCCESS"/>--%>
+
+<asp:Button runat="server" CssClass="btn btn-info" SkinId="botaoPadraoINFO"/>
+<asp:Button runat="server" CssClass="btn btn-info btn-sm" SkinId="botaoPadraoINFO_Small"/>
+
+<asp:Button runat="server" CssClass="btn btn-warning" SkinId="botaoPadraoWarning"/>
+<asp:Button runat="server" CssClass="btn btn-warning btn-sm" SkinId="botaoPadraoWarning_Small"/>
+
+<asp:DropDownList runat="server" CssClass="form-control" SkinId="comboPadrao1"/>
+
+
+<asp:Image style="cursor:pointer" ToolTip="exibir calendário" runat="server" SkinId="imgCanlendario" ImageUrl="img/calendar.png" ImageAlign="AbsMiddle" />
+<asp:TextBox runat="server" SkinId="textboxSkin" BorderColor="Black" BorderWidth="1px" Font-Size="11px" BorderStyle="Solid" />
+<asp:GridView runat="server" SkinId="gridViewSkin" Font-Size="10px" CellPadding="4" ForeColor="#333333" BorderWidth="1px" BorderColor="#507CD1" GridLines="None">
+    <RowStyle BackColor="#EFF3FB" Font-Size="10px" />
+    <FooterStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+    <PagerStyle BackColor="#2461BF" ForeColor="White" HorizontalAlign="Center" />
+    <SelectedRowStyle BackColor="#D1DDF1" Font-Bold="True" ForeColor="#333333" />
+    <HeaderStyle BackColor="#507CD1" Font-Bold="True" ForeColor="White" />
+    <EditRowStyle BackColor="whitesmoke" />
+    <AlternatingRowStyle  Font-Size="10px" BackColor="White" />
+</asp:GridView>
