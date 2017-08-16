@@ -200,7 +200,7 @@
                         item.Status = TipoItemBaixa.OcorrenciaSemLiquidacao;
                         sessao.SaveOrUpdate(item);
                         continue;
-                    } 
+                    }
 
                     if (item.Cobranca.Cancelada) { item.Status = TipoItemBaixa.TituloCanceladoLiquidado; item.Cobranca.Cancelada = false; }
                     else if (item.Cobranca.Pago) { item.Status = TipoItemBaixa.PagamentoDuplicado; }
