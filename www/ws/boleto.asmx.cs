@@ -547,7 +547,7 @@ namespace MedProj.www.ws
 
                         // intervarlo permitido para geração de cobranças
                         DateTime inicioPeriodo = new DateTime(dataVencimento.Year, dataVencimento.Month, 1);
-                        DateTime fimPeriodo = new DateTime(dataVencimento.AddDays(5).Year, dataVencimento.AddDays(5).Month, dataVencimento.AddDays(5).Day, 23, 59, 59, 990);
+                        DateTime fimPeriodo = new DateTime(dataVencimento.AddDays(15).Year, dataVencimento.AddDays(15).Month, dataVencimento.AddDays(15).Day, 23, 59, 59, 990);
 
                         if (DateTime.Now < inicioPeriodo || DateTime.Now > fimPeriodo)
                         {
@@ -555,11 +555,11 @@ namespace MedProj.www.ws
                             //TODO: deve-se checar adimplencia?
                             //data.Dispose();
                             pm.Rollback();
-                            return retorno("erro", "Emissao fora do periodo permitido que e de " + inicioPeriodo.ToString("dd/MM/yyyy") + " a " + fimPeriodo.ToString("dd/MM/yyyy"));
+                            return retorno("erro", "Emissão fora do periodo permitido que é de " + inicioPeriodo.ToString("dd/MM/yyyy") + " a " + fimPeriodo.ToString("dd/MM/yyyy"));
                         }
 
                         // Se a cobrança for emitida após o vencimento original, mas dentro do período permitido 
-                        if (DateTime.Now.Day > dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
+                        if (DateTime.Now.Day >= dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
                         {
                             //TODO: calcular juro e multa ?
 
