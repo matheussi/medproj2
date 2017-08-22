@@ -9,6 +9,7 @@ using LC.Framework.Phantom;
 using System.Configuration;
 using System.Data;
 using System.Text;
+using System.Globalization;
 
 namespace MedProj.www.ws
 {
@@ -1072,6 +1073,29 @@ namespace MedProj.www.ws
                 return Convert.ToString(param);
         }
 
+        DateTime toDate(object param)
+        {
+            if (param == null || param == DBNull.Value || Convert.ToString(param).Trim() == "")
+                return DateTime.MinValue;
+            else
+            {
+                string strdata = Convert.ToString(param);
+                String[] arr = strdata.Split('/');
+                if (arr.Length != 3) { return DateTime.MinValue; }
+
+                DateTime resultado = DateTime.MinValue;
+
+                bool ret = DateTime.TryParseExact(strdata, "dd/MM/yyyy",
+                    new System.Globalization.CultureInfo("pt-Br"),
+                    System.Globalization.DateTimeStyles.None, out resultado);
+
+                if (ret)
+                    return resultado;
+                else
+                    return DateTime.MinValue;
+            }
+        }
+
         int toInt(object param)
         {
             if (param == null || param == DBNull.Value)
@@ -1648,8 +1672,8 @@ Dornelas
         }
 
 
-        [WebMethod()]
-        public string DadosParaCartao(string codigoContrato, string matriculaBeneficiario, string token)
+        //[WebMethod()]
+        string DadosParaCartao___(string codigoContrato, string matriculaBeneficiario, string token)
         {
             if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
 
@@ -1760,5 +1784,160 @@ Dornelas
 
             return retorno("ok", retornar, true);
         }
+
+        [WebMethod()]
+        public string DadosParaCartao(string idContrato, string token)
+        {
+            /*
+             Ramo: OK,
+             Apolice: OK,
+             Certificado, 
+             Subestipulante, 
+             Início individual do Risco, 
+             Fim Vigência, 
+             Data Emissão, 
+             Coberturas, e Valor: OK
+            */
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+
+            string qry = "", retornar = "";
+            StringBuilder sb = new StringBuilder();
+            System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                pm.UseSingleCommandInstance();
+
+                qry = string.Concat(
+                    "select * from beneficiario ",
+                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
+                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
+                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
+                    "   inner join operadora on contrato_operadoraId=operadora_id ",
+                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
+                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+                    " where ",
+                    "   contrato_cancelado <> 1 and contrato_inativo <> 1 ",
+                    "   and contrato_id=", idContrato,
+                    " order by beneficiario_nome ");
+
+                DataTable dt = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+                pm.CloseSingleCommandInstance();
+
+                if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
+                {
+                    return retorno("erro", "Nenhum registro localizado");
+                }
+                else
+                { 
+                    DataRow row = dt.Rows[0];
+                    string ramo = toString(row["contrato_ramo"]);
+                    string apolice = toString(row["contrato_numeroApolice"]);
+                    string matricula = toString(row["contrato_numeroMatricula"]); //certificado
+                    string vigencia = toString(row["contrato_vigencia"]); //inicio do risco
+                    string vigenciaFim = toDate(row["contrato_vigencia"]).AddYears(1).ToString("dd/MM/yyyy"); //Fim Vigência
+                    string estipulanteNome = toString(row["estipulante_id"]);
+                    string emissao = toDate(row["beneficiario_data"]).ToString("dd/MM/yyyy");
+                }
+
+                List<string> idsprocessados = new List<string>();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (idsprocessados.Contains(Convert.ToString(row["beneficiario_id"]))) continue;
+                    idsprocessados.Add(Convert.ToString(row["beneficiario_id"]));
+
+                    sb.Append("<beneficiario>");
+                    sb.Append("<nome>"); sb.Append(row["beneficiario_nome"]); sb.Append("</nome>");
+                    sb.Append("<documento>"); sb.Append(row["beneficiario_cpf"]); sb.Append("</documento>");
+                    sb.Append("<nomeMae>"); sb.Append(row["beneficiario_nomeMae"]); sb.Append("</nomeMae>");
+                    sb.Append("<email>"); sb.Append(row["beneficiario_email"]); sb.Append("</email>");
+
+                    sb.Append("<contrato>");
+                    sb.Append("<numero>"); sb.Append(row["contrato_numero"]); sb.Append("</numero>");
+                    sb.Append("<dataCadastro>"); sb.Append(Convert.ToDateTime(row["contrato_data"], cinfo).ToString("dd/MM/yyyy")); sb.Append("</dataCadastro>");
+                    sb.Append("<dataAdmissao>"); sb.Append(Convert.ToDateTime(row["contrato_admissao"], cinfo).ToString("dd/MM/yyyy")); sb.Append("</dataAdmissao>");
+                    sb.Append("<dataValidade>");
+                    if (row["contrato_validade"] != null && row["contrato_validade"] != DBNull.Value && Convert.ToString(row["contrato_validade"]).Trim() != "")
+                        sb.Append(Convert.ToDateTime(row["contrato_validade"], cinfo).ToString("dd/MM/yyyy"));
+                    sb.Append("</dataValidade>");
+                    sb.Append("<apolice>"); sb.Append(row["contrato_numeroApolice"]); sb.Append("</apolice>");
+                    sb.Append("</contrato>");
+
+                    sb.Append("<contratoAdm>");
+                    sb.Append("<nome>"); sb.Append(row["contratoadm_descricao"]); sb.Append("</nome>");
+                    sb.Append("<diaVencimento>"); sb.Append(row["contratoADM_DTVC"]); sb.Append("</diaVencimento>");
+                    sb.Append("</contratoAdm>");
+
+                    sb.Append("<operadora>");
+                    sb.Append("<nome>"); sb.Append(row["operadora_nome"]); sb.Append("</nome>");
+                    sb.Append("<cnpj>"); sb.Append(row["operadora_cnpj"]); sb.Append("</cnpj>");
+                    sb.Append("<telefone>"); sb.Append(row["operadora_fone"]); sb.Append("</telefone>");
+                    sb.Append("</operadora>");
+
+                    sb.Append("<associadopj>");
+                    sb.Append("<nome>"); sb.Append(row["estipulante_descricao"]); sb.Append("</nome>");
+                    sb.Append("<diaVencimento>"); sb.Append(row["estipulante_dataVencimento"]); sb.Append("</diaVencimento>");
+                    sb.Append("</associadopj>");
+
+                    sb.Append("<endereco>");
+                    sb.Append("<logradouro>"); sb.Append(row["endereco_logradouro"]); sb.Append("</logradouro>");
+                    sb.Append("<numero>"); sb.Append(row["endereco_numero"]); sb.Append("</numero>");
+                    sb.Append("<complemento>"); sb.Append(row["endereco_complemento"]); sb.Append("</complemento>");
+                    sb.Append("<bairro>"); sb.Append(row["endereco_bairro"]); sb.Append("</bairro>");
+                    sb.Append("<cidade>"); sb.Append(row["endereco_cidade"]); sb.Append("</cidade>");
+                    sb.Append("<uf>"); sb.Append(row["endereco_uf"]); sb.Append("</uf>");
+                    sb.Append("<cep>"); sb.Append(row["endereco_cep"]); sb.Append("</cep>");
+                    sb.Append("</endereco>");
+
+                    sb.Append("</beneficiario>");
+                }
+
+                retornar = sb.ToString();
+                idsprocessados.Clear();
+                sb.Remove(0, sb.Length);
+            }
+
+            return retorno("ok", retornar, true);
+        }
     }
 }
+/*
+        void testPdf()
+        {
+            string pathOriginal = @"C:\Users\ACER E1 572 6830\Desktop\temp\clube\";
+            string pdfOriginal = pathOriginal + "mod01.pdf";
+            string pdfNovo = pathOriginal + DateTime.Now.ToString("MMddHHmmss") + ".pdf";
+
+            PdfSharp.Pdf.PdfDocument PDFDoc = PdfSharp.Pdf.IO.PdfReader.Open(pdfOriginal, PdfDocumentOpenMode.Import);
+            PdfSharp.Pdf.PdfDocument PDFNewDoc = new PdfSharp.Pdf.PdfDocument();
+            for (int Pg = 0; Pg < PDFDoc.Pages.Count; Pg++)
+            {
+                PDFNewDoc.AddPage(PDFDoc.Pages[Pg]);
+            }
+
+            //Atualizando
+            XFont font = new XFont("Verdana", 7, XFontStyle.Regular);
+
+            PdfPage page = PDFNewDoc.Pages[1];
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            gfx.DrawString("Certificado", font, XBrushes.Red, 390, 322);
+            gfx.DrawString("Ramo", font, XBrushes.Red, 358, 347);
+            gfx.DrawString("Apolice", font, XBrushes.Red, 416, 347);
+
+            gfx.DrawString("Segurado principal", font, XBrushes.Red, 85, 371);
+            gfx.DrawString("Subestipulante", font, XBrushes.Red, 419, 371);
+
+            gfx.DrawString("000.000.000-0", font, XBrushes.Red, 82, 397);
+            gfx.DrawString("28/11/1990", font, XBrushes.Red, 213, 397);
+            gfx.DrawString("28/11/1990", font, XBrushes.Red, 313, 397);
+            gfx.DrawString("28/11/1990", font, XBrushes.Red, 430, 397);
+            gfx.DrawString("28/11/1990", font, XBrushes.Red, 530, 397);
+
+            gfx.DrawString("Cobertura", font, XBrushes.Red, 82, 424); //horizontal - vertical
+            gfx.DrawString("R$ 0,00", font, XBrushes.Red, 219, 424); 
+
+            PDFNewDoc.Save(pdfNovo);
+        }
+*/

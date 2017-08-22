@@ -453,9 +453,6 @@
                             if (!string.IsNullOrWhiteSpace(stoString(row["CARTAO"])))
                             {
                                 //TODO: foi fornecido um número de contrato. VALIDAR
-
-                                //contratoNumero = stoString(row["CARTAO"]);
-
                                 adicionaItemLog(agenda, ref log, null, i, string.Format("CPF: {0}", cpf), Entidades.Enuns.AgendaImportacaoItemLogStatus.Erro, "Número de cartão não pode ser fornecido");
                                 continue;
                             }
@@ -464,7 +461,6 @@
                                 numero = new Entidades.NumeroCartao();
 
                                 // Gera um número válido de contrato
-
                                 cmdAux.CommandText = "SELECT MAX(numerocontrato_numero) FROM numero_contrato";
                                 aux = cmdAux.ExecuteScalar();
 
@@ -591,6 +587,8 @@
                             cb.Tipo         = 0;
                             cb.Data         = contrato.DataAdmissao;
                             cb.Vigencia     = contrato.DataVigencia;
+                            cb.Ramo         = stoString(row["RAMO"]);
+                            cb.Apolice      = stoString(row["APOLICE"]);
 
                             sessao.Save(cb);
 
