@@ -79,6 +79,10 @@
                                 <HeaderStyle HorizontalAlign="Left" />
                             </asp:BoundField>
 
+                            <asp:BoundField DataField="Parcela" HeaderText="Parcela">
+                                <HeaderStyle HorizontalAlign="Left" />
+                            </asp:BoundField>
+
                             <asp:BoundField DataField="CobrancaVidas" HeaderText="Vidas">
                                 <HeaderStyle HorizontalAlign="Left" />
                             </asp:BoundField>

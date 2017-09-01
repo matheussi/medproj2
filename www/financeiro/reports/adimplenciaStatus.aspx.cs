@@ -39,10 +39,10 @@
             List<RelatorioFacade.AdimplenciaVO> vos = null;
 
             gridContratos.Columns[5].Visible = true;
-            gridContratos.Columns[6].Visible = true;
             gridContratos.Columns[7].Visible = true;
             gridContratos.Columns[8].Visible = true;
             gridContratos.Columns[9].Visible = true;
+            gridContratos.Columns[10].Visible = true;
 
             string asspjid = "0";
 
@@ -60,11 +60,11 @@
                     return;
                 }
 
-                gridContratos.Columns[5].Visible = false;
-                gridContratos.Columns[6].Visible = false;
-                gridContratos.Columns[7].Visible = false;
-                gridContratos.Columns[8].Visible = false;
-                gridContratos.Columns[9].Visible = false;
+                gridContratos.Columns[5].Visible  = false;
+                gridContratos.Columns[7].Visible  = false;
+                gridContratos.Columns[8].Visible  = false;
+                gridContratos.Columns[9].Visible  = false;
+                gridContratos.Columns[10].Visible = false;
 
                 vos = RelatorioFacade.Instancia.cobrancasNaoGeradas(asspjid, de, ate);
             }
@@ -152,10 +152,13 @@
             DateTime? de  = Util.CTipos.CStringToDateTimeG(txtDe.Text);
             DateTime? ate = Util.CTipos.CStringToDateTimeG(txtAte.Text);
 
+            string asspjid = "0";
+            if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
+
             if (cboTipo.SelectedIndex == 0)
-                vos = RelatorioFacade.Instancia.RelatorioAdimplentes(cboAssociadoPJ.SelectedValue, de, ate);
+                vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
             else
-                vos = RelatorioFacade.Instancia.RelatorioInadimplentes(cboAssociadoPJ.SelectedValue, de, ate);
+                vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
 
             if (vos == null || vos.Count == 0) return;
 
@@ -174,6 +177,7 @@
             dt.Columns.Add("ContratoADM");
 
             dt.Columns.Add("Vencimento");
+            dt.Columns.Add("Parcela");
             dt.Columns.Add("Vidas");
 
             if (cboTipo.SelectedIndex == 0) //adimplentes
@@ -197,6 +201,8 @@
                 nova["Titular"] = vo.BeneficiarioNome;
                 nova["AssociadoPJ"] = vo.AssociadoPJ;
                 nova["ContratoADM"] = vo.ContratoADM;
+
+                nova["Parcela"] = vo.Parcela;
 
                 nova["Vidas"]      = vo.CobrancaVidas;
                 nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
