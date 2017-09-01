@@ -141,6 +141,23 @@
             return data;
         }
 
+        protected int CToInt(object param)
+        {
+            if (param == null || param == DBNull.Value)
+                return 0;
+            else
+            {
+                try
+                {
+                    return Convert.ToInt32(param);
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
         protected string CToString(object param)
         {
             if (param == null || param == DBNull.Value)
