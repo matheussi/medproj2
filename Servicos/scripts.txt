@@ -113,7 +113,7 @@ GO
 ALTER DATABASE dados_791 SET RECOVERY FULL
 GO
 ---------------------------------------------------------------------------------
-
+--Para permitir transacao snapshot
 ALTER DATABASE dados_791
 SET ALLOW_SNAPSHOT_ISOLATION ON
 
