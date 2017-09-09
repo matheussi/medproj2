@@ -913,6 +913,24 @@
             this.Valor = Math.Round(_multa + _juro, 2);
         }
 
+        public void CalculaJurosMulta(DateTime vencimento)
+        {
+            vencimento = new DateTime(vencimento.Year, vencimento.Month, vencimento.Day, 23, 59, 59, 995);
+
+            Decimal _multa = this.Valor;
+            Decimal _juro = 0;
+
+            int diasPassadosDoVencimento = Cobranca.DiferenciaEmDiasCorridos(vencimento, DateTime.Now);
+
+            Decimal atrasoMulta = Convert.ToDecimal(10) / Convert.ToDecimal(100);
+            _multa += (_valor * atrasoMulta); //Multa
+
+            decimal rateJuro = (this.Valor * 0.01M) / 30M;
+            _juro = (rateJuro * (Convert.ToDecimal(diasPassadosDoVencimento)));
+
+            this.Valor = Math.Round(_multa + _juro, 2);
+        }
+
         public static decimal calulaValorPorVida(PersistenceManager pm, Contrato contrato, string vencimento, out string erro)
         {
             erro = "";

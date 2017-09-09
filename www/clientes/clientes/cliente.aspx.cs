@@ -3039,15 +3039,15 @@ namespace MedProj.www.clientes.clientes
 
             if (optCNPJ.Checked)
             {
-                object aux = LocatorHelper.Instance.ExecuteScalar(
-                            string.Concat("select cobranca_id from cobranca where cobranca_cobrancaRefId is null and cobranca_propostaId=", this.contratoId, " and cobranca_pago=1 and (cobranca_cancelada is null or cobranca_cancelada=0) and month(cobranca_dataVencimento)=", dataVencimento.Month, " and year(cobranca_dataVencimento)=", dataVencimento.Year),
-                            null, null, null);
+                //object aux = LocatorHelper.Instance.ExecuteScalar(
+                //            string.Concat("select cobranca_id from cobranca where cobranca_cobrancaRefId is null and cobranca_propostaId=", this.contratoId, " and cobranca_pago=1 and (cobranca_cancelada is null or cobranca_cancelada=0) and month(cobranca_dataVencimento)=", dataVencimento.Month, " and year(cobranca_dataVencimento)=", dataVencimento.Year),
+                //            null, null, null);
 
-                if (aux != null && aux != DBNull.Value || Convert.ToString(aux).Trim() != "")
-                {
-                    Alerta(null, this, "erro", "Vencimento ja pago.");
-                    return;
-                }
+                //if (aux != null && aux != DBNull.Value || Convert.ToString(aux).Trim() != "")
+                //{
+                //    Alerta(null, this, "erro", "Vencimento ja pago.");
+                //    return;
+                //}
 
 
                 vidas = Util.CTipos.CToInt(txtQtdVidasCob.Text);

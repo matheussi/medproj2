@@ -587,8 +587,6 @@
                             cb.Tipo         = 0;
                             cb.Data         = contrato.DataAdmissao;
                             cb.Vigencia     = contrato.DataVigencia;
-                            cb.Ramo         = stoString(row["RAMO"]);
-                            cb.Apolice      = stoString(row["APOLICE"]);
 
                             sessao.Save(cb);
 

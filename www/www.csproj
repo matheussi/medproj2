@@ -105,6 +105,12 @@
     <Reference Include="NReco.PdfGenerator">
       <HintPath>..\packages\Boleto.Net.2.1.0.303\lib\NReco.PdfGenerator.dll</HintPath>
     </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting">
+      <HintPath>..\packages\PDFsharp.1.32.3057.0\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
@@ -713,6 +719,10 @@
     <Content Include="ws\boleto.asmx" />
     <Content Include="_testEmail.aspx" />
     <Content Include="ckeditor\.htaccess" />
+    <Content Include="files\pdfcarteira\mod-capemisa.pdf" />
+    <Content Include="files\pdfcarteira\mod-generalli.pdf" />
+    <Content Include="files\pdfcarteira\mod-cartao.pdf" />
+    <Content Include="files\pdfcarteira\mod.pdf" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\local2.pubxml" />
     <Content Include="proxy\proxyCarregaEspecialidades.aspx" />

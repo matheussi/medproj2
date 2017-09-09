@@ -537,6 +537,12 @@
             set;
         }
 
+        [DBFieldInfo("contrato_ramo", FieldType.Single)]
+        public string Ramo { get; set; }
+
+        [DBFieldInfo("contrato_numeroApolice", FieldType.Single)]
+        public string Apolice { get; set; }
+
         [Joinned("plano_descricao")]
         public String PlanoDescricao
         {

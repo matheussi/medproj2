@@ -134,7 +134,7 @@
                 }
 
                 qry = string.Concat(
-                    "select contrato_id,contrato_numero,beneficiario_nome,contrato_numeroid,estipulante_descricao,contratoadm_descricao,beneficiario_razaoSocial,cobranca_dataVencimento,cobranca_qtdVidas,cobranca_valorPagto,cobranca_dataPagto,cobranca_valor, beneficiario_cpf ",
+                    "select contrato_id,contrato_numero,beneficiario_nome,contrato_numeroid,estipulante_descricao,contratoadm_descricao,beneficiario_razaoSocial,cobranca_dataVencimento,cobranca_qtdVidas,cobranca_valorPagto,cobranca_dataPagto,cobranca_valor,beneficiario_cpf, cobranca_parcela",
                     "   from contrato ",
                     "       inner join contrato_beneficiario on contratobeneficiario_contratoId = contrato_id and contratobeneficiario_tipo=0 and contratobeneficiario_ativo=1 ",
                     "       inner join beneficiario on contratobeneficiario_beneficiarioId = beneficiario_id and contratobeneficiario_tipo=0 and contratobeneficiario_ativo=1 ",
@@ -165,7 +165,7 @@
                 }
 
                 qry = string.Concat(
-                    "select contrato_id,contrato_numero,beneficiario_nome,contrato_numeroid,estipulante_descricao,contratoadm_descricao,beneficiario_razaoSocial,cobranca_dataVencimento,cobranca_qtdVidas,cobranca_valorPagto,cobranca_dataPagto,cobranca_valor, beneficiario_cpf ",
+                    "select contrato_id,contrato_numero,beneficiario_nome,contrato_numeroid,estipulante_descricao,contratoadm_descricao,beneficiario_razaoSocial,cobranca_dataVencimento,cobranca_qtdVidas,cobranca_valorPagto,cobranca_dataPagto,cobranca_valor, beneficiario_cpf, cobranca_parcela ",
                     "   from contrato ",
                     "       inner join contrato_beneficiario on contratobeneficiario_contratoId = contrato_id and contratobeneficiario_tipo=0 and contratobeneficiario_ativo=1 ",
                     "       inner join beneficiario on contratobeneficiario_beneficiarioId = beneficiario_id and contratobeneficiario_tipo=0 and contratobeneficiario_ativo=1 ",
@@ -201,6 +201,8 @@
                         vo.ContratoADM = dr.GetString(5);
                         vo.ContratoID = dr.GetInt64(0);
                         vo.ContratoNumero = dr.GetString(1);
+
+                        vo.Parcela = CToInt(dr["cobranca_parcela"]);
 
                         if (dr["beneficiario_razaoSocial"] != null && dr["beneficiario_razaoSocial"] != DBNull.Value && Convert.ToString(dr["beneficiario_razaoSocial"]).Trim() != "" )
                         {
@@ -252,6 +254,7 @@
             public string AssociadoPJ { get; set; }
             public string ContratoADM { get; set; }
             public string EstipulanteNome { get; set; }
+            public int Parcela { get; set; }
 
             //Adimplentes
             public DateTime CobrancaVencimento { get; set; }

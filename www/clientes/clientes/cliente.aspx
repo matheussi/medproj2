@@ -1110,8 +1110,7 @@
                                                                 <b>Senha</b>
                                                             </td>
                                                             <td style="border-right: solid 1px black">
-                                                                <asp:TextBox Width="95%" TextMode="Password" MaxLength="40" runat="server" SkinID="txtPadrao"
-                                                                    ID="txtSenha" />
+                                                                <asp:TextBox Width="95%" TextMode="Password" ReadOnly="true" MaxLength="40" runat="server" SkinID="txtPadrao" ID="txtSenha" />
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -1305,9 +1304,14 @@
                                                 </div>
                                             </div>
                                             <div class="alert alert-danger" style="height:60px">
-                                                <label class="col-xs-1" style="margin-top:2px">Senha</label>
-                                                <div class="col-xs-3">
-                                                    <asp:TextBox ID="txtSenhaContrato" MaxLength="20" TextMode="Password" runat="server" SkinID="txtPadrao" Width="200px" />
+                                                <div class="row">
+                                                    <label class="col-xs-1" style="margin-top:2px">Senha</label>
+                                                    <div class="col-xs-2">
+                                                        <asp:TextBox ID="txtSenhaContrato" MaxLength="20" TextMode="Password" ReadOnly="true" runat="server" SkinID="txtPadrao" Width="100%" />
+                                                    </div>
+                                                    <div class="col-xs-2 text-left">
+                                                        <input type="button" id="cmdAlterarSenha" value="alterar senha" class="btn btn-info btn-sm" onclick="if (document.getElementById('ctl00_content_tab_p5a_txtSenhaContrato').readOnly) { document.getElementById('ctl00_content_tab_p5a_txtSenhaContrato').readOnly = false; document.getElementById('ctl00_content_tab_p5a_txtSenhaContrato').focus(); document.getElementById('cmdAlterarSenha').value = 'proteger senha'; document.getElementById('ctl00_content_tab_p5a_txtSenhaContrato').type = 'text'; } else { document.getElementById('ctl00_content_tab_p5a_txtSenhaContrato').readOnly = true; document.getElementById('cmdAlterarSenha').value = 'alterar senha'; document.getElementById('ctl00_content_tab_p5a_txtSenhaContrato').type = 'password'; }" />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </asp:Panel>

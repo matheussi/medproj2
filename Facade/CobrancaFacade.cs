@@ -237,7 +237,7 @@
             return dataVencimento;
         }
 
-        void addInstruecoesParaArquivoCNAB(ref Boleto b1, DateTime vencimento, DateTime dataCriacao)
+        void addInstrucoesParaArquivoCNAB(ref Boleto b1, DateTime vencimento, DateTime dataCriacao)
         {
             Instrucao_Itau item1 = new Instrucao_Itau(5); //5=instrucoes do titulo ; 10= nao protestar
             b1.Instrucoes.Add(item1);
@@ -514,6 +514,10 @@
                                 c,
                                 new EspecieDocumento(341, "1"));
 
+                            if (cobranca.DataCriacao == DateTime.MinValue) { cobranca.DataCriacao = DateTime.Now; }
+                            b1.DataDocumento = cobranca.DataCriacao;
+                            b1.DataProcessamento = cobranca.DataCriacao;
+
                             b1.NumeroDocumento = cobranca.ID.ToString().PadLeft(8, '0'); //"00000001";
 
                             #region dados sacado 
@@ -529,7 +533,7 @@
 
                             #endregion
 
-                            this.addInstruecoesParaArquivoCNAB(ref b1, cobranca.DataVencimento, cobranca.DataCriacao);
+                            this.addInstrucoesParaArquivoCNAB(ref b1, cobranca.DataVencimento, cobranca.DataCriacao);
 
                             b1.Banco = new BoletoNet.Banco(341);
 
@@ -750,7 +754,7 @@
 
                             #endregion
 
-                            this.addInstruecoesParaArquivoCNAB(ref b1, cobranca.DataVencimento, cobranca.DataCriacao);
+                            this.addInstrucoesParaArquivoCNAB(ref b1, cobranca.DataVencimento, cobranca.DataCriacao);
 
                             b1.Banco = new BoletoNet.Banco(341);
 
