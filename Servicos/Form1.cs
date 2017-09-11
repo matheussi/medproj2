@@ -266,7 +266,8 @@ using System.IO;
                                 var configsPagto = sessao.Query<ConfigEmailAviso>()
                                     .Fetch(co => co.Texto)
                                     .FetchMany(c => c.Contratos)
-                                    .Where(c => c.Ativo == true) //TESTE:  && c.ID == 4 || c.ID >= 14     -------------//.Where(c => c.Tipo == MedProj.Entidades.Enuns.TipoConfig.AvisoDePagamento && c.Ativo == true)
+                                    .Where(c => c.Ativo == true) 
+                                    //.Where(c => c.Ativo == true && c.ID == 17) //TODO: denis comentar e descomentar acima     //-------------//.Where(c => c.Tipo == MedProj.Entidades.Enuns.TipoConfig.AvisoDePagamento && c.Ativo == true)
                                     .ToList();
 
                                 int confgs = 0;
@@ -371,7 +372,9 @@ using System.IO;
                         msg.To.Add(vo.BeneficiarioMAIL);
 
                     //msg.To.Clear();
-                    //msg.To.Add("denis@linkecerebro.com.br");
+                    //msg.Bcc.Add("denis@wedigi.com.br");
+
+                    msg.ReplyToList.Add("contato@clubeazul.org.br");
 
                     msg.Subject = "Clube Azul - Informação"; //TODO: parametrizar
 
