@@ -174,7 +174,7 @@
                         "       inner join cobranca on cobranca_propostaid = contratobeneficiario_contratoid ",
                         "       inner join contrato on contrato_id = cobranca_propostaId ",
                         "       left join config_email_instancia on cobranca_id = cei_cobrancaId and cei_tipo=", Convert.ToInt16(config.Tipo).ToString(), " and cei_configId= ", config.ID.ToString(),
-                        "   where ", //contrato_id=143274 and 
+                        "   where ", //contrato_id=143274 and ",
                         "       contrato_tipoPessoa = 1 and cei_cobrancaId is null and cobranca_pago = 1", dataCriacaoCriterio);
 
                 //TODO  para resolver o problema que ocorrerá de um novo aviso de pagamento enviar todas 
@@ -189,7 +189,7 @@
                         "       inner join cobranca on cobranca_propostaid = contratobeneficiario_contratoid ",
                         "       inner join contrato on contrato_id = cobranca_propostaId ",
                         "       left join config_email_instancia on cobranca_id = cei_cobrancaId and cei_configId= ", config.ID.ToString(), //and cei_tipo=", Convert.ToInt16(config.Tipo).ToString(), " 
-                        "   where ", //contrato_id=143274 and 
+                        "   where ", //contrato_id=143274 and ",
                         "       contrato_tipoPessoa = 1 and ",
                         "       cei_cobrancaId is null and ",
                         "       cobranca_cancelada=0 and contrato_inativo=0 and contrato_cancelado=0 and ",
@@ -225,7 +225,7 @@
                         "       inner join cobranca on cobranca_propostaid = contratobeneficiario_contratoid ",
                         "       inner join contrato on contrato_id = cobranca_propostaId ",
                         "       left join config_email_instancia on cobranca_id = cei_cobrancaId and cei_configId= ", config.ID.ToString(), //and cei_tipo=", Convert.ToInt16(config.Tipo).ToString(), " 
-                        "   where ", //contrato_id=143274 and 
+                        "   where ", //contrato_id=217100 and ", //todo: denis, comentar o hardcoded
                         "       contrato_tipoPessoa = 1 and ",
                         "       cei_cobrancaId is null and ",
                         "       cobranca_cancelada=0 and contrato_inativo=0 and contrato_cancelado=0 and ",
