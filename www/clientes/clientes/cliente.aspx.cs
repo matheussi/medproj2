@@ -3946,15 +3946,15 @@ namespace MedProj.www.clientes.clientes
                 return;
             }
 
-            ContratoADM contrato = new ContratoADM(cboContrato.SelectedValue);
-            contrato.Carregar();
-            DateTime dteContrato = new DateTime(contrato.Data.Year, contrato.Data.Month, contrato.Data.Day, 0, 0, 0);
-            DateTime admissao = CStringToDateTime(txtAdmissao.Text);
-            if (admissao < dteContrato)
-            {
-                Alerta(null, this, "_err", "Atenção!\\nA data de admissão não pode ser inferior à data do contrato administrativo.");
-                return;
-            }
+            ////ContratoADM contrato = new ContratoADM(cboContrato.SelectedValue);
+            ////contrato.Carregar();
+            ////DateTime dteContrato = new DateTime(contrato.Data.Year, contrato.Data.Month, contrato.Data.Day, 0, 0, 0);
+            ////DateTime admissao = CStringToDateTime(txtAdmissao.Text);
+            ////if (admissao < dteContrato)
+            ////{
+            ////    Alerta(null, this, "_err", "Atenção!\\nA data de admissão não pode ser inferior à data do contrato administrativo.");
+            ////    return;
+            ////}
 
             if (!validaNumero()) return;
 
