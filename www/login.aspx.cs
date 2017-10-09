@@ -40,6 +40,18 @@
 
                 //string linha = "10218386464000143910800098824                                 00003324            109000033246             I0614081700003324  00003324            10081700000000264100333063501000000000044000000000000000000000000000000000000000000000000000000000000000000000000002856700000000025970000000000000   15081700000000000000000000000PARA-CHOQUES ZONA SUL LTDA                                          B3000013";
                 //decimal valor = (Convert.ToDecimal(linha.Substring(253, 13)) / Convert.ToDecimal(100)) + (Convert.ToDecimal(linha.Substring(175, 13)) / Convert.ToDecimal(100));
+
+                //Entidades.NumeroCartao numero = null;
+                //numero = new Entidades.NumeroCartao();
+                //var contratoNumero = (Convert.ToInt64("63708700417315") + 1).ToString();
+                //numero.Numero = contratoNumero;
+                //numero.GerarDigitoVerificador();
+                //numero.Contrato = new Contrato();
+                //numero.Contrato.ID = 110698;
+
+                //NumeroCartaoFacade.Instancia.Salvar(numero);
+
+                //NumeroCartaoFacade.Instancia.CancelarNumerosDeCartao(null, null, 0);
             }
         }
 

@@ -238,6 +238,24 @@ namespace MedProj.www {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor A16;
         
         /// <summary>
+        /// li24 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl li24;
+        
+        /// <summary>
+        /// A26 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor A26;
+        
+        /// <summary>
         /// li7 control.
         /// </summary>
         /// <remarks>

@@ -115,6 +115,7 @@
     <Compile Include="PrestadorFacade.cs" />
     <Compile Include="PrestadorUnidadeFacade.cs" />
     <Compile Include="ProcedimentoFacade.cs" />
+    <Compile Include="ProdutoFacade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegraComissaoFacade.cs" />
     <Compile Include="RelatorioFacade.cs" />

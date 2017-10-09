@@ -176,6 +176,7 @@
 
                                     <li runat="server" id="li1" enableviewstate="false"><a id="A1" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/adm/procedimentos/procedimentos.aspx">Procedimentos</a></li>
                                     <li runat="server" id="li16" enableviewstate="false"><a id="A16" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/adm/importacao/importacoesProcedimento.aspx">Procedimentos X Prestadores</a></li>
+                                    <li runat="server" id="li24" enableviewstate="false"><a id="A26" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/adm/produto/produtos.aspx">Produtos</a></li>
                                     <li runat="server" id="li7" enableviewstate="false"><a id="A5" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/adm/segmento/segmentos.aspx">Segmentos</a></li>
                                     <li runat="server" id="li4" enableviewstate="false"><a id="A4" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/adm/tabelas/tabelas.aspx">Tabelas de preço</a></li>
                                     <li runat="server" id="li2" enableviewstate="false"><a id="A2" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/adm/usuarios/usuarios.aspx">Usuários</a></li>

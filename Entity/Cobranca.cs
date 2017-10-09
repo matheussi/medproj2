@@ -435,6 +435,13 @@
             set;
         }
 
+        [DBFieldInfo("cobranca_competencia", FieldType.Single)]
+        public string Competencia
+        {
+            get;
+            set;
+        }
+
         [Joinned("contrato_codcobranca")]
         public String ContratoCodCobranca
         {

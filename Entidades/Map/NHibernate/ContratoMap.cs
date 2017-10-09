@@ -56,6 +56,7 @@
             base.Map(c => c.KitSolicitado).Column("contrato_kitSolicitado");
             base.Map(c => c.CartaoSolicitado).Column("contrato_cartaoSolicitado");
             base.Map(c => c.Rascunho).Column("contrato_rascunho");
+            base.Map(c => c.Importado).Column("contrato_importado");
 
             base.Map(c => c.Data).Column("contrato_data").Not.Update();
 

@@ -201,6 +201,8 @@
     <Content Include="adm\pagamento\pagamentos.aspx" />
     <Content Include="adm\procedimentos\procedimento.aspx" />
     <Content Include="adm\procedimentos\procedimentos.aspx" />
+    <Content Include="adm\produto\produto.aspx" />
+    <Content Include="adm\produto\produtos.aspx" />
     <Content Include="adm\segmento\segmento.aspx" />
     <Content Include="adm\segmento\segmentos.aspx" />
     <Content Include="adm\tabelas\tabela.aspx" />
@@ -1098,6 +1100,20 @@
     </Compile>
     <Compile Include="adm\procedimentos\procedimentos.aspx.designer.cs">
       <DependentUpon>procedimentos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adm\produto\produto.aspx.cs">
+      <DependentUpon>produto.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adm\produto\produto.aspx.designer.cs">
+      <DependentUpon>produto.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="adm\produto\produtos.aspx.cs">
+      <DependentUpon>produtos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="adm\produto\produtos.aspx.designer.cs">
+      <DependentUpon>produtos.aspx</DependentUpon>
     </Compile>
     <Compile Include="adm\segmento\segmento.aspx.cs">
       <DependentUpon>segmento.aspx</DependentUpon>
