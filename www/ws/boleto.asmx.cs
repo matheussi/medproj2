@@ -19,6 +19,13 @@
     using LC.Web.PadraoSeguros.Entity;
     using System.IO;
     using PdfSharp.Drawing.Layout;
+    using System.Collections;
+    using NHibernate;
+    using NHibernate.Linq;
+    using FluentNHibernate.Cfg.Db;
+    using FluentNHibernate.Cfg;
+    using NHibernate.Dialect;
+    using FluentNHibernate.Conventions.Helpers;
 
     /// <summary>
     /// 
@@ -268,6 +275,345 @@
             }
         }
 
+        [WebMethod(Description = "Dados os parâmetros, cria a cobrança e retorna a url para exibição do boleto - Versão 02.")]
+        public string GerarBoletoV2(string token, string idContrato, string qtdVidas, string vencimento, string competencia)
+        {
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autenticacao");
+
+            string[] arr = vencimento.Split('/');
+            if (arr.Length != 3)
+            {
+                return retorno("erro", "Data de vencimento não estava em um formato válido: dd/MM/yyyy");
+            }
+
+            if (string.IsNullOrEmpty(competencia) || competencia.Length != 7)
+            {
+                return retorno("erro", "Competencia não estava em um formato válido: MM/yyyy");
+            }
+
+            try
+            {
+                DateTime dtComp = new DateTime(toInt(competencia.Split('/')[1]), toInt(competencia.Split('/')[0]), 1);
+            }
+            catch
+            {
+                return retorno("erro", "Competencia não estava em um formato válido: MM/yyyy");
+            }
+            
+            DateTime dataVencimento = new DateTime(
+                Convert.ToInt32(arr[2]), Convert.ToInt32(arr[1]), Convert.ToInt32(arr[0]), 23, 59, 59, 900);
+
+            string boletoUrl = "", status = "", instrucoes = "";
+            bool calculaJuro = false;
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                pm.BeginTransactionContext();
+
+                try
+                {
+                    var contrato = new Contrato(idContrato);
+                    pm.Load(contrato);
+
+                    #region Verifica se o ja há uma cobrança paga para o vencimento
+
+                    object aux = LocatorHelper.Instance.ExecuteScalar(
+                        string.Concat("select cobranca_id from cobranca where cobranca_pago=1 and cobranca_propostaId=", contrato.ID, " and (cobranca_cancelada is null or cobranca_cancelada=0) and cobranca_competencia='", competencia, "'"),
+                        null, null, pm);
+
+                    if (aux != null && aux != DBNull.Value && Convert.ToString(aux).Trim() != "")
+                    {
+                        CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                        logErr01.CobrancaValor = 0;
+                        logErr01.PropostaID = idContrato;
+                        logErr01.DataEnviada = vencimento;
+                        logErr01.Vidas = toInt(qtdVidas);
+                        logErr01.Msg = "Competencia ja liquidada: " + competencia;
+                        logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                        pm.Save(logErr01);
+
+                        pm.Commit();
+                        return retorno("erro", "Competencia ja liquidada: " + competencia);
+                    }
+                    #endregion
+
+                    string erro = "";
+                    decimal valorPorVida = this.calulaValorPorVida(pm, contrato, vencimento, out erro);
+                    if (valorPorVida == 0)
+                    {
+                        pm.Rollback();
+                        return retorno("erro", erro);
+                    }
+
+                    int diaVenctoProjeto = this.toInt(LocatorHelper.Instance.ExecuteScalar(
+                        string.Concat("select contratoADM_DTVC from contratoadm where contratoadm_id=", contrato.ContratoADMID),
+                        null, null, pm));
+
+                    //TODO: denis, voltar o que estava antes?
+                    var cobrancas = Cobranca.CarregarTodas(idContrato, true, pm); //var cobrancas = Cobranca.CarregarTodas(idContrato, false, pm);
+                    int ultimaParcela = 1;
+
+                    if (cobrancas != null && cobrancas.Count > 0) ultimaParcela = cobrancas.Max(c => c.Parcela) + 1;
+
+                    decimal acrescimoOuDesconto = 0;
+                    int acrescimoOuDescontoTipo = -1;
+
+                    #region calcula acréscimos ou descontos de contrato
+
+                    if (contrato.DescontoAcrescimoTipo != 0)
+                    {
+                        if (contrato.DescontoAcrescimoData == DateTime.MinValue ||
+                            contrato.DescontoAcrescimoData >= DateTime.Now)
+                        {
+                            if (contrato.DescontoAcrescimoTipo == 1)
+                            {
+                                acrescimoOuDescontoTipo = 1;
+                                acrescimoOuDesconto = contrato.DescontoAcrescimoValor;
+                            }
+                            else
+                            {
+                                acrescimoOuDescontoTipo = 2;
+                                acrescimoOuDesconto = (-1 * contrato.DescontoAcrescimoValor);
+                            }
+                        }
+
+                        if (contrato.DescontoAcrescimoData == DateTime.MinValue)
+                        {
+                            contrato.DescontoAcrescimoTipo = 0;
+                            pm.Save(contrato);//////////////////////////////////
+                        }
+                    }
+                    #endregion
+
+
+                    //salva a cobranca
+                    Cobranca cobranca = new Cobranca();
+                    cobranca.Parcela = ultimaParcela;
+                    cobranca.DataVencimento = dataVencimento;
+                    if (acrescimoOuDesconto > decimal.Zero) cobranca.AcrescimoDeContrato = acrescimoOuDesconto;
+                    if (acrescimoOuDescontoTipo > -1) cobranca.AcrescimoDeContratoTipo = acrescimoOuDescontoTipo;
+
+                    if (cobranca.Parcela <= 1)
+                    {
+                        #region comentado
+                        //aux = LocatorHelper.Instance.ExecuteScalar(
+                        //    string.Concat("select estipulante_dataVencimento from estipulante where estipulante_id=", contrato.EstipulanteID),
+                        //    null, null, pm);
+
+                        //if (aux != null && aux != DBNull.Value)
+                        //{
+                        //    if (dataVencimento.Month == DateTime.Now.Month &&
+                        //        dataVencimento.Day > Convert.ToInt32(aux))
+                        //    {
+                        //        cobranca.DataVencimento = DateTime.Now.AddDays(2);
+                        //        cobranca.DataVencimento = new DateTime(cobranca.DataVencimento.Year, cobranca.DataVencimento.Month, cobranca.DataVencimento.Day, 23, 59, 59, 990);
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    if (dataVencimento < DateTime.Now)
+                        //    {
+                        //        cobranca.DataVencimento = DateTime.Now.AddDays(2);
+                        //        cobranca.DataVencimento = new DateTime(cobranca.DataVencimento.Year, cobranca.DataVencimento.Month, cobranca.DataVencimento.Day, 23, 59, 59, 990);
+                        //    }
+                        //}
+                        #endregion
+
+                        cobranca.Parcela = 1;
+
+                        cobranca.DataVencimento = calcula1oVencimento(dataVencimento, diaVenctoProjeto);
+
+                        #region comentado 2 
+                        //regras dos dias 28,29,30 e 31
+                        #endregion
+                    }
+                    else
+                    {
+                        string qry = "";
+                        //Regra 2: não pode gerar uma cobrança para um mês em que ja há cobrança
+                        try
+                        {
+                            qry = string.Concat(
+                                "select cobranca_id from ",
+                                "   cobranca where ",
+                                "       (cobranca_cancelada is null or cobranca_cancelada=0) and cobranca_propostaid=", contrato.ID,
+                                "       and cobranca_competencia='", competencia, "'");
+
+                            aux = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                            if (aux != null && aux != DBNull.Value && Convert.ToString(aux).Trim() != "")
+                            {
+                                    CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                                    logErr01.CobrancaValor = 0;
+                                    logErr01.PropostaID = idContrato;
+                                    logErr01.DataEnviada = vencimento;
+                                    logErr01.Vidas = toInt(qtdVidas);
+                                    logErr01.Msg = "Ja existe uma cobranca gerada para a competencia " + competencia;
+                                    logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                                    pm.Save(logErr01);
+
+                                    pm.Commit();
+
+                                    return retorno("erro", "Ja existe uma cobranca gerada para a competencia " + competencia);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            pm.Rollback();
+
+                            return retorno("erro", ex.Message);
+                        }
+
+                        #region Regra 1: não pode gerar uma cobrança se não houver cobrança gerada no mês anterior
+                        try
+                        {
+                            DateTime refe = new DateTime(
+                                toInt(competencia.Split('/')[1]), toInt(competencia.Split('/')[0]), 1).AddMonths(-1);
+
+                            qry = string.Concat(
+                                "select cobranca_id from ",
+                                "   cobranca where ",
+                                "       cobranca_propostaid=", contrato.ID, //cobranca_cancelada=0 and 
+                                "       and cobranca_competencia='", refe.ToString("MM/yyyy"), "'"); //"       and year(cobranca_dataVencimento)=", refe.Year);
+
+                            aux = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                            if ((aux == null || aux == DBNull.Value || Convert.ToString(aux).Trim() == "") && DateTime.Now > new DateTime(2017, 12, 1))
+                            {
+                                CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                                logErr01.CobrancaValor = 0;
+                                logErr01.PropostaID = idContrato;
+                                logErr01.DataEnviada = vencimento;
+                                logErr01.Vidas = toInt(qtdVidas);
+                                logErr01.Msg = "Sem cobranca na comp. anterior: " + refe.ToString("MM/yyyy");
+                                logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                                pm.Save(logErr01);
+
+                                pm.Commit();
+
+                                return retorno("erro", "Nao identificamos cobranca gerada na competencia anterior: " + refe.ToString("MM/yyyy"));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            pm.Rollback();
+
+                            return retorno("erro", ex.Message);
+                        }
+                        #endregion
+
+                        // Parcelas 2 em diante: só podem ser geradas entre o dia 1 do mes de vencimento e 
+                        // 15 dias após a data de vencimento
+
+                        // Intervarlo permitido para geração de cobranças
+                        DateTime inicioPeriodo = new DateTime(dataVencimento.Year, dataVencimento.Month, 1);
+                        DateTime fimPeriodo = new DateTime(dataVencimento.AddDays(15).Year, dataVencimento.AddDays(15).Month, dataVencimento.AddDays(15).Day, 23, 59, 59, 990);
+
+                        if (DateTime.Now < inicioPeriodo || DateTime.Now > fimPeriodo)
+                        {
+                            //Emissão fora do periodo permitido
+                            pm.Rollback();
+                            return retorno("erro", "Emissão fora do periodo permitido que é de " + inicioPeriodo.ToString("dd/MM/yyyy") + " a " + fimPeriodo.ToString("dd/MM/yyyy"));
+                        }
+
+                        // Se a cobrança for emitida após o vencimento original, mas dentro do período permitido 
+                        if (DateTime.Now.Day > dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
+                        {
+                            DateTime novoVencimento = new DateTime(
+                                DateTime.Now.AddDays(2).Year,
+                                DateTime.Now.AddDays(2).Month,
+                                DateTime.Now.AddDays(2).Day, 23, 59, 59, 900);
+
+                            cobranca.DataVencimento = novoVencimento;
+
+                            instrucoes = "1";
+                            calculaJuro = true;
+                        }
+                    }
+
+                    //Devido à margem para registro no banco ...
+                    DateTime validadePagto = LC.Web.PadraoSeguros.Facade.CobrancaFacade.Instancia.calculaValidadeBoleto(cobranca.DataCriacao);
+                    if (cobranca.DataVencimento < validadePagto)
+                    {
+                        cobranca.DataVencimento = new DateTime(
+                            validadePagto.AddDays(1).Year,
+                            validadePagto.AddDays(1).Month,
+                            validadePagto.AddDays(1).Day, 23, 59, 59, 900);
+                    }
+
+                    cobranca.Valor = (valorPorVida * Convert.ToDecimal(qtdVidas));
+
+                    if (calculaJuro)
+                    {
+                        cobranca.CalculaJurosMulta(dataVencimento);
+                    }
+
+                    cobranca.Valor += acrescimoOuDesconto;
+
+                    cobranca.Tipo = Convert.ToInt32(Cobranca.eTipo.Normal);
+                    cobranca.CobrancaRefID = null;
+                    cobranca.DataPgto = DateTime.MinValue;
+                    cobranca.ValorPgto = Decimal.Zero;
+                    cobranca.Pago = false;
+                    cobranca.PropostaID = idContrato;
+                    cobranca.Cancelada = false;
+                    cobranca.QtdVidas = Convert.ToInt32(qtdVidas);
+                    cobranca.Competencia = competencia;
+
+                    #region Verifica se tem configuração de adicional para o boleto
+
+                    DataTable dt = LC.Web.PadraoSeguros.Facade.CobrancaFacade.Instancia.CarregaAdicionais(contrato, pm);
+                    System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+
+                    if (dt != null)
+                    {
+                        if (toDecimal(dt.Rows[0]["Valor"], cinfo) > decimal.Zero)
+                        {
+                            cobranca.AdicionalID = toInt(dt.Rows[0]["ID"]);
+                            cobranca.Valor += toDecimal(dt.Rows[0]["Valor"], cinfo);
+                            cobranca.InstrucaoAdicional = string.Concat(toString(dt.Rows[0]["Texto"]), " ", toDecimal(dt.Rows[0]["Valor"], cinfo).ToString("C"));
+                        }
+                    }
+
+                    #endregion
+
+                    pm.Save(cobranca);
+
+                    //atualiza a qtd de vidas na proposta
+                    string sql = string.Concat("update contrato set contrato_qtdVidas=", qtdVidas, " where contrato_id=", idContrato);
+                    NonQueryHelper.Instance.ExecuteNonQuery(sql, pm);
+
+                    ContratoBeneficiario cb = ContratoBeneficiario.CarregarTitular(idContrato, pm);
+
+                    CobrancaLog.CobrancaCriadaLog log = new CobrancaLog.CobrancaCriadaLog();
+                    log.CobrancaID = cobranca.ID;
+                    log.CobrancaValor = cobranca.Valor;
+                    log.PropostaID = idContrato;
+                    log.CobrancaVencimento = cobranca.DataVencimento;
+                    log.DataEnviada = vencimento;
+                    log.Vidas = toInt(qtdVidas);
+                    log.Origem = (int)CobrancaLog.Fonte.WebService;
+
+                    try
+                    {
+                        pm.Save(log);
+                    }
+                    catch
+                    {
+                    }
+
+                    pm.Commit(); 
+
+                    boletoUrl = this.BoletoURL(cobranca, cb, out status, instrucoes);
+                }
+                catch (Exception ex)
+                {
+                    pm.Rollback();
+                    return retorno("erro", ex.Message);
+                }
+
+                return retorno(status, boletoUrl);
+            }
+        }
+
         [WebMethod(Description = "Dados os parâmetros, cria a cobrança e retorna a url para exibição do boleto.")]
         public string GerarBoleto(string token, string idContrato, string qtdVidas, string vencimento)
         {
@@ -294,7 +640,7 @@
                     var contrato = new Contrato(idContrato);
                     pm.Load(contrato);
 
-                    #region Verifica se o ja há uma cobrança paga para o vencimento  
+                    #region Verifica se o ja há uma cobrança paga para o vencimento
 
                     object aux = LocatorHelper.Instance.ExecuteScalar(
                         string.Concat("select cobranca_id from cobranca where cobranca_pago=1 and cobranca_propostaId=", contrato.ID, " and (cobranca_cancelada is null or cobranca_cancelada=0) and month(cobranca_dataCriacao)=", arr[1], " and year(cobranca_dataCriacao)=", arr[2]),
@@ -316,7 +662,7 @@
                     }
                     #endregion
 
-                    #region comentado 
+                    #region comentado
                     //aux = LocatorHelper.Instance.ExecuteScalar(
                     //    string.Concat("select tabela_id from tabela_cobertura where tabela_contratoAdmId=", contrato.ContratoADMID),
                     //    null, null, pm);
@@ -364,11 +710,11 @@
                     decimal acrescimoOuDesconto = 0;
                     int acrescimoOuDescontoTipo = -1;
 
-                    #region calcula acréscimos ou descontos de contrato 
+                    #region calcula acréscimos ou descontos de contrato
 
                     if (contrato.DescontoAcrescimoTipo != 0)
                     {
-                        if (contrato.DescontoAcrescimoData == DateTime.MinValue || 
+                        if (contrato.DescontoAcrescimoData == DateTime.MinValue ||
                             contrato.DescontoAcrescimoData >= DateTime.Now)
                         {
                             if (contrato.DescontoAcrescimoTipo == 1)
@@ -401,7 +747,7 @@
 
                     if (cobranca.Parcela <= 1)
                     {
-                        #region comentado 
+                        #region comentado
                         //aux = LocatorHelper.Instance.ExecuteScalar(
                         //    string.Concat("select estipulante_dataVencimento from estipulante where estipulante_id=", contrato.EstipulanteID),
                         //    null, null, pm);
@@ -429,7 +775,7 @@
 
                         cobranca.DataVencimento = calcula1oVencimento(dataVencimento, diaVenctoProjeto);
 
-                        #region comentado 2 
+                        #region comentado 2
 
                         //int diaHoje   = DateTime.Now.Day;
                         //int diaUltimo = ultimoDiaDoMes(DateTime.Now);
@@ -480,7 +826,7 @@
                         //}
                         #endregion
                     }
-                    else 
+                    else
                     {
                         string qry = "";
                         //Regra 2: não pode gerar uma cobrança para um mês em que ja há cobrança
@@ -489,7 +835,7 @@
                             qry = string.Concat(
                                 "select cobranca_id from ",
                                 "   cobranca where ",
-                              //"       cobranca_cobrancaRefId is null and ",
+                                //"       cobranca_cobrancaRefId is null and ",
                                 "       cobranca_cancelada=0 and cobranca_propostaid=", contrato.ID,
                                 "       and month(cobranca_dataVencimento)=", cobranca.DataVencimento.Month,
                                 "       and year(cobranca_dataVencimento)=", cobranca.DataVencimento.Year);
@@ -524,14 +870,14 @@
                                 }
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             pm.Rollback();
 
                             return retorno("erro", ex.Message);
                         }
 
-                        #region Regra 1: não pode gerar uma cobrança se não houver cobrança gerada no mês anterior 
+                        #region Regra 1: não pode gerar uma cobrança se não houver cobrança gerada no mês anterior
                         try
                         {
                             DateTime refe = dataVencimento.AddMonths(-1);
@@ -559,7 +905,7 @@
                                 return retorno("erro", "Nao identificamos cobranca gerada na competencia anterior");
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             pm.Rollback();
 
@@ -585,8 +931,8 @@
                         if (DateTime.Now.Day >= dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
                         {
                             DateTime novoVencimento = new DateTime(
-                                DateTime.Now.AddDays(2).Year, 
-                                DateTime.Now.AddDays(2).Month, 
+                                DateTime.Now.AddDays(2).Year,
+                                DateTime.Now.AddDays(2).Month,
                                 DateTime.Now.AddDays(2).Day, 23, 59, 59, 900);
 
                             cobranca.DataVencimento = novoVencimento;
@@ -624,7 +970,7 @@
                     cobranca.Cancelada = false;
                     cobranca.QtdVidas = Convert.ToInt32(qtdVidas);
 
-                    #region Verifica se tem configuração de adicional para o boleto 
+                    #region Verifica se tem configuração de adicional para o boleto
 
                     DataTable dt = LC.Web.PadraoSeguros.Facade.CobrancaFacade.Instancia.CarregaAdicionais(contrato, pm);
                     System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
@@ -641,7 +987,7 @@
 
                     #endregion
 
-                    pm.Save(cobranca); 
+                    pm.Save(cobranca);
 
                     //atualiza a qtd de vidas na proposta
                     string sql = string.Concat("update contrato set contrato_qtdVidas=", qtdVidas, " where contrato_id=", idContrato);
@@ -1477,9 +1823,9 @@ Dornelas
             {
                 #region generali 
 
-                gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Red, 208, 43);
-                gfx.DrawString(numero, font, XBrushes.Red, 336, 43);
-                gfx.DrawString(senha, font, XBrushes.Red, 485, 43);
+                gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Black, 208, 43);
+                gfx.DrawString(numero, font, XBrushes.Black, 336, 43);
+                gfx.DrawString(senha, font, XBrushes.Black, 485, 43);
 
                 //texto
                 XRect rect = new XRect(42, 65, 505, 200);
@@ -1488,18 +1834,18 @@ Dornelas
                 tf.Alignment = XParagraphAlignment.Justify;
                 tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
 
-                gfx.DrawString(certificado, font, XBrushes.Red, 371, 286);
-                gfx.DrawString(ramo, font, XBrushes.Red, 396, 315);
-                gfx.DrawString(apolice, font, XBrushes.Red, 479, 315);
+                gfx.DrawString(certificado, font, XBrushes.Black, 371, 286);
+                gfx.DrawString(ramo, font, XBrushes.Black, 396, 315);
+                gfx.DrawString(apolice, font, XBrushes.Black, 479, 315);
 
-                gfx.DrawString(nome.ToUpper(), font, XBrushes.Red, 42, 339);
-                gfx.DrawString(estipulanteNome, font, XBrushes.Red, 396, 339);
+                gfx.DrawString(nome.ToUpper(), font, XBrushes.Black, 42, 339);
+                gfx.DrawString(estipulanteNome, font, XBrushes.Black, 396, 339);
 
-                gfx.DrawString(cpf, font, XBrushes.Red, 42, 363);
-                gfx.DrawString(nascimento, font, XBrushes.Red, 175, 363);
-                gfx.DrawString(vigencia, font, XBrushes.Red, 286, 363);
-                gfx.DrawString(vigenciaFim, font, XBrushes.Red, 400, 363);
-                gfx.DrawString(emissao, font, XBrushes.Red, 490, 363);
+                gfx.DrawString(cpf, font, XBrushes.Black, 42, 363);
+                gfx.DrawString(nascimento, font, XBrushes.Black, 175, 363);
+                gfx.DrawString(vigencia, font, XBrushes.Black, 286, 363);
+                gfx.DrawString(vigenciaFim, font, XBrushes.Black, 400, 363);
+                gfx.DrawString(emissao, font, XBrushes.Black, 490, 363);
 
                 //dados de cobertura
                 for (int i = 0; i < rowDadosCobertura.Count; i++)
@@ -1608,7 +1954,41 @@ Dornelas
         [WebMethod()]
         public string GerarCartao(string idContrato, string modelo, string token, CartaoDTO dto)
         {
+            #region validacoes 
+
             if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+
+            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generalli"))
+            {
+                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generalli'.");
+            }
+
+            if (string.IsNullOrEmpty(idContrato))
+            {
+                if (dto == null)
+                {
+                    return retorno("erro", "Parâmetros idContato e dto não enviados");
+                }
+                else
+                {
+                    string msg = "";
+                    bool ok = dto.Validar(out msg);
+
+                    if (!ok)
+                    {
+                        return retorno("erro", msg);
+                    }
+
+                    idContrato = Importar(dto, out msg).ToString();
+
+                    if (idContrato == "0")
+                    {
+                        return retorno("erro", msg);
+                    }
+                }
+            }
+
+            #endregion
 
             string qry = "", pdfGerado = "", cartaoGerado = "";
             StringBuilder sb = new StringBuilder();
@@ -1722,6 +2102,320 @@ Dornelas
             }
 
             return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
+        }
+
+        long Importar(CartaoDTO dto, out string mensagem)
+        {
+            mensagem = "";
+
+            using (var sessao = ObterSessao())
+            {
+                //List<AssociadoPJ_X_Beneficiario> lista = new List<AssociadoPJ_X_Beneficiario>();
+                using (var trans = sessao.BeginTransaction(IsolationLevel.ReadUncommitted))
+                {
+                    IDbCommand cmdAux = sessao.Connection.CreateCommand();
+                    trans.Enlist(cmdAux);
+
+                    try
+                    {
+                        object aux = null;
+                        string cpf = "", contratoNumero = "";
+
+                        Entidades.Beneficiario beneficiario;
+
+                        //bool cepErrado = false;
+                        //AssociadoPJ_X_Beneficiario itemAssociacao = null;
+
+                        //Beneficiário
+                        cpf = dto.CPF_TITULAR;
+
+                        #region validacoes e salva beneficiario
+
+                        try
+                        {
+                            if (cpf != "99999999999")
+                            {
+                                cpf = cpf.Replace(".", "").Replace("-", "").Replace(@"/", "").PadLeft(11, '0');
+                                beneficiario = sessao.Query<Entidades.Beneficiario>().Where(b => b.CPF.Replace(".", "").Replace("-", "") == cpf).SingleOrDefault();
+                            }
+                            else
+                            {
+                                beneficiario = null;
+                            }
+                        }
+                        catch
+                        {
+                            mensagem = "Erro inesperado 001";
+                            trans.Rollback();
+                            return 0;
+                        }
+
+                        if (beneficiario != null)
+                        {
+                            mensagem = "Beneficiário já cadastrado";
+                            trans.Rollback();
+                            return 0;
+                        }
+
+                        #region salva beneficiario
+
+                        beneficiario = new Entidades.Beneficiario();
+
+                        beneficiario.Celular = dddFone(dto.DDD_CEL, dto.FONE_CEL);
+                        beneficiario.CPF = cpf;
+                        beneficiario.Data = DateTime.Now;
+                        beneficiario.DataNascimento = dto.DT_NASCIMENTO;
+                        beneficiario.Email = dto.EMAIL;
+                        beneficiario.EstadoCivilId = 0;
+                        beneficiario.Nome = dto.NOME_BENEFICIARIO;
+                        //beneficiario.NomeMae = dto.NOME_MAE;
+                        beneficiario.Peso = 0;
+                        beneficiario.Ramal = dto.RAMAL1;
+                        //beneficiario.Ramal2 = stoString(row["RAMAL2"]);
+                        //beneficiario.RG = dto.RG;
+                        //beneficiario.RGOrgaoExp = dto.RG_ORGAO_EXP;
+                        //beneficiario.RgUF = dto.RG_UF;
+                        beneficiario.SexoId = traduzSexo(dto.SEXO).ToString();
+                        beneficiario.Telefone = dddFone(dto.DDD1, dto.FONE1);
+                        //beneficiario.Telefone2 = dddFone(dto.DDD2, dto.FONE2);
+
+                        sessao.Save(beneficiario);
+
+                        #endregion
+
+
+                        #endregion
+
+                        #region salva endereço
+
+                        //ATENCAO: nao se deve alterar enderecos pre-existentes, pois isso alterará tb os contratos antigos, caso existam
+                        Entidades.Endereco endereco = new Entidades.Endereco();
+
+                        endereco.Bairro = dto.BAIRRO;
+                        endereco.CEP = dto.CEP.Replace("-", "");
+                        endereco.Cidade = dto.CIDADE;
+                        endereco.Complemento = dto.COMPLEMENTO;
+                        endereco.DonoId = beneficiario.ID;
+                        endereco.Logradouro = dto.LOGRADOURO;
+                        endereco.Numero = dto.NUMERO;
+                        endereco.Tipo = 0; //stoString(row["TIPO"]) == "1" ? 1 : 0;
+                        endereco.UF = dto.UF.Trim();
+
+                        sessao.Save(endereco);
+
+                        #endregion
+
+                        Entidades.NumeroCartao numero = null;
+
+                        numero = new Entidades.NumeroCartao();
+
+                        // Gera um número válido de contrato
+                        cmdAux.CommandText = "SELECT MAX(numerocontrato_numero) FROM numero_contrato";
+                        aux = cmdAux.ExecuteScalar();
+
+                        if (aux != null && aux != DBNull.Value)
+                        {
+                            contratoNumero = (Convert.ToInt64(aux) + 1).ToString();
+                            numero.Numero = contratoNumero;
+                            numero.GerarDigitoVerificador();
+                        }
+                        else
+                        {
+                            numero.GerarNumeroInicial();
+                        }
+
+                        numero.Ativo = true;
+                        numero.Contrato = null;
+                        numero.Data = DateTime.Now;
+
+                        Entidades.Contrato contrato = new Entidades.Contrato();
+
+                        #region preenche contrato
+
+                        contrato.Importado = true;
+                        contrato.Cancelado = false;
+                        contrato.ContratoADMID = Convert.ToInt64(dto.ContratoAdmID);
+                        contrato.DataAdmissao = dto.DT_ADMISSAO;
+                        contrato.DataVigencia = dto.DT_VIGENCIA;
+                        contrato.DonoID = -1;
+                        contrato.EmailCobranca = beneficiario.Email;
+                        contrato.EnderecoCobrancaID = endereco.ID;
+                        contrato.EnderecoReferenciaID = endereco.ID;
+                        contrato.EstipulanteID = Convert.ToInt64(dto.AssociadoPjID); //Estipulante
+                        contrato.FilialID = Convert.ToInt64(dto.FilialID); //Filial
+                        contrato.Inativo = false;
+                        contrato.Numero = numero.NumeroCompletoSemCV;
+                        contrato.NumeroID = 0; ////////////////////////
+
+                        contrato.OperadoraID = Convert.ToInt64(dto.OperadoraID);
+                        contrato.PlanoID = Convert.ToInt64(dto.PlanoID);
+
+                        contrato.Matricula = dto.MATRICULA;
+
+                        //contrato.ResponsavelCPF = stoString(row["CPF_RESP_LEGAL"]);
+                        //contrato.ResponsavelDataNascimento = stoDateTimeNull(row["DT_NASC_RESP_LEGAL"]); ;
+                        //contrato.ResponsavelNome = stoString(row["NOME_RESP_LEGAL"]);
+                        //contrato.ResponsavelRG = stoString(row["RG_RESP_LEGAL"]);
+                        //contrato.ResponsavelSexo = stoString(row["SEXO_RESP_LEGAL"]).Trim() == "1" ? "Masculino" : "Feminino";
+
+                        contrato.Senha = ""; /////////////
+                        contrato.TipoAcomodacao = 0;
+                        contrato.TipoContratoID = 1; //straduzTipoContrato(row["TIPO_PROPOSTA"]);
+                        contrato.NumeroApolice = dto.APOLICE;
+                        contrato.Ramo = dto.RAMO;
+                        contrato.UsuarioID = 1;
+                        contrato.KitSolicitado = false;
+                        contrato.CartaoSolicitado = false;
+                        //contrato.CaminhoArquivo = dto.TIPO;
+
+                        contrato.Produto = dto.PRODUTOR;
+
+                        Entidades.AssociadoPJ assocpj = sessao.Get<Entidades.AssociadoPJ>(Convert.ToInt64(dto.AssociadoPjID));
+
+                        if (assocpj.TipoDataValidade == Entidades.Enuns.TipoDataValidade.DataFixa)
+                        {
+                            contrato.DataValidade = assocpj.DataValidadeFixa.Value;
+                        }
+                        else
+                        {
+                            contrato.DataValidade = contrato.DataVigencia.AddMonths(assocpj.MesesAPartirDaVigencia.Value);
+                        }
+
+                        #endregion
+
+                        try
+                        {
+                            contrato.Importado = false;
+                            sessao.Save(contrato);
+
+                            numero.Contrato = contrato;
+                            sessao.Save(numero);
+
+                            contrato.NumeroID = numero.ID;
+
+                            contrato.GerarSenha();
+
+                            sessao.Update(contrato);
+                        }
+                        catch
+                        {
+                            mensagem = "Erro insperado 002";
+                            trans.Rollback();
+                            return 0;
+                        }
+
+                        Entidades.ContratoBeneficiario cb = new Entidades.ContratoBeneficiario();
+                        cb.Ativo = true;
+                        cb.Beneficiario = beneficiario;
+                        cb.Contrato = contrato;
+                        cb.Tipo = 0;
+                        cb.Data = contrato.DataAdmissao;
+                        cb.Vigencia = contrato.DataVigencia;
+
+                        sessao.Save(cb);
+
+                        #region comentado
+
+                        //lista.Add(
+                        //    new AssociadoPJ_X_Beneficiario
+                        //    {
+                        //        AssociadoPjId = contrato.EstipulanteID.ToString(),
+                        //        BeneficiarioId = Convert.ToString(beneficiario.ID)
+                        //    });
+
+                        //agenda.DataConclusao = DateTime.Now;
+                        //sessao.Update(agenda);
+
+                        //log.ForEach(l => sessao.Save(l));
+
+                        ////salva a associação beneficiário x associado pj, sobrescrevendo a anterior
+                        //if (lista != null && lista.Count > 0)
+                        //{
+                        //    cmdAux.CommandText = "delete from associadopj_beneficiario where assocbenef_associadopjId=" + lista[0].AssociadoPjId;
+                        //    cmdAux.ExecuteNonQuery();
+
+                        //    foreach (var assoc in lista)
+                        //    {
+                        //        cmdAux.CommandText = string.Concat(
+                        //            "insert into associadopj_beneficiario (assocbenef_associadopjId,assocbenef_beneficiarioId) values (", assoc.AssociadoPjId, ",", assoc.BeneficiarioId, ")");
+                        //        cmdAux.ExecuteNonQuery();
+                        //    }
+                        //}
+                        #endregion
+
+                        trans.Commit();
+
+                        return contrato.ID;
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                        mensagem = "Erro insperado 003";
+                        return 0;
+                    }
+                }
+            }
+        }
+
+        private static NHibernate.Cfg.Configuration _config = null;
+        private static Hashtable _allFactories = new Hashtable();
+
+        protected static ISession ObterSessao()
+        {
+            string chave = "1";
+            ISessionFactory _sessionFactory = null;
+
+            if (!_allFactories.ContainsKey(chave))
+            {
+                _sessionFactory = CriarSessaoNHibernate();
+                _allFactories.Add(chave, _sessionFactory);
+            }
+            else
+            {
+                _sessionFactory = (ISessionFactory)_allFactories[chave];
+            }
+
+            ISession sessao = _sessionFactory.OpenSession();
+            sessao.FlushMode = FlushMode.Commit;
+
+            return sessao;
+        }
+
+        static ISessionFactory CriarSessaoNHibernate()
+        {
+            string connString = ConfigurationManager.ConnectionStrings["Contexto"].ConnectionString;
+
+            var f = Fluently.Configure().Database((MsSqlConfiguration.MsSql2008.Dialect<MsSql2008Dialect>().ConnectionString(connString).ShowSql()))
+                    .ExposeConfiguration(p => p.Properties["command_timeout"] = "1000") //timeout
+                    .ExposeConfiguration(p => p.Properties["hibernate.cache.use_query_cache"] = "false") //sem cache 
+                    .ExposeConfiguration(x => x.SetInterceptor(new SqlStatementInterceptor()))
+                    .Mappings(m => m.FluentMappings.AddFromAssemblyOf<MedProj.Entidades.Map.NHibernate.UsuarioMap>().Conventions.Setup(x => x.Add(AutoImport.Never())));
+
+            _config = f.BuildConfiguration();
+            return f.BuildSessionFactory();
+        }
+
+        string dddFone(string ddd, string fone)
+        {
+            if (string.IsNullOrWhiteSpace(fone))
+                return string.Empty;
+            else if (!string.IsNullOrWhiteSpace(ddd))
+                return string.Concat("(", ddd, ") ", fone);
+            else if (fone.IndexOf('(') > -1)
+                return fone;
+            else
+                return string.Concat("(00) ", fone);
+        }
+
+        int traduzSexo(Object param)
+        {
+            if (param == null || param == DBNull.Value)
+                return 0;
+
+            if (Convert.ToString(param).ToUpper() == "M")
+                return 1;
+            else
+                return 0;
         }
 
         #endregion
@@ -1841,7 +2535,7 @@ Dornelas
             return retorno(status, url);
         }
 
-        [WebMethod()]
+        //[WebMethod()]
         public string GerarBoleto_TESTE(string token, string idContrato, string qtdVidas, string vencimento)
         {
             token = this.TokenGuid;
@@ -2281,7 +2975,7 @@ Dornelas
             public string   NOME_BENEFICIARIO { get; set; }
             public DateTime DT_NASCIMENTO { get; set; }
             public char     SEXO { get; set; }
-            public string   DD1 { get; set; }
+            public string   DDD1 { get; set; }
             public string   FONE1 { get; set; }
             public string   RAMAL1 { get; set; }
             public string   DDD_CEL { get; set; }
@@ -2295,9 +2989,45 @@ Dornelas
             public string   CIDADE { get; set; }
             public string   UF { get; set; }
 
+            public string   ContratoAdmID { get; set; }
+            public string   AssociadoPjID { get; set; }
+            public string   OperadoraID { get; set; }
+            public string   FilialID { get; set; }
+            public string   PlanoID { get; set; }
+
             public bool Validar(out string erro)
             {
                 erro = "";
+
+                if (string.IsNullOrEmpty(ContratoAdmID))
+                {
+                    erro = "ContratoAdmID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(AssociadoPjID))
+                {
+                    erro = "AssociadoPjID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(OperadoraID))
+                {
+                    erro = "OperadoraID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(FilialID))
+                {
+                    erro = "FilialID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(PlanoID))
+                {
+                    erro = "ContratoAdmID não PlanoID";
+                    return false;
+                }
 
                 if (string.IsNullOrEmpty(PRODUTOR))
                 {
