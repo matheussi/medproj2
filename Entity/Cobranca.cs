@@ -1127,6 +1127,31 @@
             }
         }
 
+        /// <summary>
+        /// True se a competencia NAO existir
+        /// </summary>
+        public static Boolean VerificaExistenciaCompetencia(Object contratoId, object cobrancaId, string competencia)
+        {
+            String[] pName = new String[] { "@comp" };
+            String[] pValue = new String[] { competencia };
+
+            String query = " SELECT cobranca_id " +
+                        " FROM cobranca " +
+                        " WHERE cobranca_cancelada=0 and cobranca_competencia=@comp AND cobranca_propostaid = " + contratoId;
+
+            if (cobrancaId != null)
+            {
+                query += " and cobranca_id <> " + cobrancaId;
+            }
+
+            DataTable dt = LocatorHelper.Instance.ExecuteParametrizedQuery(
+                query, pName, pValue).Tables[0];
+
+            Boolean valido = dt == null || dt.Rows.Count == 0;
+
+            return valido;
+        }
+
         #region Load methods 
 
         public static Cobranca CarregarPor(Object propostaId, Int32 mes, Int32 ano, Cobranca.eTipo tipo, PersistenceManager pm)
