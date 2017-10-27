@@ -37,7 +37,7 @@
                             <asp:TemplateField>
                                 <HeaderTemplate>Associado PJ</HeaderTemplate>
                                 <ItemTemplate>
-                                    <asp:Literal ID="litAssoc" Text='<%#DataBinder.Eval(Container.DataItem, "AssociadoPJ.Nome")%>' runat="server" />
+                                    <asp:Literal ID="litAssoc" Text='<%#DataBinder.Eval(Container.DataItem, "AssociadoPJNOME")%>' runat="server" />
                                 </ItemTemplate>
                             </asp:TemplateField>
                             <asp:ButtonField ButtonType="Link" Text="" CommandName="Excluir">
