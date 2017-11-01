@@ -442,6 +442,20 @@
             set;
         }
 
+        [DBFieldInfo("cobranca_iugu_id", FieldType.Single)]
+        public string Iugu_Id
+        {
+            get;
+            set;
+        }
+
+        [DBFieldInfo("cobranca_iugu_url", FieldType.Single)]
+        public string Iugu_Url
+        {
+            get;
+            set;
+        }
+
         [Joinned("contrato_codcobranca")]
         public String ContratoCodCobranca
         {
