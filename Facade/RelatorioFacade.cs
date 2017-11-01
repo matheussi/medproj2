@@ -141,11 +141,13 @@
                     "       inner join estipulante on estipulante_id = contrato_estipulanteId ",
                     "       inner join contratoADM on contratoadm_id = contrato_contratoAdmId ",
                     "       inner join cobranca on cobranca_propostaId = contrato_id and cobranca_pago=1 ",
-                    "   where ",
-                    "       estipulante_ativo=1 and contrato_inativo=0 and contrato_cancelado=0 and contrato_rascunho=0 ",
-                    "       and cobranca_cancelada=0 and cobranca_pago=1 ", innerCond, //and cobranca_dataVencimento > getdate()
-//                  "       and contrato_id not in (select cobranca_propostaid from cobranca where cobranca_cancelada=0 and cobranca_pago=0 and cobranca_dataVencimento < getdate()", innerCond, ") ",
-//                  "       and (select count(cobranca_id) from cobranca where cobranca_propostaId = contrato_id and cobranca_cancelada=0) > 0 ",
+                    "   where  cobranca_pago=1 ", innerCond,
+
+//                    "       estipulante_ativo=1 and contrato_inativo=0 and contrato_cancelado=0 and contrato_rascunho=0 ",
+//                    "       and cobranca_cancelada=0 and cobranca_pago=1 ", innerCond, //and cobranca_dataVencimento > getdate()
+////                  "       and contrato_id not in (select cobranca_propostaid from cobranca where cobranca_cancelada=0 and cobranca_pago=0 and cobranca_dataVencimento < getdate()", innerCond, ") ",
+////                  "       and (select count(cobranca_id) from cobranca where cobranca_propostaId = contrato_id and cobranca_cancelada=0) > 0 ",
+
                     cond,
                     "   order by estipulante_descricao,contratoadm_descricao,beneficiario_nome,cobranca_datavencimento");
             }
