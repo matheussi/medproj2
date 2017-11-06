@@ -15,6 +15,7 @@
     using BoletoNet;
     using System.IO;
     using LC.Web.PadraoSeguros.Facade;
+    using LC.Framework.Phantom;
 
     public partial class boleto_itau : System.Web.UI.Page
     {
@@ -83,6 +84,13 @@
 
             Ent.Cobranca cobr = new Ent.Cobranca(cobid);
             cobr.Carregar();
+
+            if (!string.IsNullOrEmpty(cobr.Iugu_Id) && !string.IsNullOrEmpty(cobr.Iugu_Url))
+            {
+                Response.Redirect(cobr.Iugu_Url);
+                Response.End();
+                return;
+            }
 
             if (contrato.EnderecoCobrancaID == null && contrato.EnderecoReferenciaID == null)
             {
@@ -179,8 +187,73 @@
             if (!string.IsNullOrEmpty(instru))
             {
                 Instrucao_Itau item4 = new Instrucao_Itau();
-                item4.Descricao = instrucoes[Convert.ToInt32(instru)];  //"Não receber após " + vencimento.AddMonths(3).ToString("dd/MM/yyyy");
+
+                if (!string.IsNullOrEmpty(cobr.Competencia) && cobr.Parcela != 1)
+                {
+                    int diaVenctoProjeto = Util.CTipos.CToInt(LocatorHelper.Instance.ExecuteScalar(
+                            string.Concat("select contratoADM_DTVC from contratoadm where contratoadm_id=", contrato.ContratoADMID),
+                            null, null, null));
+                    try
+                    {
+                        DateTime vencimentoPROJETO = new DateTime(
+                            Util.CTipos.CToInt(cobr.Competencia.Split('/')[1]),
+                            Util.CTipos.CToInt(cobr.Competencia.Split('/')[0]),
+                            diaVenctoProjeto, 23, 59, 59, 995);
+
+                        if (cobr.DataCriacao > vencimentoPROJETO)
+                            item4.Descricao = instrucoes[Convert.ToInt32(1)];
+                        else
+                            item4.Descricao = instrucoes[Convert.ToInt32(0)];
+                    }
+                    catch
+                    {
+                        item4.Descricao = instrucoes[Convert.ToInt32(instru)];
+                    }
+
+                }
+                else
+                {
+                    item4.Descricao = instrucoes[Convert.ToInt32(instru)];  //"Não receber após " + vencimento.AddMonths(3).ToString("dd/MM/yyyy");
+                }
+
                 b4.Instrucoes.Add(item4);
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(cobr.Competencia) && cobr.Parcela != 1)
+                {
+                    Instrucao_Itau item4 = new Instrucao_Itau();
+
+                    int diaVenctoProjeto = Util.CTipos.CToInt(LocatorHelper.Instance.ExecuteScalar(
+                            string.Concat("select contratoADM_DTVC from contratoadm where contratoadm_id=", contrato.ContratoADMID),
+                            null, null, null));
+
+                    try
+                    {
+                        DateTime vencimentoPROJETO = new DateTime(
+                            Util.CTipos.CToInt(cobr.Competencia.Split('/')[1]),
+                            Util.CTipos.CToInt(cobr.Competencia.Split('/')[0]),
+                            diaVenctoProjeto, 23, 59, 59, 995);
+
+                        if (cobr.DataCriacao > vencimentoPROJETO)
+                            item4.Descricao = instrucoes[Convert.ToInt32(1)];
+                        else
+                            item4.Descricao = instrucoes[Convert.ToInt32(0)];
+                    }
+                    catch
+                    {
+                        item4.Descricao = instrucoes[Convert.ToInt32(0)];
+                    }
+
+                    b4.Instrucoes.Add(item4);
+
+                }
+                else if (cobr.Parcela == 1)
+                {
+                    Instrucao_Itau item4 = new Instrucao_Itau();
+                    item4.Descricao = instrucoes[Convert.ToInt32(0)];
+                    b4.Instrucoes.Add(item4);
+                }
             }
 
             //b4.DigitoNossoNumero = "1";
