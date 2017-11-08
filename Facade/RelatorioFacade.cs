@@ -246,6 +246,83 @@
             return adimplenciaInadimplencia(associadoPjId, de, ate, false);
         }
 
+        public List<AdimplenciaVO> RelatorioIUGU(string contratoId, DateTime? de, DateTime? ate)
+        {
+            string innerCond = "";
+
+            if (de.HasValue || ate.HasValue)
+            {
+                if (de.HasValue)
+                {
+                    innerCond = string.Concat(innerCond, " and cobranca_dataPagto >= '", de.Value.ToString("yyyy-MM-dd"), "' ");
+                }
+
+                if (ate.HasValue)
+                {
+                    innerCond = string.Concat(innerCond, " and cobranca_dataPagto <= '", ate.Value.ToString("yyyy-MM-dd 23:59:59"), "' ");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(contratoId))
+            {
+                innerCond = string.Concat(innerCond, " and contrato_id=", contratoId);
+            }
+
+            string qry = string.Concat(
+                    "select contrato_id,contrato_numero, beneficiario_nome,beneficiario_razaoSocial,cobranca_datavencimento,cobranca_dataPagto,cobranca_valor, cobranca_valorPagto,cobranca_dataPagto,sum(produtoitemcobranca_produtoitemvalor) as totalProd ",
+                    "   from contrato ",
+                    "       inner JOIN contrato_beneficiario ON contrato_id=contratobeneficiario_contratoId AND contratobeneficiario_ativo=1 AND contratobeneficiario_tipo=0 ",
+                    "       inner JOIN beneficiario ON beneficiario_id=contratobeneficiario_beneficiarioId AND contratobeneficiario_ativo=1 ",
+                    "       inner join cobranca on cobranca_propostaid = contrato_id and cobranca_iugu_url is not null and cobranca_iugu_url <> '' ",
+                    "       inner join operadora on operadora_id = contrato_operadoraid ",
+                    "       inner join estipulante on estipulante_id = contrato_estipulanteid ",
+                    "       inner join contratoadm on contratoadm_id = contrato_contratoadmid ",
+                    "       inner join produto_item_cobranca on cobranca_id = produtoitemcobranca_cobrancaid ",
+                    "   where ",
+                    "       cobranca_pago=1 ", innerCond,
+                    "   group by contrato_id,contrato_numero, beneficiario_nome,beneficiario_razaoSocial,cobranca_datavencimento,cobranca_dataPagto,cobranca_valor,cobranca_valorPagto,cobranca_dataPagto ",
+                    "   order by beneficiario_nome,cobranca_datavencimento ");
+
+            List<AdimplenciaVO> vos = new List<AdimplenciaVO>();
+
+            using (var sessao = ObterSessao())
+            {
+                IDbCommand cmd = sessao.Connection.CreateCommand();
+                cmd.CommandText = qry;
+
+                using (IDataReader dr = cmd.ExecuteReader())
+                {
+                    System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+
+                    while (dr.Read())
+                    {
+                        AdimplenciaVO vo = new AdimplenciaVO();
+
+                        vo.BeneficiarioNome = CToString(dr["beneficiario_nome"]);
+                        vo.ContratoID = dr.GetInt64(0);
+                        vo.ContratoNumero = CToString(dr["contrato_numero"]);
+
+                        if (dr["beneficiario_razaoSocial"] != null && dr["beneficiario_razaoSocial"] != DBNull.Value && Convert.ToString(dr["beneficiario_razaoSocial"]).Trim() != "")
+                        {
+                            vo.BeneficiarioNome = Convert.ToString(dr["beneficiario_razaoSocial"]).Trim();
+                        }
+
+                        vo.CobrancaVencimento = Convert.ToDateTime(dr["cobranca_dataVencimento"], cinfo);
+                        if (dr["cobranca_dataPagto"] != DBNull.Value)
+                            vo.CobrancaDataPago = Convert.ToDateTime(dr["cobranca_dataPagto"], cinfo);
+
+                        vo.CobrancaValorPago = Convert.ToDecimal(dr["cobranca_valorPagto"], cinfo);
+                        vo.CobrancaValorPendente = Convert.ToDecimal(dr["cobranca_valor"], cinfo);
+                        vo.TotalProdutoValor = Convert.ToDecimal(dr["totalProd"], cinfo);
+
+                        vos.Add(vo);
+                    }
+                }
+            }
+
+            return vos;
+        }
+
         [Serializable]
         public class AdimplenciaVO
         {
@@ -266,6 +343,19 @@
 
             //Inadimplentes
             public decimal CobrancaValorPendente { get; set; }
+
+            //IUGU
+            public decimal TotalProdutoValor { get; set; }
+            public decimal TotalCoberturaValor 
+            {
+                get 
+                {
+                    if(CobrancaValorPendente > TotalProdutoValor)
+                        return CobrancaValorPendente - TotalProdutoValor; 
+                    else
+                        return TotalProdutoValor - CobrancaValorPendente; 
+                }
+            }
         }
     }
 }
