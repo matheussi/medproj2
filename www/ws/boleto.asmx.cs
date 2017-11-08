@@ -27,6 +27,8 @@
     using NHibernate.Dialect;
     using FluentNHibernate.Conventions.Helpers;
 
+    //using iugu01;
+
     /// <summary>
     /// 
     /// </summary>
@@ -275,6 +277,8 @@
             }
         }
 
+        /***************************************************************************************************************************/
+
         [WebMethod(Description = "Dados os parâmetros, cria a cobrança e retorna a url para exibição do boleto - Versão 02.")]
         public string GerarBoletoV2(string token, string idContrato, string qtdVidas, string vencimento, string competencia)
         {
@@ -315,7 +319,7 @@
                     var contrato = new Contrato(idContrato);
                     pm.Load(contrato);
 
-                    #region Verifica se o ja há uma cobrança paga para o vencimento
+                    #region Verifica se o ja há uma cobrança paga para a competencia
 
                     object aux = LocatorHelper.Instance.ExecuteScalar(
                         string.Concat("select cobranca_id from cobranca where cobranca_pago=1 and cobranca_propostaId=", contrato.ID, " and (cobranca_cancelada is null or cobranca_cancelada=0) and cobranca_competencia='", competencia, "'"),
@@ -348,6 +352,52 @@
                     int diaVenctoProjeto = this.toInt(LocatorHelper.Instance.ExecuteScalar(
                         string.Concat("select contratoADM_DTVC from contratoadm where contratoadm_id=", contrato.ContratoADMID),
                         null, null, pm));
+
+                    #region IUGU - Customer =====================================
+
+                    var titular = ContratoBeneficiario.CarregarTitular(contrato.ID, pm);
+
+                    if (string.IsNullOrEmpty(contrato.IuguCustumerId) && contrato.IuguHabilitado)
+                    {
+                        //TODO: Denis COMENTAr linha abaixo
+                        //titular.BeneficiarioEmail = "matheussi@gmail.com";
+
+                        //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                        using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                        {
+                            contrato.IuguCustumerId = proxy.ObterCustomer(
+                                null, Convert.ToString(contrato.ID), titular.BeneficiarioEmail, titular.BeneficiarioNome, token);
+
+                            contrato.AtualizarIuguCustomerId(pm);
+                        }
+                    }
+
+                    #endregion ====================================================
+
+                    #region IUGU - Subscription =====================================
+
+                    if (string.IsNullOrEmpty(contrato.IuguSubscriptionId) && contrato.IuguHabilitado)
+                    {
+                        //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                        using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                        {
+                            string msg = "";
+                            bool ok = proxy.ObterSubscription(contrato.IuguCustumerId, token, out msg);
+
+                            if (ok)
+                            {
+                                contrato.IuguSubscriptionId = msg;
+                                contrato.AtualizarIuguSubscriptonId(pm);
+                            }
+                            else
+                            {
+                                pm.Rollback();
+                                return retorno("erro", msg);
+                            }
+                        }
+                    }
+
+                    #endregion ====================================================
 
                     //TODO: denis, voltar o que estava antes?
                     var cobrancas = Cobranca.CarregarTodas(idContrato, true, pm); //var cobrancas = Cobranca.CarregarTodas(idContrato, false, pm);
@@ -503,9 +553,11 @@
                         // Parcelas 2 em diante: só podem ser geradas entre o dia 1 do mes de vencimento e 
                         // 15 dias após a data de vencimento
 
+                        DateTime vencimentoPROJETO = new DateTime(dataVencimento.Year, dataVencimento.Month, diaVenctoProjeto, 23, 59, 59, 995);
+
                         // Intervarlo permitido para geração de cobranças
                         DateTime inicioPeriodo = new DateTime(dataVencimento.Year, dataVencimento.Month, 1);
-                        DateTime fimPeriodo = new DateTime(dataVencimento.AddDays(15).Year, dataVencimento.AddDays(15).Month, dataVencimento.AddDays(15).Day, 23, 59, 59, 990);
+                        DateTime fimPeriodo = new DateTime(vencimentoPROJETO.AddDays(15).Year, vencimentoPROJETO.AddDays(15).Month, vencimentoPROJETO.AddDays(15).Day, 23, 59, 59, 990); //new DateTime(dataVencimento.AddDays(15).Year, dataVencimento.AddDays(15).Month, dataVencimento.AddDays(15).Day, 23, 59, 59, 990);
 
                         if (DateTime.Now < inicioPeriodo || DateTime.Now > fimPeriodo)
                         {
@@ -515,7 +567,7 @@
                         }
 
                         // Se a cobrança for emitida após o vencimento original, mas dentro do período permitido 
-                        if (DateTime.Now.Day > dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
+                        if (DateTime.Now.Day > vencimentoPROJETO.Day && DateTime.Now.Day <= fimPeriodo.Day) //if (DateTime.Now.Day > dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
                         {
                             DateTime novoVencimento = new DateTime(
                                 DateTime.Now.AddDays(2).Year,
@@ -577,6 +629,81 @@
 
                     pm.Save(cobranca);
 
+                    #region IUGU - Boleto =========================================
+
+                    if (contrato.IuguHabilitado && !string.IsNullOrEmpty(contrato.IuguCustumerId))
+                    {
+                        var ends = Endereco.CarregarPorDono(titular.BeneficiarioID, Endereco.TipoDono.Beneficiario, pm);
+
+                        if (ends == null || ends.Count == 0)
+                        {
+                            pm.Rollback();
+                            return retorno("erro", "Não foi possível localizar o endereço do beneficiário");
+                        }
+
+                        iugu_srv.PagadorVO vo = new iugu_srv.PagadorVO();
+                        vo.bairro = ends[0].Bairro;
+                        vo.cep = ends[0].CEP;
+                        vo.cidade = ends[0].Cidade;
+                        vo.cpfOuCnpj = titular.BeneficiarioCPF;
+                        vo.email = titular.BeneficiarioEmail;
+                        vo.estado = ends[0].UF;
+                        vo.nome = titular.BeneficiarioNome;
+                        vo.numero = ends[0].Numero;
+                        vo.pais = "Brasil";
+                        vo.rua = ends[0].Logradouro;
+
+                        #region IUGU - Itens ====================================================================
+
+                        string[][] itens = null; // new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
+
+                        if (contrato.IuguHabilitado)
+                        {
+                            var itensProduto = Produto.CarregarItensVigentes(contrato.ContratoADMID, pm);
+                            if (itensProduto != null)
+                            {
+                                itens = new string[1 + itensProduto.Count][];
+                                itens[0] = new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                                for (int k = 0; k < itensProduto.Count; k++) //foreach (var itemProd in itensProduto)
+                                {
+                                    itens[k + 1] = new string[] { itensProduto[k].Nome, itensProduto[k].Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                                    cobranca.Valor += itensProduto[k].Valor;
+                                }
+
+                                ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, pm);
+                            }
+                            else
+                            {
+                                itens = new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
+                            }
+                        }
+                        #endregion
+
+                        //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                        using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                        {
+                            string msg = "";
+                            string boletoIdCrypto = new Util.Crypto.SecureQueryString().Encrypt(Convert.ToString(cobranca.ID));
+                            bool iuguOk = proxy.NovoBoletoAsync(contrato.IuguCustumerId, contrato.IuguSubscriptionId, cobranca.DataVencimento, itens, vo, boletoIdCrypto, out msg);
+
+                            if (iuguOk)
+                            {
+                                cobranca.Iugu_Id = msg.Split(new string[] { "___" }, StringSplitOptions.None)[1];
+                                cobranca.Iugu_Url = msg.Split(new string[] { "___" }, StringSplitOptions.None)[0];
+                                cobranca.ArquivoIDUltimoEnvio = -10;
+                                pm.Save(cobranca);
+                            }
+                            else
+                            {
+                                pm.Rollback();
+                                return retorno("erro", msg);
+                            }
+                        }
+                    }
+                    #endregion
+
                     //atualiza a qtd de vidas na proposta
                     string sql = string.Concat("update contrato set contrato_qtdVidas=", qtdVidas, " where contrato_id=", idContrato);
                     NonQueryHelper.Instance.ExecuteNonQuery(sql, pm);
@@ -600,9 +727,15 @@
                     {
                     }
 
-                    pm.Commit(); 
+                    pm.Commit();
 
-                    boletoUrl = this.BoletoURL(cobranca, cb, out status, instrucoes);
+                    if (contrato.IuguHabilitado && !string.IsNullOrEmpty(cobranca.Iugu_Url))
+                    {
+                        status = "ok";
+                        boletoUrl = cobranca.Iugu_Url;
+                    }
+                    else
+                        boletoUrl = this.BoletoURL(cobranca, cb, out status, instrucoes);
                 }
                 catch (Exception ex)
                 {
@@ -610,9 +743,14 @@
                     return retorno("erro", ex.Message);
                 }
 
+                
+
                 return retorno(status, boletoUrl);
             }
         }
+
+
+        /***************************************************************************************************************************/
 
         [WebMethod(Description = "Dados os parâmetros, cria a cobrança e retorna a url para exibição do boleto.")]
         public string GerarBoleto(string token, string idContrato, string qtdVidas, string vencimento)

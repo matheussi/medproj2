@@ -31,6 +31,42 @@ namespace MedProj.www.financeiro.reports {
         protected global::System.Web.UI.WebControls.Button lnkNovo;
         
         /// <summary>
+        /// pnl_Label_Tipo_e_AssociadoPj control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnl_Label_Tipo_e_AssociadoPj;
+        
+        /// <summary>
+        /// pnl_Label_Contrato control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnl_Label_Contrato;
+        
+        /// <summary>
+        /// chkIugu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkIugu;
+        
+        /// <summary>
+        /// pnlTipo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlTipo;
+        
+        /// <summary>
         /// cboTipo control.
         /// </summary>
         /// <remarks>
@@ -40,6 +76,15 @@ namespace MedProj.www.financeiro.reports {
         protected global::System.Web.UI.WebControls.DropDownList cboTipo;
         
         /// <summary>
+        /// pnlAssociadoPJ control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlAssociadoPJ;
+        
+        /// <summary>
         /// cboAssociadoPJ control.
         /// </summary>
         /// <remarks>
@@ -47,6 +92,24 @@ namespace MedProj.www.financeiro.reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList cboAssociadoPJ;
+        
+        /// <summary>
+        /// pnlContrato control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlContrato;
+        
+        /// <summary>
+        /// cboContrato control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboContrato;
         
         /// <summary>
         /// txtDe control.
@@ -94,6 +157,15 @@ namespace MedProj.www.financeiro.reports {
         protected global::System.Web.UI.WebControls.ImageButton lnkToExcel;
         
         /// <summary>
+        /// pnlResultadoPadrao control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlResultadoPadrao;
+        
+        /// <summary>
         /// gridContratos control.
         /// </summary>
         /// <remarks>
@@ -101,6 +173,24 @@ namespace MedProj.www.financeiro.reports {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gridContratos;
+        
+        /// <summary>
+        /// pnlResultadoIUGU control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlResultadoIUGU;
+        
+        /// <summary>
+        /// gridIUGU control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gridIUGU;
         
         /// <summary>
         /// litAviso control.

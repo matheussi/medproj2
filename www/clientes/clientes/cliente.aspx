@@ -1318,7 +1318,6 @@
                                         <asp:Panel ID="pnlUtilizacaoPJ" runat="server" Visible="false">
                                             <div class="alert alert-info">
                                                  <div class="form-group">
-                                                    <%--<strong>Vidas cobertas</strong>--%>
                                                      <label class="col-xs-2 control-label">Vidas cobertas</label>
                                                      <div class="col-md-10" style="margin-top:3px">
                                                          <asp:TextBox ID="txtVidasCobertas" Width="80px" MaxLength="4" SkinID="txtPadrao" runat="server" onkeypress="filtro_SoNumeros(event);" />
@@ -1326,6 +1325,22 @@
                                                  </div>
                                             </div>
                                         </asp:Panel>
+                                        <br />
+                                        <div class="alert alert-danger">
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <b>Emissão de cobranças</b>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-12">
+                                                <asp:DropDownList ID="cboFormaEmissaoCobranca" runat="server" SkinID="comboPadrao1" Width="100%">
+                                                    <asp:ListItem Text="Emissão padrão" Value="0" />
+                                                    <asp:ListItem Text="Emissão via Iugu" Value="1" />
+                                                </asp:DropDownList>
+                                            </div>
+                                        </div>
+                                        </div>
                                     </ContentTemplate>
                                 </asp:UpdatePanel>
                             </ContentTemplate>
@@ -1365,7 +1380,6 @@
                                                         <%--<asp:ButtonField ButtonType="Image" ImageUrl="~/Images/search.png" Text="ver" CommandName="detalhe">--%>
                                                         <asp:ButtonField ButtonType="Link" Text="<img border='0' alt='ver' title='ver' src='../../images/search.png' />" CommandName="detalhe">
                                                             <HeaderStyle HorizontalAlign="Left" />
-                                                            <ItemStyle Width="1%" />
                                                         </asp:ButtonField>
                                                     </Columns>
                                                 </asp:GridView>
@@ -1538,10 +1552,16 @@
                                     <hr />
                                     <div class="form-group">
                                         <label class="col-xs-2 control-label text-left">Nova cobrança</label>
-                                        <div class="col-xs-3">
+                                        <div class="col-xs-2">
                                             <div class="input-group">
                                                 <span class="input-group-addon">Vencto.</span>
                                                 <asp:TextBox ID="txtVencimentoCob" BackColor="WhiteSmoke" Width="90px" SkinID="txtPadrao" runat="server" onkeypress="filtro_SoNumeros(event); mascara_DATA(this, event);" MaxLength="10" />
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Competência</span>
+                                                <asp:TextBox ID="txtCompetencia" BackColor="WhiteSmoke" Width="60px" SkinID="txtPadrao" runat="server" onkeypress="filtro_SoNumeros(event);" MaxLength="6" />
                                             </div>
                                         </div>
                                         <div class="col-xs-2">
@@ -1612,6 +1632,12 @@
                                                         <HeaderStyle HorizontalAlign="Left" />
                                                         <ItemStyle HorizontalAlign="Left" />
                                                     </asp:BoundField>
+
+                                                    <asp:BoundField DataField="Competencia" HeaderText="Compet.">
+                                                        <HeaderStyle HorizontalAlign="Left" />
+                                                        <ItemStyle HorizontalAlign="Left" />
+                                                    </asp:BoundField>
+
                                                     <asp:ButtonField Text="<img src='../../images/mail.gif' border='0' alt='enviar e-mail' title='enviar e-mail' />"
                                                         CommandName="email">
                                                         <HeaderStyle HorizontalAlign="Left" />
@@ -1656,6 +1682,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
 
                                     <asp:Panel ID="pnlConfComissao" runat="server" EnableViewState="false" Visible="false">
                                         <div class="form-group" style="text-align:left">

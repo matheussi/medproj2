@@ -1867,6 +1867,15 @@ namespace MedProj.www.clientes.clientes {
         protected global::System.Web.UI.WebControls.TextBox txtVidasCobertas;
         
         /// <summary>
+        /// cboFormaEmissaoCobranca control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboFormaEmissaoCobranca;
+        
+        /// <summary>
         /// p7Atendimento control.
         /// </summary>
         /// <remarks>
@@ -2144,6 +2153,15 @@ namespace MedProj.www.clientes.clientes {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtVencimentoCob;
+        
+        /// <summary>
+        /// txtCompetencia control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCompetencia;
         
         /// <summary>
         /// pnlTipoCobrancaNormal control.

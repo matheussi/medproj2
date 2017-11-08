@@ -28,7 +28,19 @@
             if (!IsPostBack)
             {
                 Util.Geral.ExibirEstipulantes(cboAssociadoPJ, true, true);
+                this.carregarContratosIUGU();
             }
+        }
+
+        void carregarContratosIUGU()
+        {
+            var lista = Contrato.CarregarContratoIUGU();
+            cboContrato.DataValueField = "Id";
+            cboContrato.DataTextField = "BeneficiarioTitularNome";
+            cboContrato.DataSource = lista;
+            cboContrato.DataBind();
+
+            cboContrato.Items.Insert(0, new ListItem("Selecione", "-1"));
         }
 
         void montarRelatorio()
@@ -38,39 +50,62 @@
 
             List<RelatorioFacade.AdimplenciaVO> vos = null;
 
-            gridContratos.Columns[5].Visible = true;
-            gridContratos.Columns[7].Visible = true;
-            gridContratos.Columns[8].Visible = true;
-            gridContratos.Columns[9].Visible = true;
-            gridContratos.Columns[10].Visible = true;
-
             string asspjid = "0";
 
-            if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
-            
-            if(cboTipo.SelectedIndex == 0)
-                vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
-            else if (cboTipo.SelectedIndex == 1)
-                vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
-            else
+            if (!chkIugu.Checked)
             {
-                if (!de.HasValue || !ate.HasValue)
+                gridContratos.Columns[5].Visible = true;
+                gridContratos.Columns[7].Visible = true;
+                gridContratos.Columns[8].Visible = true;
+                gridContratos.Columns[9].Visible = true;
+                gridContratos.Columns[10].Visible = true;
+
+                if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
+
+                if (cboTipo.SelectedIndex == 0)
+                    vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
+                else if (cboTipo.SelectedIndex == 1)
+                    vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
+                else
                 {
-                    Util.Geral.Alerta(this, "Os campos de data são obrigatórios para este relatório.");
-                    return;
+                    if (!de.HasValue || !ate.HasValue)
+                    {
+                        Util.Geral.Alerta(this, "Os campos de data são obrigatórios para este relatório.");
+                        return;
+                    }
+
+                    gridContratos.Columns[5].Visible = false;
+                    gridContratos.Columns[7].Visible = false;
+                    gridContratos.Columns[8].Visible = false;
+                    gridContratos.Columns[9].Visible = false;
+                    gridContratos.Columns[10].Visible = false;
+
+                    vos = RelatorioFacade.Instancia.cobrancasNaoGeradas(asspjid, de, ate);
                 }
 
-                gridContratos.Columns[5].Visible  = false;
-                gridContratos.Columns[7].Visible  = false;
-                gridContratos.Columns[8].Visible  = false;
-                gridContratos.Columns[9].Visible  = false;
-                gridContratos.Columns[10].Visible = false;
-
-                vos = RelatorioFacade.Instancia.cobrancasNaoGeradas(asspjid, de, ate);
+                gridContratos.DataSource = vos;
+                gridContratos.DataBind();
+                if (gridContratos.Rows.Count == 0)  { litAviso.Text = "Nenhum registro localizado"; }
+                else                                { litAviso.Text = ""; }
             }
+            else ///////////////////////// IUGU ///////////////////////////////////
+            {
+                string contratoId = "";
+                if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
 
-            gridContratos.DataSource = vos;
-            gridContratos.DataBind();
+                vos = RelatorioFacade.Instancia.RelatorioIUGU(contratoId, de, ate);
+
+                gridIUGU.DataSource = vos;
+                gridIUGU.DataBind();
+
+                if (gridIUGU.Rows.Count == 0) { litAviso.Text = "Nenhum registro localizado"; }
+                else
+                {
+                    litAviso.Text = string.Concat(
+                        "<b>Total Cobertura:</b> ", vos.Sum(v => v.TotalCoberturaValor).ToString("C"), " - ",
+                        "<b>Total Produtos: </b>", vos.Sum(v => v.TotalProdutoValor).ToString("C"));
+                }
+            }
 
             if (vos != null && vos.Count > 0)
             {
@@ -91,8 +126,9 @@
         protected void cmdProcurar_Click(object sender, EventArgs e)
         {
             this.montarRelatorio();
-            if (gridContratos.Rows.Count == 0) { litAviso.Text = "Nenhum registro localizado"; }
         }
+
+        /****/
 
         protected void gridContratos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
@@ -100,7 +136,6 @@
             {
             }
         }
-
         protected void gridContratos_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
@@ -131,13 +166,11 @@
                 //}
             }
         }
-
         protected void gridContratos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gridContratos.PageIndex = e.NewPageIndex;
             this.montarRelatorio();
         }
-
         protected void grid_RowDataBound_Confirmacao(Object sender, GridViewRowEventArgs e, int indiceControle, String Msg)
         {
             if (e.Row.RowType == DataControlRowType.DataRow)
@@ -146,21 +179,171 @@
             }
         }
 
+
+        protected void gridIUGU_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "editar")
+            {
+            }
+        }
+        protected void gridIUGU_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                //Boolean rascunho = Convert.ToBoolean(gridContratos.DataKeys[e.Row.RowIndex][1]);
+                //((Image)e.Row.Cells[4].Controls[1]).Visible = rascunho;
+
+                //Boolean cancelado = Convert.ToBoolean(gridContratos.DataKeys[e.Row.RowIndex][2]);
+                //Boolean inativado = Convert.ToBoolean(gridContratos.DataKeys[e.Row.RowIndex][3]);
+
+                ////UIHelper.AuthWebCtrl((LinkButton)e.Row.Cells[5].Controls[0], new String[] { Perfil.CadastroIDKey, Perfil.ConferenciaIDKey, Perfil.OperadorIDKey, Perfil.OperadorLiberBoletoIDKey, Perfil.PropostaBeneficiarioIDKey });
+                ////UIHelper.AuthCtrl((LinkButton)e.Row.Cells[7].Controls[0], new String[] { Perfil.AdministradorIDKey });
+                ////UIHelper.AuthWebCtrl((LinkButton)e.Row.Cells[7].Controls[0], new String[] { Perfil.AdministradorIDKey });
+                //grid_RowDataBound_Confirmacao(sender, e, 7, "Deseja realmente prosseguir com a exclusão?\\nEssa operação não poderá ser desfeita.");
+
+                //if (Usuario.Autenticado.PerfilID != Perfil.AdministradorIDKey) { gridContratos.Columns[7].Visible = false; }
+
+                //if (cancelado || inativado)
+                //{
+                //    e.Row.Cells[0].ForeColor = System.Drawing.Color.FromName("#CC0000");
+                //    ((LinkButton)e.Row.Cells[5].Controls[0]).Text = "<img src='../../images/unactive.png' title='inativo' alt='inativo' border='0'>";
+                //    //base.grid_RowDataBound_Confirmacao(sender, e, 4, "Deseja realmente ativar o contrato?");
+                //}
+                //else
+                //{
+                //    //base.grid_RowDataBound_Confirmacao(sender, e, 4, "Deseja realmente cancelar o contrato?");
+                //    ((LinkButton)e.Row.Cells[5].Controls[0]).Text = "<img src='../../images/active.png' title='ativo' alt='ativo' border='0'>";
+                //}
+            }
+        }
+        protected void gridIUGU_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gridIUGU.PageIndex = e.NewPageIndex;
+            this.montarRelatorio();
+        }
+        protected void gridIUGU_RowDataBound_Confirmacao(Object sender, GridViewRowEventArgs e, int indiceControle, String Msg)
+        {
+            //if (e.Row.RowType == DataControlRowType.DataRow)
+            //{
+            //    e.Row.Cells[indiceControle].Attributes.Add("onClick", "return confirm('" + Msg + "');");
+            //}
+        }
+
+        /****/
+
         protected void cmdToExcel_Click(Object sende, EventArgs e)
         {
             List<RelatorioFacade.AdimplenciaVO> vos = null;
             DateTime? de  = Util.CTipos.CStringToDateTimeG(txtDe.Text);
             DateTime? ate = Util.CTipos.CStringToDateTimeG(txtAte.Text);
 
-            string asspjid = "0";
-            if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
+            DataTable dt = new DataTable();
 
-            if (cboTipo.SelectedIndex == 0)
-                vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
+            if (!chkIugu.Checked)
+            {
+                string asspjid = "0";
+                if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
+
+                if (cboTipo.SelectedIndex == 0)
+                    vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
+                else
+                    vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
+
+                if (vos == null || vos.Count == 0) return;
+
+                //HttpResponse response = HttpContext.Current.Response;
+                //response.Clear();
+                //response.Charset = "";
+
+                //response.ContentType = "application/vnd.ms-excel";
+                //response.AddHeader("Content-Disposition", "attachment;filename=\"relatorio_financeiro.xls\"");
+
+                dt.Columns.Add("NumeroCartao");
+                dt.Columns.Add("CNPJ");
+                dt.Columns.Add("Titular");
+                dt.Columns.Add("AssociadoPJ");
+                dt.Columns.Add("ContratoADM");
+
+                dt.Columns.Add("Vencimento");
+                dt.Columns.Add("Parcela");
+                dt.Columns.Add("Vidas");
+
+                if (cboTipo.SelectedIndex == 0) //adimplentes
+                {
+                    dt.Columns.Add("ValorPago");
+                    dt.Columns.Add("DataPagamento");
+                }
+                else
+                {
+                    dt.Columns.Add("ValorPendente");
+                }
+
+                //dt.Columns.Add("AssociadoPJ");
+
+                foreach (var vo in vos)
+                {
+                    DataRow nova = dt.NewRow();
+
+                    nova["NumeroCartao"] = string.Concat("'", vo.ContratoNumero);
+                    nova["CNPJ"] = string.Concat("'", vo.BeneficiarioDocumento);
+                    nova["Titular"] = vo.BeneficiarioNome;
+                    nova["AssociadoPJ"] = vo.AssociadoPJ;
+                    nova["ContratoADM"] = vo.ContratoADM;
+
+                    nova["Parcela"] = vo.Parcela;
+
+                    nova["Vidas"] = vo.CobrancaVidas;
+                    nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
+
+                    if (cboTipo.SelectedIndex == 0) //adimplentes
+                    {
+                        nova["ValorPago"] = vo.CobrancaValorPago.ToString("C");
+                        nova["DataPagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
+                    }
+                    else
+                    {
+                        nova["ValorPendente"] = vo.CobrancaValorPendente.ToString("C");
+                    }
+
+                    nova["AssociadoPJ"] = vo.EstipulanteNome;
+
+                    dt.Rows.Add(nova);
+                }
+            }
             else
-                vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
+            {
+                string contratoId = "";
+                if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
 
-            if (vos == null || vos.Count == 0) return;
+                vos = RelatorioFacade.Instancia.RelatorioIUGU(contratoId, de, ate);
+
+                if (vos == null || vos.Count == 0) return;
+
+                dt.Columns.Add("NumeroCartao");
+                dt.Columns.Add("Titular");
+
+                dt.Columns.Add("Vencimento");
+                dt.Columns.Add("Pagamento");
+                dt.Columns.Add("Cobertura");
+                dt.Columns.Add("Produto");
+
+                //dt.Columns.Add("AssociadoPJ");
+
+                foreach (var vo in vos)
+                {
+                    DataRow nova = dt.NewRow();
+
+                    nova["NumeroCartao"] = string.Concat("'", vo.ContratoNumero);
+                    nova["Titular"] = vo.BeneficiarioNome;
+                    nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
+                    nova["Pagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
+
+                    nova["Cobertura"] = vo.TotalCoberturaValor.ToString("C");
+                    nova["Produto"] = vo.TotalProdutoValor.ToString("C");
+
+                    dt.Rows.Add(nova);
+                }
+            }
 
             HttpResponse response = HttpContext.Current.Response;
             response.Clear();
@@ -168,59 +351,6 @@
 
             response.ContentType = "application/vnd.ms-excel";
             response.AddHeader("Content-Disposition", "attachment;filename=\"relatorio_financeiro.xls\"");
-
-            DataTable dt = new DataTable();
-            dt.Columns.Add("NumeroCartao");
-            dt.Columns.Add("CNPJ");
-            dt.Columns.Add("Titular");
-            dt.Columns.Add("AssociadoPJ");
-            dt.Columns.Add("ContratoADM");
-
-            dt.Columns.Add("Vencimento");
-            dt.Columns.Add("Parcela");
-            dt.Columns.Add("Vidas");
-
-            if (cboTipo.SelectedIndex == 0) //adimplentes
-            {
-                dt.Columns.Add("ValorPago");
-                dt.Columns.Add("DataPagamento");
-            }
-            else
-            {
-                dt.Columns.Add("ValorPendente");
-            }
-
-            //dt.Columns.Add("AssociadoPJ");
-
-            foreach (var vo in vos)
-            {
-                DataRow nova = dt.NewRow();
-
-                nova["NumeroCartao"] = string.Concat("'", vo.ContratoNumero);
-                nova["CNPJ"] = string.Concat("'", vo.BeneficiarioDocumento);
-                nova["Titular"] = vo.BeneficiarioNome;
-                nova["AssociadoPJ"] = vo.AssociadoPJ;
-                nova["ContratoADM"] = vo.ContratoADM;
-
-                nova["Parcela"] = vo.Parcela;
-
-                nova["Vidas"]      = vo.CobrancaVidas;
-                nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
-
-                if (cboTipo.SelectedIndex == 0) //adimplentes
-                {
-                    nova["ValorPago"]     = vo.CobrancaValorPago.ToString("C");
-                    nova["DataPagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
-                }
-                else
-                {
-                    nova["ValorPendente"] = vo.CobrancaValorPendente.ToString("C");
-                }
-
-                nova["AssociadoPJ"] = vo.EstipulanteNome;
-
-                dt.Rows.Add(nova);
-            }
 
             using (StringWriter sw = new StringWriter())
             {
@@ -260,6 +390,52 @@
             lnkToExcelT.Visible = false;
             gridContratos.DataSource = null;
             gridContratos.DataBind();
+        }
+
+        protected void chkIugu_CheckedChanged(object sender, EventArgs e)
+        {
+            pnlTipo.Visible = !chkIugu.Checked;
+            pnlContrato.Visible = chkIugu.Checked;
+            pnlAssociadoPJ.Visible = !chkIugu.Checked;
+
+            pnl_Label_Contrato.Visible = chkIugu.Checked;
+            pnl_Label_Tipo_e_AssociadoPj.Visible = !chkIugu.Checked;
+
+            pnlResultadoIUGU.Visible = chkIugu.Checked;
+            pnlResultadoPadrao.Visible = !chkIugu.Checked;
+
+            if (chkIugu.Checked)
+            {
+                ////litAssociadoPJ_Contrato.Text = "Contrato:";
+                //cboTipo.SelectedIndex = 0;
+                //cboTipo.Enabled = false;
+                if (gridIUGU.Rows.Count > 0)
+                {
+                    lnkToExcel.Visible = true;
+                    lnkToExcelT.Visible = true;
+                }
+                else
+                {
+                    lnkToExcel.Visible = false;
+                    lnkToExcelT.Visible = false;
+                }
+            }
+            else
+            {
+                ////litAssociadoPJ_Contrato.Text = "Associado PJ:";
+                //cboTipo.Enabled = true;
+
+                if (gridContratos.Rows.Count > 0)
+                {
+                    lnkToExcel.Visible = true;
+                    lnkToExcelT.Visible = true;
+                }
+                else
+                {
+                    lnkToExcel.Visible = false;
+                    lnkToExcelT.Visible = false;
+                }
+            }
         }
     }
 }

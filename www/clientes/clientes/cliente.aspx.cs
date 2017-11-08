@@ -1105,6 +1105,11 @@ namespace MedProj.www.clientes.clientes
                 if(contrato.DescontoAcrescimoData > DateTime.MinValue)
                     txtDataDescontoAcrescimo.Text = contrato.DescontoAcrescimoData.ToString("dd/MM/yyyy");
             }
+
+            if (contrato.IuguHabilitado)
+                cboFormaEmissaoCobranca.SelectedIndex = 1;
+            else
+                cboFormaEmissaoCobranca.SelectedIndex = 0;
         }
 
         void SetaEstadoDosAdicionais()
@@ -2544,10 +2549,10 @@ namespace MedProj.www.clientes.clientes
                     e.Row.Cells[6].Text = "";
                     e.Row.ToolTip = "parcela negociada";
 
-                    e.Row.Cells[7].Enabled = false;
-                    e.Row.Cells[7].Controls[0].Visible = false;
-                    e.Row.Cells[9].Enabled = false;
-                    e.Row.Cells[9].Controls[0].Visible = false;
+                    e.Row.Cells[8].Enabled = false;
+                    e.Row.Cells[8].Controls[0].Visible = false;
+                    e.Row.Cells[10].Enabled = false;
+                    e.Row.Cells[10].Controls[0].Visible = false;
                 }
 
                 if (gridCobranca.DataKeys[e.Row.RowIndex][2] != null && Convert.ToString(gridCobranca.DataKeys[e.Row.RowIndex][2]).Trim() != "")
@@ -2598,8 +2603,8 @@ namespace MedProj.www.clientes.clientes
 
                             if (venctoLimite < DateTime.Now)
                             {
-                                ((ImageButton)e.Row.Cells[7].Controls[0]).Visible = false;
-                                ((ImageButton)e.Row.Cells[9].Controls[0]).Visible = false;
+                                ((ImageButton)e.Row.Cells[8].Controls[0]).Visible = false;
+                                ((ImageButton)e.Row.Cells[10].Controls[0]).Visible = false;
                             }
                         }
                     }
@@ -2612,16 +2617,16 @@ namespace MedProj.www.clientes.clientes
 
                     if (pago >= cobrado)
                     {
-                        e.Row.Cells[7].Controls[0].Visible = false;
+                        e.Row.Cells[8].Controls[0].Visible = false;
                     }
                     else
                     {
-                        ((LinkButton)e.Row.Cells[7].Controls[0]).Attributes.Add("onClick", "if(confirm('Esta ação criará uma cobrança complementar no valor de " + (cobrado - pago).ToString("C") + ".\\nConfirma a operação?')) { return true; } else { return false; }");
+                        ((LinkButton)e.Row.Cells[8].Controls[0]).Attributes.Add("onClick", "if(confirm('Esta ação criará uma cobrança complementar no valor de " + (cobrado - pago).ToString("C") + ".\\nConfirma a operação?')) { return true; } else { return false; }");
                     }
                 }
 
                 //((LinkButton)e.Row.Cells[6].Controls[0]).ToolTip = "enviar e-mail";
-                ((ImageButton)e.Row.Cells[8].Controls[0]).ToolTip = "recalcular";
+                ((ImageButton)e.Row.Cells[9].Controls[0]).ToolTip = "recalcular";
 
                 // Regra de mensagem de boleto
                 if (optCNPJ.Checked)
@@ -2632,13 +2637,13 @@ namespace MedProj.www.clientes.clientes
                         bool vencidoHa5DiasOuMais = Cobranca.VencidoHa5DiasUteis(cob.DataVencimento);
                         if (!vencidoHa5DiasOuMais)
                         {
-                            ((LinkButton)e.Row.Cells[7].Controls[0]).Attributes.Add("onClick", "if(confirm('Cobrança vencida.\\nEsta ação criará uma nova cobrança.Confirma a operação?')) { return true; } else { return false; }");
-                            ((LinkButton)e.Row.Cells[9].Controls[0]).Attributes.Add("onClick", "if(confirm('Cobrança vencida.\\nEsta ação criará uma nova cobrança.Confirma a operação?')) { return true; } else { return false; }");
+                            ((LinkButton)e.Row.Cells[8].Controls[0]).Attributes.Add("onClick", "if(confirm('Cobrança vencida.\\nEsta ação criará uma nova cobrança.Confirma a operação?')) { return true; } else { return false; }");
+                            ((LinkButton)e.Row.Cells[10].Controls[0]).Attributes.Add("onClick", "if(confirm('Cobrança vencida.\\nEsta ação criará uma nova cobrança.Confirma a operação?')) { return true; } else { return false; }");
                         }
                         else
                         {
-                            ((LinkButton)e.Row.Cells[7].Controls[0]).Attributes.Add("onClick", "alert('Cobrança vencida há 5 dias ou mais.'); return false;");
-                            ((LinkButton)e.Row.Cells[9].Controls[0]).Attributes.Add("onClick", "alert('Cobrança vencida há 5 dias ou mais.'); return false;");
+                            ((LinkButton)e.Row.Cells[8].Controls[0]).Attributes.Add("onClick", "alert('Cobrança vencida há 5 dias ou mais.'); return false;");
+                            ((LinkButton)e.Row.Cells[10].Controls[0]).Attributes.Add("onClick", "alert('Cobrança vencida há 5 dias ou mais.'); return false;");
                         }
                     }
                 }
@@ -2685,11 +2690,11 @@ namespace MedProj.www.clientes.clientes
 
                 if (cobranca.Pago) return;
 
-                if (Cobranca.VencidoHa5DiasUteis(cobranca.DataVencimento) && optCNPJ.Checked) return;
+                //if (Cobranca.VencidoHa5DiasUteis(cobranca.DataVencimento) && optCNPJ.Checked) return;
 
                 //List<CobrancaComposite> composite = null;
 
-                String naoReceber = "Não receber após o vencimento.";
+                String naoReceber = "Não receber após o vencimento."; naoReceber = "";
 
                 Int32 indice = Convert.ToInt32(e.CommandArgument);
                 DateTime vencto = CStringToDateTime(((TextBox)gridCobranca.Rows[indice].Cells[3].Controls[1]).Text);
@@ -2997,6 +3002,8 @@ namespace MedProj.www.clientes.clientes
             //    return;
             //}
 
+            string competencia = "";
+
             if (this.contratoId == null)
             {
                 Util.Geral.Alerta(this, "Você deve primeiramente salvar o contrato.");
@@ -3057,16 +3064,33 @@ namespace MedProj.www.clientes.clientes
                     Util.Geral.Alerta(this, "Informe a quantidade de vidas.");
                     return;
                 }
+
+                if (txtCompetencia.Text.Trim().Length != 6)
+                {
+                    Util.Geral.Alerta(this, "Informe a competência no formato: mês/ano");
+                    return;
+                }
+
+                competencia = txtCompetencia.Text.Substring(0, 2) + "/" + txtCompetencia.Text.Substring(2, 4);
+
+                bool valido = Cobranca.VerificaExistenciaCompetencia(this.contratoId, null, competencia);
+
+                if (!valido)
+                {
+                    Util.Geral.Alerta(this, "Já existe uma cobrança para a competência '" + competencia + "'");
+                    return;
+                }
             }
 
             #endregion
 
+            Contrato c = null;
             Cobranca cobranca = new Cobranca();
 
             var cobrancas = Cobranca.CarregarTodas(this.contratoId, false, null);
             int ultimaParcela = 1;
 
-            if (cobrancas != null && cobrancas.Count > 0) ultimaParcela = cobrancas.Max(c => c.Parcela) + 1;
+            if (cobrancas != null && cobrancas.Count > 0) ultimaParcela = cobrancas.Max(co => co.Parcela) + 1;
 
             cobranca.Parcela = ultimaParcela;
             cobranca.DataVencimento = dataVencimento;
@@ -3075,7 +3099,7 @@ namespace MedProj.www.clientes.clientes
                 cobranca.Valor = CToDecimal(txtValorCob.Text);
             else
             {
-                Contrato c = new Contrato(this.contratoId);
+                c = new Contrato(this.contratoId);
                 c.Carregar();
 
                 string erro = "";
@@ -3101,7 +3125,121 @@ namespace MedProj.www.clientes.clientes
             cobranca.Pago = false;
             cobranca.PropostaID = this.contratoId;
             cobranca.Cancelada = false;
+            cobranca.Competencia = competencia;
             cobranca.Salvar();
+
+            //IUGU
+            if (cboFormaEmissaoCobranca.SelectedIndex == 1 && optCNPJ.Checked)
+            {
+                #region IUGU =====================================
+
+                ContratoBeneficiario titular = ContratoBeneficiario.CarregarTitular(this.contratoId, null);
+
+                if (txtEmailAtendimento.Text.Trim() != "") titular.BeneficiarioEmail = txtEmailAtendimento.Text;
+
+                //TODO: Denis COMENTAr linha abaixo
+                //titular.BeneficiarioEmail = "matheussi@gmail.com";
+
+                //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                {
+                    if (string.IsNullOrEmpty(c.IuguCustumerId))
+                    {
+                        c.IuguCustumerId = proxy.ObterCustomer(
+                            null, Convert.ToString(c.ID), titular.BeneficiarioEmail, titular.BeneficiarioNome, "233478a4-d2a3-4514-b9c2-6c70f5c2e63d");
+
+                        c.AtualizarIuguCustomerId(null);
+                    }
+
+                    /**************************************************************************************/
+
+                    string msg = "";
+
+                    if (string.IsNullOrEmpty(c.IuguSubscriptionId))
+                    {
+                        bool ok = proxy.ObterSubscription(c.IuguCustumerId, "233478a4-d2a3-4514-b9c2-6c70f5c2e63d", out msg);
+
+                        if (ok)
+                        {
+                            c.IuguSubscriptionId = msg;
+                            c.AtualizarIuguSubscriptonId(null);
+                        }
+                        else
+                        {
+                            Alerta(null, this, "err", msg);
+                            return;
+                        }
+                    }
+
+                    #region valores de produtos
+
+                    var ends = Endereco.CarregarPorDono(titular.BeneficiarioID, Endereco.TipoDono.Beneficiario, null);
+
+                    if (ends == null || ends.Count == 0)
+                    {
+                        Alerta(null, this, "err", "Não foi possível localizar o endereço do beneficiário");
+                        return;
+                    }
+
+                    iugu_srv.PagadorVO vo = new iugu_srv.PagadorVO();
+                    vo.bairro = ends[0].Bairro;
+                    vo.cep = ends[0].CEP;
+                    vo.cidade = ends[0].Cidade;
+                    vo.cpfOuCnpj = titular.BeneficiarioCPF;
+                    vo.email = titular.BeneficiarioEmail;
+                    vo.estado = ends[0].UF;
+                    vo.nome = titular.BeneficiarioNome;
+                    vo.numero = ends[0].Numero;
+                    vo.pais = "Brasil";
+                    vo.rua = ends[0].Logradouro;
+
+                    #region IUGU - Itens ====================================================================
+
+                    string[][] itens = null;
+
+                    var itensProduto = Produto.CarregarItensVigentes(c.ContratoADMID, null);
+                    if (itensProduto != null)
+                    {
+                        itens = new string[1 + itensProduto.Count][];
+                        itens[0] = new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                        for (int k = 0; k < itensProduto.Count; k++)
+                        {
+                            itens[k + 1] = new string[] { itensProduto[k].Nome, itensProduto[k].Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                            cobranca.Valor += itensProduto[k].Valor;
+                        }
+
+                        ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, null);
+                    }
+                    else
+                    {
+                        itens = new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
+                    }
+                    #endregion
+
+                    #endregion
+
+                    msg = "";
+                    string boletoIdCrypto = new Util.Crypto.SecureQueryString().Encrypt(Convert.ToString(cobranca.ID));
+                    bool iuguOk = proxy.NovoBoletoAsync(c.IuguCustumerId, c.IuguSubscriptionId, cobranca.DataVencimento, itens, vo, boletoIdCrypto, out msg);
+
+                    if (iuguOk)
+                    {
+                        cobranca.Iugu_Id = msg.Split(new string[] { "___" }, StringSplitOptions.None)[1];
+                        cobranca.Iugu_Url = msg.Split(new string[] { "___" }, StringSplitOptions.None)[0];
+                        cobranca.ArquivoIDUltimoEnvio = -10;
+                        cobranca.Salvar(); //pm.Save(cobranca);
+                    }
+                    else
+                    {
+                        Alerta(null, this, "err", msg);
+                        return;
+                    }
+                }
+
+                #endregion ====================================================
+            }
 
             //List<CobrancaComposite> composite = new List<CobrancaComposite>();
 
@@ -4167,7 +4305,10 @@ namespace MedProj.www.clientes.clientes
 
             if (contrato.Tipo == (int)eTipoPessoa.Juridica)
             {
-                //
+                if (cboFormaEmissaoCobranca.SelectedIndex == 1)
+                    contrato.IuguHabilitado = true;
+                else
+                    contrato.IuguHabilitado = false;
             }
             else
             {
