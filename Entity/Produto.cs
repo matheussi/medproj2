@@ -188,11 +188,25 @@
         public static void SalvarRelacionamento(object cobrancaId, IList<ProdutoItem> itens, PersistenceManager pm)
         {
             if (itens == null || cobrancaId == null) return;
+            bool newPm = false;
+
+            if (pm == null)
+            {
+                pm = new PersistenceManager();
+                pm.UseSingleCommandInstance();
+                newPm = true;
+            }
 
             foreach (var i in itens)
             {
                 var relac = new ProdutoITEM_Cobranca { CobrancaID = cobrancaId, ProdutoItemID = i.ID, ProdutoItemValor = i.Valor };
                 pm.Save(relac);
+            }
+
+            if (newPm)
+            {
+                pm.CloseSingleCommandInstance();
+                pm.Dispose();
             }
         }
     }
