@@ -87,6 +87,7 @@
         string _senha;
         bool _importado;
 
+
         String _planoDescricao;
         string _estipulantDescricao;
         String _operadoraDescricao;
@@ -543,6 +544,28 @@
         [DBFieldInfo("contrato_numeroApolice", FieldType.Single)]
         public string Apolice { get; set; }
 
+
+        [DBFieldInfo("contrato_utilizarIugu", FieldType.Single)]
+        public bool IuguHabilitado
+        {
+            get;
+            set;
+        }
+
+        [DBFieldInfo("contrato_iugu_custumerid", FieldType.Single)]
+        public string IuguCustumerId
+        { 
+            get; 
+            set; 
+        }
+
+        [DBFieldInfo("contrato_iugu_subscriptionid", FieldType.Single)]
+        public string IuguSubscriptionId
+        {
+            get;
+            set;
+        }
+
         [Joinned("plano_descricao")]
         public String PlanoDescricao
         {
@@ -788,6 +811,20 @@
         }
 
         #endregion
+
+        public void AtualizarIuguCustomerId(PersistenceManager pm = null)
+        {
+            NonQueryHelper.Instance.ExecuteNonQuery(
+                string.Concat("update contrato set contrato_iugu_custumerid='", this.IuguCustumerId, "' where contrato_id=", this.ID),
+                pm);
+        }
+
+        public void AtualizarIuguSubscriptonId(PersistenceManager pm = null)
+        {
+            NonQueryHelper.Instance.ExecuteNonQuery(
+                string.Concat("update contrato set contrato_iugu_subscriptionid='", this.IuguSubscriptionId, "' where contrato_id=", this.ID),
+                pm);
+        }
 
         public static Contrato CarregarPorParametros(String numeroContrato, Object operadoraId, PersistenceManager pm)
         {
