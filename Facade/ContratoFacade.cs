@@ -516,6 +516,9 @@
                     contrato.Numero = novo.NumeroCompletoSemCV;
                     contrato.NumeroID = novo.ID;
                     contrato.CartaoSolicitado = false;
+
+                    if (contrato.DataVigencia == DateTime.MinValue) contrato.DataVigencia = contrato.DataAdmissao;
+
                     sessao.Update(contrato);
 
                     tran.Commit();
