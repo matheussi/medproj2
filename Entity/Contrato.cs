@@ -1299,6 +1299,37 @@
                 (query, pnames, values, typeof(Contrato));
         }
 
+        public static IList<Contrato> CarregarContratoIUGU()
+        {
+            //String whereAnd = "";
+            //if (codCobranca == null) { codCobranca = ""; }
+            //if (benficiarioNome == null) { benficiarioNome = ""; }
+            //String[] pnames = new String[3] { "@contrato_numero", "@beneficiario_nome", "@contrato_codcobranca" };
+            //String[] values = new String[3] { numero, "%" + benficiarioNome + "%", codCobranca };
+
+            //if (!String.IsNullOrEmpty(numero))
+            //{
+            //    whereAnd = " AND contrato_numero=@contrato_numero ";
+            //}
+
+            //if (!String.IsNullOrEmpty(codCobranca))
+            //{
+            //    whereAnd += " AND contrato_codcobranca=@contrato_codcobranca ";
+            //}
+
+            String query = String.Concat("contrato.*, operadora_nome, beneficiario_nome ",
+                "FROM contrato ",
+                "INNER JOIN operadora ON contrato_operadoraid=operadora_id ",
+                "INNER JOIN contratoadm ON contrato_contratoadmid=contratoadm_id ",
+                " LEFT JOIN contrato_beneficiario ON contrato_id=contratobeneficiario_contratoId AND contratobeneficiario_ativo=1 AND contratobeneficiario_tipo=", Convert.ToInt32(ContratoBeneficiario.TipoRelacao.Titular),
+                " LEFT JOIN beneficiario ON beneficiario_id=contratobeneficiario_beneficiarioId AND contratobeneficiario_ativo=1 ",
+                "WHERE contrato_utilizarIugu=1 ",
+                " ORDER BY beneficiario_nome DESC");
+
+            return LocatorHelper.Instance.ExecuteParametrizedQuery<Contrato>
+                (query, null, null, typeof(Contrato));
+        }
+
         public static IList<Contrato> CarregarPorOperadoraID(Object operadoraId, String numero, String benficiarioNome, String codCobranca, String protocolo)
         {
             String whereAnd = "";
