@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="Teste">
+        <s:complexType />
+      </s:element>
+      <s:element name="TesteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="TesteResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterCustomer">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="clienteid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="nome" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterCustomerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ObterCustomerResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterSubscription">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerid" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="token" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ObterSubscriptionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ObterSubscriptionResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="msg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="NovoBoletoAsync">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerId" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="subscriptionId" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="vencimento" type="s:dateTime" />
+            <s:element minOccurs="0" maxOccurs="1" name="str_itens" type="tns:ArrayOfArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="vo" type="tns:PagadorVO" />
+            <s:element minOccurs="0" maxOccurs="1" name="boletoid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ArrayOfString" nillable="true" type="tns:ArrayOfString" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="PagadorVO">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="rua" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="numero" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="bairro" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="cidade" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="estado" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="pais" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="cep" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="cpfOuCnpj" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="email" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="nome" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="fone" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ddd" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="NovoBoletoAsyncResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="NovoBoletoAsyncResult" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="msg" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="TesteSoapIn">
+    <wsdl:part name="parameters" element="tns:Teste" />
+  </wsdl:message>
+  <wsdl:message name="TesteSoapOut">
+    <wsdl:part name="parameters" element="tns:TesteResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObterCustomerSoapIn">
+    <wsdl:part name="parameters" element="tns:ObterCustomer" />
+  </wsdl:message>
+  <wsdl:message name="ObterCustomerSoapOut">
+    <wsdl:part name="parameters" element="tns:ObterCustomerResponse" />
+  </wsdl:message>
+  <wsdl:message name="ObterSubscriptionSoapIn">
+    <wsdl:part name="parameters" element="tns:ObterSubscription" />
+  </wsdl:message>
+  <wsdl:message name="ObterSubscriptionSoapOut">
+    <wsdl:part name="parameters" element="tns:ObterSubscriptionResponse" />
+  </wsdl:message>
+  <wsdl:message name="NovoBoletoAsyncSoapIn">
+    <wsdl:part name="parameters" element="tns:NovoBoletoAsync" />
+  </wsdl:message>
+  <wsdl:message name="NovoBoletoAsyncSoapOut">
+    <wsdl:part name="parameters" element="tns:NovoBoletoAsyncResponse" />
+  </wsdl:message>
+  <wsdl:portType name="iugu_interopSoap">
+    <wsdl:operation name="Teste">
+      <wsdl:input message="tns:TesteSoapIn" />
+      <wsdl:output message="tns:TesteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObterCustomer">
+      <wsdl:input message="tns:ObterCustomerSoapIn" />
+      <wsdl:output message="tns:ObterCustomerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ObterSubscription">
+      <wsdl:input message="tns:ObterSubscriptionSoapIn" />
+      <wsdl:output message="tns:ObterSubscriptionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="NovoBoletoAsync">
+      <wsdl:input message="tns:NovoBoletoAsyncSoapIn" />
+      <wsdl:output message="tns:NovoBoletoAsyncSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="iugu_interopSoap" type="tns:iugu_interopSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Teste">
+      <soap:operation soapAction="http://tempuri.org/Teste" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterCustomer">
+      <soap:operation soapAction="http://tempuri.org/ObterCustomer" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterSubscription">
+      <soap:operation soapAction="http://tempuri.org/ObterSubscription" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NovoBoletoAsync">
+      <soap:operation soapAction="http://tempuri.org/NovoBoletoAsync" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="iugu_interopSoap12" type="tns:iugu_interopSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="Teste">
+      <soap12:operation soapAction="http://tempuri.org/Teste" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterCustomer">
+      <soap12:operation soapAction="http://tempuri.org/ObterCustomer" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ObterSubscription">
+      <soap12:operation soapAction="http://tempuri.org/ObterSubscription" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="NovoBoletoAsync">
+      <soap12:operation soapAction="http://tempuri.org/NovoBoletoAsync" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="iugu_interop">
+    <wsdl:port name="iugu_interopSoap" binding="tns:iugu_interopSoap">
+      <soap:address location="http://localhost:26898/iugu-interop.asmx" />
+    </wsdl:port>
+    <wsdl:port name="iugu_interopSoap12" binding="tns:iugu_interopSoap12">
+      <soap12:address location="http://localhost:26898/iugu-interop.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -71,6 +71,9 @@
 
             if (!IsPostBack)
             {
+
+                //string[][] itens = new string[][] { new string[] { "Clube Azul", "100" } };
+
                 //DateTime from = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 0, 0, 0);
                 //DateTime to = from.AddMonths(1).AddDays(-1);
                 //to = new DateTime(to.Year, to.Month, to.Day, 23, 59, 59);

@@ -34,6 +34,11 @@
                 Util.UsuarioLogado.Encerrar();
                 FormsAuthentication.SignOut();
 
+                //string[][] itens = new string[2][];
+
+                //itens[0] = new string[] { "Clube Azul", "1" };
+                //itens[1] = new string[] { "Clube Azul", "2" };
+
                 //string or = "10218386464000143910800098824    0000                         000031430000000000000109                     I0100003143  15071700000000334483410000001N010101001000000000000001507170000000000000000000000000000000000000000233069899000158GALVOTECNICA LTDA EPP                   RUA SAO JOAO BATISTA                    BOTAFOGO    22270030RIO DE JANEIRO RJGALVOTECNICA LTDA EPP             15071700 000002";
 
                 //string nw = or.Substring(0, 108) + "31" + or.Substring(110);
