@@ -54,6 +54,8 @@
 
             if (!chkIugu.Checked)
             {
+                #region PADRAO 
+
                 gridContratos.Columns[5].Visible = true;
                 gridContratos.Columns[7].Visible = true;
                 gridContratos.Columns[8].Visible = true;
@@ -87,13 +89,44 @@
                 gridContratos.DataBind();
                 if (gridContratos.Rows.Count == 0)  { litAviso.Text = "Nenhum registro localizado"; }
                 else                                { litAviso.Text = ""; }
+
+                #endregion
             }
             else ///////////////////////// IUGU ///////////////////////////////////
             {
-                string contratoId = "";
-                if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
+                gridIUGU.Columns[2].Visible = true;
+                gridIUGU.Columns[3].Visible = true;
+                gridIUGU.Columns[4].Visible = true;
+                gridIUGU.Columns[5].Visible = true;
 
-                vos = RelatorioFacade.Instancia.RelatorioIUGU(contratoId, de, ate);
+                asspjid = "";
+                if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
+
+                if (cboTipo.SelectedIndex == 0)
+                {
+                    vos = RelatorioFacade.Instancia.RelatorioIUGU_PAGO(asspjid, de, ate);
+                    gridIUGU.Columns[3].HeaderText = "Data Pagto";
+                }
+                else if (cboTipo.SelectedIndex == 1)
+                {
+                    vos = RelatorioFacade.Instancia.RelatorioIUGU_PENDENTE(asspjid, de, ate);
+                    gridIUGU.Columns[3].HeaderText = "Vencimento";
+                }
+                else
+                {
+                    if (!de.HasValue || !ate.HasValue)
+                    {
+                        Util.Geral.Alerta(this, "Os campos de data são obrigatórios para este relatório.");
+                        return;
+                    }
+
+                    gridIUGU.Columns[2].Visible = false;
+                    gridIUGU.Columns[3].Visible = false;
+                    gridIUGU.Columns[4].Visible = false;
+                    gridIUGU.Columns[5].Visible = false;
+
+                    vos = RelatorioFacade.Instancia.cobrancasNaoGeradas_IUGU(asspjid, de, ate);
+                }
 
                 gridIUGU.DataSource = vos;
                 gridIUGU.DataBind();
@@ -241,6 +274,8 @@
 
             if (!chkIugu.Checked)
             {
+                #region Padrão 
+
                 string asspjid = "0";
                 if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
 
@@ -309,13 +344,23 @@
 
                     dt.Rows.Add(nova);
                 }
+
+                #endregion
             }
             else
             {
-                string contratoId = "";
-                if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
+                string asspjid = "0"; //string contratoId = "";
+                if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
+                //if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
+                string dataHeader = "Pagamento";
 
-                vos = RelatorioFacade.Instancia.RelatorioIUGU(contratoId, de, ate);
+                if (cboTipo.SelectedIndex == 0)
+                    vos = RelatorioFacade.Instancia.RelatorioIUGU_PAGO(asspjid, de, ate);
+                else
+                {
+                    vos = RelatorioFacade.Instancia.RelatorioIUGU_PENDENTE(asspjid, de, ate);
+                    dataHeader = "Vencimento";
+                }
 
                 if (vos == null || vos.Count == 0) return;
 
@@ -323,7 +368,7 @@
                 dt.Columns.Add("Titular");
 
                 dt.Columns.Add("Vencimento");
-                dt.Columns.Add("Pagamento");
+                dt.Columns.Add(dataHeader);
                 dt.Columns.Add("Cobertura");
                 dt.Columns.Add("Produto");
 
@@ -336,7 +381,9 @@
                     nova["NumeroCartao"] = string.Concat("'", vo.ContratoNumero);
                     nova["Titular"] = vo.BeneficiarioNome;
                     nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
-                    nova["Pagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
+
+                    if(vo.CobrancaDataPago != DateTime.MinValue)
+                        nova["Pagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
 
                     nova["Cobertura"] = vo.TotalCoberturaValor.ToString("C");
                     nova["Produto"] = vo.TotalProdutoValor.ToString("C");
@@ -394,12 +441,12 @@
 
         protected void chkIugu_CheckedChanged(object sender, EventArgs e)
         {
-            pnlTipo.Visible = !chkIugu.Checked;
-            pnlContrato.Visible = chkIugu.Checked;
-            pnlAssociadoPJ.Visible = !chkIugu.Checked;
+            //pnlTipo.Visible = !chkIugu.Checked;
+            //pnlContrato.Visible = chkIugu.Checked;
+            //pnlAssociadoPJ.Visible = !chkIugu.Checked;
 
-            pnl_Label_Contrato.Visible = chkIugu.Checked;
-            pnl_Label_Tipo_e_AssociadoPj.Visible = !chkIugu.Checked;
+            //pnl_Label_Contrato.Visible = chkIugu.Checked;
+            //pnl_Label_Tipo_e_AssociadoPj.Visible = !chkIugu.Checked;
 
             pnlResultadoIUGU.Visible = chkIugu.Checked;
             pnlResultadoPadrao.Visible = !chkIugu.Checked;
