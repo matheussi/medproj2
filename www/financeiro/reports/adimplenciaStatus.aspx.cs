@@ -32,15 +32,30 @@
             }
         }
 
+        void montaComboTipo(bool iugu = false)
+        {
+            cboTipo.Items.Clear();
+            cboTipo.Items.Add(new ListItem("Adimplentes", "Adimplentes"));
+            cboTipo.Items.Add(new ListItem("Inadimplentes", "Inadimplentes"));
+            cboTipo.Items.Add(new ListItem("Cobranças não geradas", "NaoGeradas"));
+
+            if (iugu)
+            {
+                cboTipo.Items.Add(new ListItem("Cobranças geradas", "Geradas"));
+            }
+
+            if (cboTipo.SelectedIndex < 0) { cboTipo.SelectedIndex = 0; }
+        }
+
         void carregarContratosIUGU()
         {
-            var lista = Contrato.CarregarContratoIUGU();
-            cboContrato.DataValueField = "Id";
-            cboContrato.DataTextField = "BeneficiarioTitularNome";
-            cboContrato.DataSource = lista;
-            cboContrato.DataBind();
+            //var lista = Contrato.CarregarContratoIUGU();
+            //cboContrato.DataValueField = "Id";
+            //cboContrato.DataTextField = "BeneficiarioTitularNome";
+            //cboContrato.DataSource = lista;
+            //cboContrato.DataBind();
 
-            cboContrato.Items.Insert(0, new ListItem("Selecione", "-1"));
+            //cboContrato.Items.Insert(0, new ListItem("Selecione", "-1"));
         }
 
         void montarRelatorio()
@@ -57,6 +72,7 @@
                 #region PADRAO 
 
                 gridContratos.Columns[5].Visible = true;
+                gridContratos.Columns[6].Visible = true;
                 gridContratos.Columns[7].Visible = true;
                 gridContratos.Columns[8].Visible = true;
                 gridContratos.Columns[9].Visible = true;
@@ -77,6 +93,7 @@
                     }
 
                     gridContratos.Columns[5].Visible = false;
+                    gridContratos.Columns[6].Visible = false;
                     gridContratos.Columns[7].Visible = false;
                     gridContratos.Columns[8].Visible = false;
                     gridContratos.Columns[9].Visible = false;
@@ -94,10 +111,14 @@
             }
             else ///////////////////////// IUGU ///////////////////////////////////
             {
-                gridIUGU.Columns[2].Visible = true;
-                gridIUGU.Columns[3].Visible = true;
                 gridIUGU.Columns[4].Visible = true;
                 gridIUGU.Columns[5].Visible = true;
+                gridIUGU.Columns[6].Visible = true;
+                gridIUGU.Columns[7].Visible = true;
+                gridIUGU.Columns[8].Visible = true;
+                gridIUGU.Columns[9].Visible = true;
+                gridIUGU.Columns[10].Visible = true;
+                gridIUGU.Columns[11].Visible = true;
 
                 asspjid = "";
                 if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
@@ -105,12 +126,20 @@
                 if (cboTipo.SelectedIndex == 0)
                 {
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_PAGO(asspjid, de, ate);
-                    gridIUGU.Columns[3].HeaderText = "Data Pagto";
+                    //gridIUGU.Columns[3].HeaderText = "Data Pagto";
+                    //gridIUGU.Columns[3].Visible = true;
                 }
                 else if (cboTipo.SelectedIndex == 1)
                 {
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_PENDENTE(asspjid, de, ate);
-                    gridIUGU.Columns[3].HeaderText = "Vencimento";
+                    //gridIUGU.Columns[3].HeaderText = "Vencimento";
+                    //gridIUGU.Columns[3].Visible = false;
+                }
+                else if (cboTipo.SelectedIndex == 3)
+                {
+                    vos = RelatorioFacade.Instancia.RelatorioIUGU_GERADAS(asspjid, de, ate);
+                    //gridIUGU.Columns[3].HeaderText = "Vencimento";
+                    //gridIUGU.Columns[3].Visible = false;
                 }
                 else
                 {
@@ -120,10 +149,14 @@
                         return;
                     }
 
-                    gridIUGU.Columns[2].Visible = false;
-                    gridIUGU.Columns[3].Visible = false;
-                    gridIUGU.Columns[4].Visible = false;
-                    gridIUGU.Columns[5].Visible = false;
+                    gridIUGU.Columns[4].Visible  = false;
+                    gridIUGU.Columns[5].Visible  = false;
+                    gridIUGU.Columns[6].Visible  = false;
+                    gridIUGU.Columns[7].Visible  = false;
+                    gridIUGU.Columns[8].Visible  = false;
+                    gridIUGU.Columns[9].Visible  = false;
+                    gridIUGU.Columns[10].Visible = false;
+                    gridIUGU.Columns[11].Visible = false;
 
                     vos = RelatorioFacade.Instancia.cobrancasNaoGeradas_IUGU(asspjid, de, ate);
                 }
@@ -349,17 +382,27 @@
             }
             else
             {
-                string asspjid = "0"; //string contratoId = "";
+                string asspjid = ""; //string contratoId = "";
                 if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
                 //if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
                 string dataHeader = "Pagamento";
 
                 if (cboTipo.SelectedIndex == 0)
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_PAGO(asspjid, de, ate);
-                else
+                else if (cboTipo.SelectedIndex == 1)
                 {
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_PENDENTE(asspjid, de, ate);
-                    dataHeader = "Vencimento";
+                    dataHeader = "";
+                }
+                else if (cboTipo.SelectedIndex == 2)
+                {
+                    vos = null;
+                    dataHeader = "";
+                }
+                else if (cboTipo.SelectedIndex == 3)
+                {
+                    vos = RelatorioFacade.Instancia.RelatorioIUGU_GERADAS(asspjid, de, ate);
+                    dataHeader = "";
                 }
 
                 if (vos == null || vos.Count == 0) return;
@@ -368,7 +411,9 @@
                 dt.Columns.Add("Titular");
 
                 dt.Columns.Add("Vencimento");
-                dt.Columns.Add(dataHeader);
+
+                if(!string.IsNullOrEmpty(dataHeader)) dt.Columns.Add(dataHeader);
+
                 dt.Columns.Add("Cobertura");
                 dt.Columns.Add("Produto");
 
@@ -483,6 +528,8 @@
                     lnkToExcelT.Visible = false;
                 }
             }
+
+            this.montaComboTipo(chkIugu.Checked);
         }
     }
 }
