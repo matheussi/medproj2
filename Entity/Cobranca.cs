@@ -1168,6 +1168,16 @@
 
         #region Load methods 
 
+        public static Cobranca CarregarPorIuguId(string iuguFaturaId, PersistenceManager pm)
+        {
+            IList<Cobranca> cobrancas = LocatorHelper.Instance.ExecuteQuery<Cobranca>("* FROM cobranca WHERE cobranca_iugu_id='" + iuguFaturaId + "'", typeof(Cobranca), pm);
+
+            if (cobrancas == null || cobrancas.Count == 0)
+                return null;
+            else
+                return cobrancas[0];
+        }
+
         public static Cobranca CarregarPor(Object propostaId, Int32 mes, Int32 ano, Cobranca.eTipo tipo, PersistenceManager pm)
         {
             IList<Cobranca> cobrancas = LocatorHelper.Instance.ExecuteQuery<Cobranca>("* FROM cobranca WHERE cobranca_propostaId=" + propostaId + " AND MONTH(cobranca_dataVencimento)=" + mes.ToString() + " AND YEAR(cobranca_dataVencimento)=" + ano.ToString() + " AND cobranca_tipo=" + Convert.ToInt32(tipo).ToString(), typeof(Cobranca), pm);

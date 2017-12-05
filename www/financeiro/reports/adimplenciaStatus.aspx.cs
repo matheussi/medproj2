@@ -314,17 +314,12 @@
 
                 if (cboTipo.SelectedIndex == 0)
                     vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
-                else
+                else if (cboTipo.SelectedIndex == 1)
                     vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
+                else
+                    vos = RelatorioFacade.Instancia.cobrancasNaoGeradas(asspjid, de, ate);
 
                 if (vos == null || vos.Count == 0) return;
-
-                //HttpResponse response = HttpContext.Current.Response;
-                //response.Clear();
-                //response.Charset = "";
-
-                //response.ContentType = "application/vnd.ms-excel";
-                //response.AddHeader("Content-Disposition", "attachment;filename=\"relatorio_financeiro.xls\"");
 
                 dt.Columns.Add("NumeroCartao");
                 dt.Columns.Add("CNPJ");
@@ -332,18 +327,21 @@
                 dt.Columns.Add("AssociadoPJ");
                 dt.Columns.Add("ContratoADM");
 
-                dt.Columns.Add("Vencimento");
-                dt.Columns.Add("Parcela");
-                dt.Columns.Add("Vidas");
+                if (cboTipo.SelectedIndex != 2)
+                {
+                    dt.Columns.Add("Vencimento");
+                    dt.Columns.Add("Parcela");
+                    dt.Columns.Add("Vidas");
 
-                if (cboTipo.SelectedIndex == 0) //adimplentes
-                {
-                    dt.Columns.Add("ValorPago");
-                    dt.Columns.Add("DataPagamento");
-                }
-                else
-                {
-                    dt.Columns.Add("ValorPendente");
+                    if (cboTipo.SelectedIndex == 0) //adimplentes
+                    {
+                        dt.Columns.Add("ValorPago");
+                        dt.Columns.Add("DataPagamento");
+                    }
+                    else
+                    {
+                        dt.Columns.Add("ValorPendente");
+                    }
                 }
 
                 //dt.Columns.Add("AssociadoPJ");
@@ -358,22 +356,25 @@
                     nova["AssociadoPJ"] = vo.AssociadoPJ;
                     nova["ContratoADM"] = vo.ContratoADM;
 
-                    nova["Parcela"] = vo.Parcela;
-
-                    nova["Vidas"] = vo.CobrancaVidas;
-                    nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
-
-                    if (cboTipo.SelectedIndex == 0) //adimplentes
+                    if (cboTipo.SelectedIndex != 2)
                     {
-                        nova["ValorPago"] = vo.CobrancaValorPago.ToString("C");
-                        nova["DataPagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
-                    }
-                    else
-                    {
-                        nova["ValorPendente"] = vo.CobrancaValorPendente.ToString("C");
-                    }
+                        nova["Parcela"] = vo.Parcela;
 
-                    nova["AssociadoPJ"] = vo.EstipulanteNome;
+                        nova["Vidas"] = vo.CobrancaVidas;
+                        nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
+
+                        if (cboTipo.SelectedIndex == 0) //adimplentes
+                        {
+                            nova["ValorPago"] = vo.CobrancaValorPago.ToString("C");
+                            nova["DataPagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
+                        }
+                        else
+                        {
+                            nova["ValorPendente"] = vo.CobrancaValorPendente.ToString("C");
+                        }
+
+                        nova["AssociadoPJ"] = vo.EstipulanteNome;
+                    }
 
                     dt.Rows.Add(nova);
                 }
@@ -385,53 +386,68 @@
                 string asspjid = ""; //string contratoId = "";
                 if (cboAssociadoPJ.SelectedIndex > 0) asspjid = cboAssociadoPJ.SelectedValue;
                 //if (cboContrato.SelectedIndex > 0) contratoId = cboContrato.SelectedValue;
-                string dataHeader = "Pagamento";
 
                 if (cboTipo.SelectedIndex == 0)
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_PAGO(asspjid, de, ate);
                 else if (cboTipo.SelectedIndex == 1)
                 {
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_PENDENTE(asspjid, de, ate);
-                    dataHeader = "";
                 }
                 else if (cboTipo.SelectedIndex == 2)
                 {
                     vos = null;
-                    dataHeader = "";
                 }
                 else if (cboTipo.SelectedIndex == 3)
                 {
                     vos = RelatorioFacade.Instancia.RelatorioIUGU_GERADAS(asspjid, de, ate);
-                    dataHeader = "";
                 }
 
                 if (vos == null || vos.Count == 0) return;
 
                 dt.Columns.Add("NumeroCartao");
+                dt.Columns.Add("CNPJ");
                 dt.Columns.Add("Titular");
+                dt.Columns.Add("AssociadoPJ");
+                dt.Columns.Add("ContratoAdm");
 
-                dt.Columns.Add("Vencimento");
+                if (cboTipo.SelectedIndex != 2) //diferente de cobrancas nao geradas
+                {
+                    dt.Columns.Add("Vencimento");
+                    dt.Columns.Add("Parcela");
+                    dt.Columns.Add("Vidas");
+                    dt.Columns.Add("Valor");
+                    dt.Columns.Add("DataPagto");
+                    dt.Columns.Add("ValorPagto");
 
-                if(!string.IsNullOrEmpty(dataHeader)) dt.Columns.Add(dataHeader);
-
-                dt.Columns.Add("Cobertura");
-                dt.Columns.Add("Produto");
-
-                //dt.Columns.Add("AssociadoPJ");
+                    dt.Columns.Add("Cobertura");
+                    dt.Columns.Add("Produto");
+                }
 
                 foreach (var vo in vos)
                 {
                     DataRow nova = dt.NewRow();
 
                     nova["NumeroCartao"] = string.Concat("'", vo.ContratoNumero);
+                    nova["CNPJ"] = string.Concat("'", vo.ContratoCNPJ);
                     nova["Titular"] = vo.BeneficiarioNome;
-                    nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
+                    nova["AssociadoPJ"] = vo.AssociadoPJ;
+                    nova["ContratoAdm"] = vo.ContratoADM;
 
-                    if(vo.CobrancaDataPago != DateTime.MinValue)
-                        nova["Pagamento"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
+                    if (cboTipo.SelectedIndex != 2) //diferente de cobrancas nao geradas
+                    {
+                        nova["Vencimento"] = vo.CobrancaVencimento.ToString("dd/MM/yyyy");
+                        nova["Parcela"] = vo.Parcela.ToString();
+                        nova["Vidas"] = vo.CobrancaVidas.ToString();
+                        nova["Valor"] = vo.CobrancaValorPendente.ToString("N2");
 
-                    nova["Cobertura"] = vo.TotalCoberturaValor.ToString("C");
-                    nova["Produto"] = vo.TotalProdutoValor.ToString("C");
+                        if (vo.CobrancaDataPago != DateTime.MinValue)
+                            nova["DataPagto"] = vo.CobrancaDataPago.ToString("dd/MM/yyyy");
+
+                        nova["ValorPagto"] = vo.CobrancaValorPago.ToString("N2");
+
+                        nova["Cobertura"] = vo.TotalCoberturaValor.ToString("C");
+                        nova["Produto"] = vo.TotalProdutoValor.ToString("C");
+                    }
 
                     dt.Rows.Add(nova);
                 }

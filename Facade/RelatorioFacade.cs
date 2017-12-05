@@ -609,6 +609,9 @@
             public DateTime CobrancaDataPago { get; set; }
 
             //Inadimplentes
+            /// <summary>
+            /// Valor cobrado
+            /// </summary>
             public decimal CobrancaValorPendente { get; set; }
 
             //IUGU

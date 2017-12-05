@@ -185,7 +185,14 @@
             set;
         }
 
-        public static void SalvarRelacionamento(object cobrancaId, IList<ProdutoItem> itens, PersistenceManager pm)
+        [DBFieldInfo("produtoitemcobranca_qtvidas", FieldType.Single)]
+        public decimal ProdutoItemQTDVidas
+        {
+            get;
+            set;
+        }
+
+        public static void SalvarRelacionamento(object cobrancaId, IList<ProdutoItem> itens, int qtdVidas, PersistenceManager pm)
         {
             if (itens == null || cobrancaId == null) return;
             bool newPm = false;
@@ -199,7 +206,14 @@
 
             foreach (var i in itens)
             {
-                var relac = new ProdutoITEM_Cobranca { CobrancaID = cobrancaId, ProdutoItemID = i.ID, ProdutoItemValor = i.Valor };
+                var relac = new ProdutoITEM_Cobranca 
+                { 
+                    CobrancaID = cobrancaId, 
+                    ProdutoItemID = i.ID, 
+                    ProdutoItemValor = i.Valor,
+                    ProdutoItemQTDVidas = qtdVidas
+                };
+
                 pm.Save(relac);
             }
 
