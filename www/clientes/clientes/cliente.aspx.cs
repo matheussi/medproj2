@@ -3102,6 +3102,12 @@ namespace MedProj.www.clientes.clientes
                 c = new Contrato(this.contratoId);
                 c.Carregar();
 
+                if (c.Inativo || c.Cancelado)
+                {
+                    Util.Geral.Alerta(this, "Contrato cancelado ou inativo.");
+                    return;
+                }
+
                 string erro = "";
 
                 cobranca.Valor = Convert.ToDecimal(vidas) * Cobranca.calulaValorPorVida(null, c, dataVencimento.ToString("dd/MM/yyyy"), out erro);
@@ -3113,7 +3119,15 @@ namespace MedProj.www.clientes.clientes
                 }
 
                 cobranca.Valor += Cobranca.calculaAcrescimoDeContrato(null, c, null, false);
-                Cobranca.calculaConfiguracaoValorAdicional(null, c, ref cobranca);
+
+                if (cboFormaEmissaoCobranca.SelectedIndex == 1 && optCNPJ.Checked)
+                {
+                    //IUGU - por hora, não fazer nada
+                }
+                else
+                {
+                    Cobranca.calculaConfiguracaoValorAdicional(null, c, ref cobranca);
+                }
 
                 cobranca.QtdVidas = vidas;
             }
@@ -3195,27 +3209,50 @@ namespace MedProj.www.clientes.clientes
 
                     #region IUGU - Itens ====================================================================
 
-                    string[][] itens = null;
+                    //string[][] itens = null;
+
+                    //var itensProduto = Produto.CarregarItensVigentes(c.ContratoADMID, null);
+                    //if (itensProduto != null)
+                    //{
+                    //    itens = new string[1 + itensProduto.Count][];
+                    //    itens[0] = new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                    //    for (int k = 0; k < itensProduto.Count; k++)
+                    //    {
+                    //        itens[k + 1] = new string[] { itensProduto[k].Nome, itensProduto[k].Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                    //        cobranca.Valor += itensProduto[k].Valor;
+                    //    }
+
+                    //    ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, null);
+                    //}
+                    //else
+                    //{
+                    //    itens = new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
+                    //}
+                    #endregion
+
+                    #region IUGU - Itens ====================================================================
+
+                    string[][] itens = null; 
 
                     var itensProduto = Produto.CarregarItensVigentes(c.ContratoADMID, null);
                     if (itensProduto != null)
                     {
-                        itens = new string[1 + itensProduto.Count][];
-                        itens[0] = new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") };
-
                         for (int k = 0; k < itensProduto.Count; k++)
                         {
-                            itens[k + 1] = new string[] { itensProduto[k].Nome, itensProduto[k].Valor.ToString("N2").Replace(".", "").Replace(",", "") };
-
-                            cobranca.Valor += itensProduto[k].Valor;
+                            cobranca.Valor += (itensProduto[k].Valor * Convert.ToDecimal(cobranca.QtdVidas));
                         }
 
-                        ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, null);
+                        ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, cobranca.QtdVidas, null);
                     }
-                    else
+
+                    itens = new string[][] 
                     {
-                        itens = new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
-                    }
+                        new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } ,
+                        new string[] { "Custo de cobrança", System.Configuration.ConfigurationManager.AppSettings["iugu_taxa"] } 
+                    };
+
                     #endregion
 
                     #endregion
