@@ -34,6 +34,7 @@
             base.References(i => i.Operadora).Column("importacao_operadoraId").Not.Nullable();
             base.References(i => i.Contrato).Column("importacao_contratoAdmId").Not.Nullable();
             base.References(i => i.Plano).Column("importacao_planoId").Not.Nullable();
+            base.References(i => i.ContratoPjId).Column("importacao_contratoPjId").Nullable();
 
             base.Map(i => i.NaoCriticarCPF).Column("importacao_naocriticarcpf").Not.Nullable();
         }
