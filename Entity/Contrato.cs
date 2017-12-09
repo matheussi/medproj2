@@ -956,6 +956,34 @@
                 (query, pnames, values, typeof(Contrato), pm);
         }
 
+        public static IList<Contrato> CarregarPorParametros(String benficiarioNome)
+        {
+            if (string.IsNullOrEmpty(benficiarioNome)) benficiarioNome = "";
+
+            //String[] values = null;
+            //String[] pnames = null;
+
+            //pnames = new String[1] { "@beneficiario_nome" };
+            //values = new String[1] { "%" + benficiarioNome + "%" };
+
+            //String query = String.Concat("contrato_id,contrato_numero, beneficiario_nome ",
+            //    "FROM contrato ",
+            //    " inner JOIN contrato_beneficiario ON contrato_id=contratobeneficiario_contratoId AND contratobeneficiario_ativo=1 AND contratobeneficiario_tipo=", Convert.ToInt32(ContratoBeneficiario.TipoRelacao.Titular),
+            //    " inner JOIN beneficiario ON beneficiario_id=contratobeneficiario_beneficiarioId AND contratobeneficiario_ativo=1 ",
+            //    "WHERE beneficiario_nome LIKE @beneficiario_nome or contrato_numero like @beneficiario_nome ", 
+            //    " ORDER BY beneficiario_nome ");
+
+
+            String query = String.Concat("contrato_id,contrato_numero, beneficiario_nome ",
+                "FROM contrato ",
+                " inner JOIN contrato_beneficiario ON contrato_id=contratobeneficiario_contratoId AND contratobeneficiario_ativo=1 AND contratobeneficiario_tipo=", Convert.ToInt32(ContratoBeneficiario.TipoRelacao.Titular),
+                " inner JOIN beneficiario ON beneficiario_id=contratobeneficiario_beneficiarioId AND contratobeneficiario_ativo=1 ",
+                "WHERE beneficiario_nome LIKE '%", benficiarioNome, "%'  or contrato_numero like '%", benficiarioNome, "%'",
+                " ORDER BY beneficiario_nome ");
+
+            return LocatorHelper.Instance.ExecuteQuery<Contrato>(query, typeof(Contrato));
+        }
+
         public static IList<Contrato> CarregarPorParametros(String numero, String benficiarioNome)
         {
             String whereAnd = "";

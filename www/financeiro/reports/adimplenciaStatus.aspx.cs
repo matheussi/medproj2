@@ -39,10 +39,10 @@
             cboTipo.Items.Add(new ListItem("Inadimplentes", "Inadimplentes"));
             cboTipo.Items.Add(new ListItem("Cobranças não geradas", "NaoGeradas"));
 
-            if (iugu)
-            {
+            //if (iugu)
+            //{
                 cboTipo.Items.Add(new ListItem("Cobranças geradas", "Geradas"));
-            }
+            //}
 
             if (cboTipo.SelectedIndex < 0) { cboTipo.SelectedIndex = 0; }
         }
@@ -84,6 +84,8 @@
                     vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
                 else if (cboTipo.SelectedIndex == 1)
                     vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
+                else if (cboTipo.SelectedIndex == 3) //cobrancas geradas
+                    vos = RelatorioFacade.Instancia.Relatorio_GERADAS(asspjid, de, ate);
                 else
                 {
                     if (!de.HasValue || !ate.HasValue)
@@ -316,6 +318,8 @@
                     vos = RelatorioFacade.Instancia.RelatorioAdimplentes(asspjid, de, ate);
                 else if (cboTipo.SelectedIndex == 1)
                     vos = RelatorioFacade.Instancia.RelatorioInadimplentes(asspjid, de, ate);
+                else if (cboTipo.SelectedIndex == 3)
+                    vos = RelatorioFacade.Instancia.Relatorio_GERADAS(asspjid, de, ate);
                 else
                     vos = RelatorioFacade.Instancia.cobrancasNaoGeradas(asspjid, de, ate);
 

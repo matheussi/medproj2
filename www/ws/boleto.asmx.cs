@@ -1861,232 +1861,6 @@ Dornelas
 
             return retorno("ok", retornar, true);
         }
-        string geraPdf(string modelo, DataRow rowDadosBasicos, DataRowCollection rowDadosCobertura)
-        {
-            #region text
-
-            //Estrategia para negrito: deixar com espaços em branco os textos em negrito, e depois posicionar o texto
-            //negritado "na mao"
-
-            string text = string.Concat("Agora você é um(a) associado(a) Clube Azul Vida saudável, um cartão de benefícios na área da saúde e bem estar.",
-                "Você terá vantagens e serviços diversos, tais como ",
-                "rede conveniada a baixo custo, descontos em farmácias, seguros diversos, entre ",
-                "outros. A relação de benefícios varia conforme a sua contratação.\n\n",
-                "Acima você encontra o número do seu cartão e sua senha de acesso, que pode ser ",
-                "trocada através da internet. Ela é sua assinatura eletrônica para autorizar o débito dos ",
-                "procedimentos em cada prestador, portanto, guarde-a sob sigilo. Atenção, a inserção ",
-                "incorreta no sistema por três vezes consecutivas bloqueará o seu cartão, ",
-                "inviabilizando a sua utilização.\n\n",
-                "Para utilizar a nossa rede afiliada de médicos, dentistas e laboratórios, é necessário ",
-                "ter créditos no seu cartão para pagamento dos procedimentos. Você poderá carregar ",
-                "créditos no seu cartão através de pagamento de boletos de recarga.\n\n",
-                "Para obter mais informações a respeito dos serviços que estão disponíveis no seu ",
-                "cartão, e sobre os processos e prazos de disponibilidade dos créditos acesse o site ",
-                "www.clubeazul.org.br ou entre em contato com nosso Call Center 3916-7277 (Rio ",
-                "de Janeiro) ou 4020-1610 (outras localidades) de segunda a sexta das 09:00h às ",
-                "17:00h.");
-
-            #endregion
-
-            string nome             = toString(rowDadosBasicos["beneficiario_nome"]);
-            string cpf              = toString(rowDadosBasicos["beneficiario_cpf"]);
-
-            if (!string.IsNullOrWhiteSpace(cpf))
-                cpf = Convert.ToUInt64(cpf).ToString(@"000\.000\.000\-00");
-
-            string nascimento = toDate(rowDadosBasicos["beneficiario_dataNascimento"]).ToString("dd/MM/yyyy");
-
-            string senha            = toString(rowDadosBasicos["contrato_senha"]);
-            string ramo             = toString(rowDadosBasicos["contrato_ramo"]);
-            string apolice          = toString(rowDadosBasicos["contrato_numeroApolice"]);
-            string certificado      = toString(rowDadosBasicos["contrato_numeroMatricula"]);
-            string vigencia         = toDate(rowDadosBasicos["contrato_vigencia"]).ToString("dd/MM/yyyy"); //inicio do risco
-            string vigenciaFim      = toDate(rowDadosBasicos["contrato_vigencia"]).AddYears(1).ToString("dd/MM/yyyy"); //Fim Vigência
-            string estipulanteNome  = toString(rowDadosBasicos["estipulante_descricao"]);
-            string emissao          = toDate(rowDadosBasicos["beneficiario_data"]).ToString("dd/MM/yyyy");
-            string contratoId       = toString(rowDadosBasicos["contrato_id"]);
-            string produto          = toString(rowDadosBasicos["contrato_produto"]);
-
-            string numero           = toString(rowDadosBasicos["contrato_numero"]);
-            numero                  = Convert.ToUInt64(numero).ToString(@"0000\.0000\.0000\.0000");
-
-            string caminhoPdfs      = ConfigurationManager.AppSettings["appPdFCarteiraCaminhoFisico"];
-            string pdfOriginal      = "";
-
-            int indicePagina;
-            if(modelo.ToLower() == "capemisa")
-                indicePagina = 0; //pdfOriginal = caminhoPdfs + "mod-capemisa.pdf";
-            else
-                indicePagina = 1; // pdfOriginal = caminhoPdfs + "mod-generalli.pdf";
-
-            pdfOriginal = caminhoPdfs + "mod.pdf";
-
-            string pdfNome          = string.Concat(new Guid(Convert.ToInt32(contratoId), 1, 2, 3, 4, 5, 6, 7, 8, 9, 0), ".pdf");
-            string pdfNovo          = string.Concat(caminhoPdfs, pdfNome);
-
-            PdfSharp.Pdf.PdfDocument PDFDoc    = PdfSharp.Pdf.IO.PdfReader.Open(pdfOriginal, PdfDocumentOpenMode.Import);
-            PdfSharp.Pdf.PdfDocument PDFNewDoc = new PdfSharp.Pdf.PdfDocument();
-            //for (int Pg = 0; Pg < PDFDoc.Pages.Count; Pg++)
-            //{
-            //    PDFNewDoc.AddPage(PDFDoc.Pages[Pg]);
-            //}
-
-            PDFNewDoc.AddPage(PDFDoc.Pages[indicePagina]);
-
-            //Atualizando
-            XFont font = new XFont("Arial Rounded MT Bold", 7, XFontStyle.Regular);
-            XFont fontTexto = new XFont("DIN-Regular", 10, XFontStyle.Regular);
-            XFont fCartaoNome = new XFont("Calibri", 9, XFontStyle.Bold);
-            XFont fArial7 = new XFont("Arial", 7, XFontStyle.Regular);
-            XFont fArialBold7 = new XFont("Arial", 7, XFontStyle.Bold);
-
-            PdfPage page = PDFNewDoc.Pages[0];
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-
-            CultureInfo cinfo = new CultureInfo("pt-Br");
-
-            if (modelo == "capemisa")
-            {
-                #region capemisa
-
-                //Cabecalho
-                gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Black, 208, 43);
-                gfx.DrawString(numero, font, XBrushes.Black, 336, 43);
-                gfx.DrawString(senha, font, XBrushes.Black, 485, 43);
-
-                //Texto
-                XRect rect = new XRect(42, 65, 505, 200);
-                gfx.DrawRectangle(XPens.Transparent, XBrushes.Transparent, rect);
-                XTextFormatter tf = new XTextFormatter(gfx);
-                tf.Alignment = XParagraphAlignment.Justify;
-                tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
-
-                gfx.DrawString(certificado, font, XBrushes.Black, 371, 297);
-                gfx.DrawString(ramo, font, XBrushes.Black, 316, 321);
-                gfx.DrawString(apolice, font, XBrushes.Black, 374, 321);
-
-                gfx.DrawString(nome, font, XBrushes.Black, 42, 345);
-                gfx.DrawString(estipulanteNome, font, XBrushes.Black, 376, 345);
-
-                gfx.DrawString(cpf, font, XBrushes.Black, 42, 371);
-                gfx.DrawString(nascimento, font, XBrushes.Black, 175, 371);
-                gfx.DrawString(vigencia, font, XBrushes.Black, 286, 371);
-                gfx.DrawString(vigenciaFim, font, XBrushes.Black, 400, 371);
-                gfx.DrawString(emissao, font, XBrushes.Black, 490, 371);
-
-                for (int i = 0; i < rowDadosCobertura.Count; i++)
-                {
-                    if (toString(rowDadosCobertura[i][0]).Length <= 45)
-                        gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 42, 395 + (i * 10)); //horizontal - vertical
-                    else
-                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 45), font, XBrushes.Black, 42, 395 + (i * 10));
-
-                    gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 177, 395 + (i * 10));
-
-                    #region comentado 
-
-                    //if (toString(rowDadosCobertura[i][0]).Length <= 45)
-                    //    gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 82, 424 + (i * 10)); //horizontal - vertical
-                    //else
-                    //    gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 45), font, XBrushes.Black, 82, 424 + (i * 10));
-
-                    //gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 219, 424 + (i * 10));
-                    #endregion
-                }
-
-                //CARTAO
-                string via = numero.Substring(14, 1).PadLeft(3, '0');
-                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 715);
-                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 730);
-                gfx.DrawString(produto.ToUpper(), fArialBold7, XBrushes.Black, 306, 760);
-                gfx.DrawString("Via " + via, fArial7, XBrushes.Black, 385, 760);
-                gfx.DrawString("Validade consulte nosso site", fArial7, XBrushes.Black, 306, 780);
-
-                #endregion
-            }
-            else
-            {
-                #region generali 
-
-                gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Black, 208, 43);
-                gfx.DrawString(numero, font, XBrushes.Black, 336, 43);
-                gfx.DrawString(senha, font, XBrushes.Black, 485, 43);
-
-                //texto
-                XRect rect = new XRect(42, 65, 505, 200);
-                gfx.DrawRectangle(XPens.Transparent, XBrushes.Transparent, rect);
-                XTextFormatter tf = new XTextFormatter(gfx);
-                tf.Alignment = XParagraphAlignment.Justify;
-                tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
-
-                gfx.DrawString(certificado, font, XBrushes.Black, 371, 286);
-                gfx.DrawString(ramo, font, XBrushes.Black, 396, 315);
-                gfx.DrawString(apolice, font, XBrushes.Black, 479, 315);
-
-                gfx.DrawString(nome.ToUpper(), font, XBrushes.Black, 42, 339);
-                gfx.DrawString(estipulanteNome, font, XBrushes.Black, 396, 339);
-
-                gfx.DrawString(cpf, font, XBrushes.Black, 42, 363);
-                gfx.DrawString(nascimento, font, XBrushes.Black, 175, 363);
-                gfx.DrawString(vigencia, font, XBrushes.Black, 286, 363);
-                gfx.DrawString(vigenciaFim, font, XBrushes.Black, 400, 363);
-                gfx.DrawString(emissao, font, XBrushes.Black, 490, 363);
-
-                //dados de cobertura
-                for (int i = 0; i < rowDadosCobertura.Count; i++)
-                {
-                    if (toString(rowDadosCobertura[i][0]).Length <= 62)
-                        gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 42, 395 + (i * 10)); //horizontal - vertical
-                    else
-                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 62), font, XBrushes.Black, 42, 395 + (i * 10));
-
-                    gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 193, 395 + (i * 10));
-                }
-
-                //cartao
-                string via = numero.Substring(14, 1).PadLeft(3, '0');
-                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 715);
-                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 730);
-                gfx.DrawString(produto.ToUpper(), fArialBold7, XBrushes.Black, 306, 760);
-                gfx.DrawString("Via " + via, fArial7, XBrushes.Black, 385, 760);
-                gfx.DrawString("Validade consulte nosso site", fArial7, XBrushes.Black, 306, 780);
-
-                #region comentado 
-
-                //gfx.DrawString(certificado, font, XBrushes.Black, 415, 325);
-                //gfx.DrawString(ramo, font, XBrushes.Black, 452, 354);
-                //gfx.DrawString(apolice, fontMenor, XBrushes.Black, 517, 354);
-
-                //gfx.DrawString(nome, font, XBrushes.Black, 85, 377);
-                //gfx.DrawString(estipulanteNome, font, XBrushes.Black, 436, 377);
-
-                //gfx.DrawString(cpf, font, XBrushes.Black, 83, 401);
-                //gfx.DrawString(nascimento, font, XBrushes.Black, 213, 401);
-                //gfx.DrawString(vigencia, font, XBrushes.Black, 313, 401);
-                //gfx.DrawString(vigenciaFim, font, XBrushes.Black, 430, 401);
-                //gfx.DrawString(emissao, font, XBrushes.Black, 530, 401);
-
-                //for (int i = 0; i < rowDadosCobertura.Count; i++)
-                //{
-                //    if (toString(rowDadosCobertura[i][0]).Length <= 62)
-                //        gfx.DrawString(toString(rowDadosCobertura[i][0]), fontMenor, XBrushes.Black, 83, 433 + (i * 10)); //horizontal - vertical
-                //    else
-                //        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 62), fontMenor, XBrushes.Black, 83, 433 + (i * 10));
-
-                //    gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), fontMenor, XBrushes.Black, 234, 433 + (i * 10));
-                //}
-                #endregion
-
-                #endregion
-            }
-
-            if (File.Exists(pdfNovo)) File.Delete(pdfNovo);
-
-            PDFNewDoc.Save(pdfNovo);
-
-            return string.Concat(ConfigurationManager.AppSettings["appUrl"], "files/pdfcarteira/", pdfNome);
-        }
-
         [Obsolete()]
         string geraCartao(string contratoId, string numero, string nome, string estipulnate)
         {
@@ -2169,6 +1943,12 @@ Dornelas
                     if (idContrato == "0")
                     {
                         return retorno("erro", msg);
+                    }
+                    else if (idContrato == "-1")
+                    {
+                        return retorno("erro", msg); //beneficiario ja existente
+
+                        //todo: carregar o id de contrato e prosseguir?
                     }
                 }
             }
@@ -2289,6 +2069,76 @@ Dornelas
             return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
         }
 
+        [WebMethod()]
+        public string GerarCartaoParaBeneficiario(string idBeneficiario, string modelo, string token)
+        {
+            #region validacoes
+
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+
+            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generalli"))
+            {
+                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generalli'.");
+            }
+
+            if (string.IsNullOrEmpty(idBeneficiario))
+            {
+                return retorno("erro", "Parâmetro idBeneficiario não enviado");
+            }
+
+            #endregion
+
+            string qry = "", pdfGerado = "", cartaoGerado = "";
+            StringBuilder sb = new StringBuilder();
+            System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                pm.UseSingleCommandInstance();
+
+                //Dados básicos
+                qry = string.Concat(
+                    "select beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contrato_senha, contrato_produto from beneficiario ",
+                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
+                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
+                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
+                    "   inner join operadora on contrato_operadoraId=operadora_id ",
+                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
+                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+                    " where ",
+//                  "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+                    "   beneficiario_id=", idBeneficiario,
+                    " order by beneficiario_nome ");
+
+                DataTable dt = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+
+                if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nenhum registro localizado.", true);
+                }
+
+                qry = string.Concat("select itemcobertura_descricao, itemcobertura_valor, status_",
+                    " from tabela_cobertura_item ",
+                    "   inner join tabela_cobertura on tabela_cobertura_item.itemcobertura_tabelaId = tabela_cobertura.tabela_id ",
+                    " where status_='Contratado' and tabela_contratoAdmId = ", dt.Rows[0]["contratoadm_id"]);
+
+                DataTable dtCobertura = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+                pm.CloseSingleCommandInstance();
+
+                if (dtCobertura == null || dtCobertura.Rows == null || dtCobertura.Rows.Count == 0)
+                {
+                    return retornoPDF("erro", "", "", "Nenhuma cobertura localizada.", true);
+                }
+
+                pdfGerado = geraPdf(modelo, dt.Rows[0], dtCobertura.Rows);
+
+                cartaoGerado = ""; // geraCartao(toString(dt.Rows[0]["contrato_id"]), toString(dt.Rows[0]["contrato_numero"]), toString(dt.Rows[0]["beneficiario_nome"]), toString(dt.Rows[0]["estipulante_descricao"]));
+            }
+
+            return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
+        }
+
         long Importar(CartaoDTO dto, out string mensagem)
         {
             mensagem = "";
@@ -2339,7 +2189,7 @@ Dornelas
                         {
                             mensagem = "Beneficiário já cadastrado";
                             trans.Rollback();
-                            return 0;
+                            return -1;
                         }
 
                         #region salva beneficiario
@@ -2542,68 +2392,339 @@ Dornelas
             }
         }
 
-        private static NHibernate.Cfg.Configuration _config = null;
-        private static Hashtable _allFactories = new Hashtable();
-
-        protected static ISession ObterSessao()
+        string geraPdf(string modelo, DataRow rowDadosBasicos, DataRowCollection rowDadosCobertura)
         {
-            string chave = "1";
-            ISessionFactory _sessionFactory = null;
+            #region text
 
-            if (!_allFactories.ContainsKey(chave))
+            //Estrategia para negrito: deixar com espaços em branco os textos em negrito, e depois posicionar o texto
+            //negritado "na mao"
+
+            string text = string.Concat("Agora você é um(a) associado(a) Clube Azul Vida saudável, um cartão de benefícios na área da saúde e bem estar.",
+                "Você terá vantagens e serviços diversos, tais como ",
+                "rede conveniada a baixo custo, descontos em farmácias, seguros diversos, entre ",
+                "outros. A relação de benefícios varia conforme a sua contratação.\n\n",
+                "Acima você encontra o número do seu cartão e sua senha de acesso, que pode ser ",
+                "trocada através da internet. Ela é sua assinatura eletrônica para autorizar o débito dos ",
+                "procedimentos em cada prestador, portanto, guarde-a sob sigilo. Atenção, a inserção ",
+                "incorreta no sistema por três vezes consecutivas bloqueará o seu cartão, ",
+                "inviabilizando a sua utilização.\n\n",
+                "Para utilizar a nossa rede afiliada de médicos, dentistas e laboratórios, é necessário ",
+                "ter créditos no seu cartão para pagamento dos procedimentos. Você poderá carregar ",
+                "créditos no seu cartão através de pagamento de boletos de recarga.\n\n",
+                "Para obter mais informações a respeito dos serviços que estão disponíveis no seu ",
+                "cartão, e sobre os processos e prazos de disponibilidade dos créditos acesse o site ",
+                "www.clubeazul.org.br ou entre em contato com nosso Call Center 3916-7277 (Rio ",
+                "de Janeiro) ou 4020-1610 (outras localidades) de segunda a sexta das 09:00h às ",
+                "17:00h.");
+
+            #endregion
+
+            string nome = toString(rowDadosBasicos["beneficiario_nome"]);
+            string cpf = toString(rowDadosBasicos["beneficiario_cpf"]);
+
+            if (!string.IsNullOrWhiteSpace(cpf))
+                cpf = Convert.ToUInt64(cpf).ToString(@"000\.000\.000\-00");
+
+            string nascimento = toDate(rowDadosBasicos["beneficiario_dataNascimento"]).ToString("dd/MM/yyyy");
+
+            string senha = toString(rowDadosBasicos["contrato_senha"]);
+            string ramo = toString(rowDadosBasicos["contrato_ramo"]);
+            string apolice = toString(rowDadosBasicos["contrato_numeroApolice"]);
+            string certificado = toString(rowDadosBasicos["contrato_numeroMatricula"]);
+            string vigencia = toDate(rowDadosBasicos["contrato_vigencia"]).ToString("dd/MM/yyyy"); //inicio do risco
+            string vigenciaFim = toDate(rowDadosBasicos["contrato_vigencia"]).AddYears(1).ToString("dd/MM/yyyy"); //Fim Vigência
+            string estipulanteNome = toString(rowDadosBasicos["estipulante_descricao"]);
+            string emissao = toDate(rowDadosBasicos["beneficiario_data"]).ToString("dd/MM/yyyy");
+            string contratoId = toString(rowDadosBasicos["contrato_id"]);
+            string produto = toString(rowDadosBasicos["contrato_produto"]);
+
+            string numero = toString(rowDadosBasicos["contrato_numero"]);
+            numero = Convert.ToUInt64(numero).ToString(@"0000\.0000\.0000\.0000");
+
+            string caminhoPdfs = ConfigurationManager.AppSettings["appPdFCarteiraCaminhoFisico"];
+            string pdfOriginal = "";
+
+            int indicePagina;
+            if (modelo.ToLower() == "capemisa")
+                indicePagina = 0; //pdfOriginal = caminhoPdfs + "mod-capemisa.pdf";
+            else
+                indicePagina = 1; // pdfOriginal = caminhoPdfs + "mod-generalli.pdf";
+
+            pdfOriginal = caminhoPdfs + "mod.pdf";
+
+            string pdfNome = string.Concat(new Guid(Convert.ToInt32(contratoId), 1, 2, 3, 4, 5, 6, 7, 8, 9, 0), ".pdf");
+            string pdfNovo = string.Concat(caminhoPdfs, pdfNome);
+
+            PdfSharp.Pdf.PdfDocument PDFDoc = PdfSharp.Pdf.IO.PdfReader.Open(pdfOriginal, PdfDocumentOpenMode.Import);
+            PdfSharp.Pdf.PdfDocument PDFNewDoc = new PdfSharp.Pdf.PdfDocument();
+            //for (int Pg = 0; Pg < PDFDoc.Pages.Count; Pg++)
+            //{
+            //    PDFNewDoc.AddPage(PDFDoc.Pages[Pg]);
+            //}
+
+            PDFNewDoc.AddPage(PDFDoc.Pages[indicePagina]);
+
+            //Atualizando
+            XFont font = new XFont("Arial Rounded MT Bold", 7, XFontStyle.Regular);
+            XFont fontTexto = new XFont("DIN-Regular", 10, XFontStyle.Regular);
+            XFont fCartaoNome = new XFont("Calibri", 9, XFontStyle.Bold);
+            XFont fArial7 = new XFont("Arial", 7, XFontStyle.Regular);
+            XFont fArialBold7 = new XFont("Arial", 7, XFontStyle.Bold);
+
+            PdfPage page = PDFNewDoc.Pages[0];
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            CultureInfo cinfo = new CultureInfo("pt-Br");
+
+            if (modelo == "capemisa")
             {
-                _sessionFactory = CriarSessaoNHibernate();
-                _allFactories.Add(chave, _sessionFactory);
+                #region capemisa
+
+                //Cabecalho
+                gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Black, 208, 43);
+                gfx.DrawString(numero, font, XBrushes.Black, 336, 43);
+                gfx.DrawString(senha, font, XBrushes.Black, 485, 43);
+
+                //Texto
+                XRect rect = new XRect(42, 65, 505, 200);
+                gfx.DrawRectangle(XPens.Transparent, XBrushes.Transparent, rect);
+                XTextFormatter tf = new XTextFormatter(gfx);
+                tf.Alignment = XParagraphAlignment.Justify;
+                tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
+
+                gfx.DrawString(certificado, font, XBrushes.Black, 371, 297);
+                gfx.DrawString(ramo, font, XBrushes.Black, 316, 321);
+                gfx.DrawString(apolice, font, XBrushes.Black, 374, 321);
+
+                gfx.DrawString(nome, font, XBrushes.Black, 42, 345);
+                gfx.DrawString(estipulanteNome, font, XBrushes.Black, 376, 345);
+
+                gfx.DrawString(cpf, font, XBrushes.Black, 42, 371);
+                gfx.DrawString(nascimento, font, XBrushes.Black, 175, 371);
+                gfx.DrawString(vigencia, font, XBrushes.Black, 286, 371);
+                gfx.DrawString(vigenciaFim, font, XBrushes.Black, 400, 371);
+                gfx.DrawString(emissao, font, XBrushes.Black, 490, 371);
+
+                for (int i = 0; i < rowDadosCobertura.Count; i++)
+                {
+                    if (toString(rowDadosCobertura[i][0]).Length <= 45)
+                        gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 42, 395 + (i * 10)); //horizontal - vertical
+                    else
+                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 45), font, XBrushes.Black, 42, 395 + (i * 10));
+
+                    gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 177, 395 + (i * 10));
+
+                    #region comentado
+
+                    //if (toString(rowDadosCobertura[i][0]).Length <= 45)
+                    //    gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 82, 424 + (i * 10)); //horizontal - vertical
+                    //else
+                    //    gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 45), font, XBrushes.Black, 82, 424 + (i * 10));
+
+                    //gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 219, 424 + (i * 10));
+                    #endregion
+                }
+
+                //CARTAO
+                string via = numero.Replace(".","").Substring(14, 1).PadLeft(3, '0');
+                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 715);
+                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 730);
+                gfx.DrawString(produto.ToUpper(), fArialBold7, XBrushes.Black, 306, 760);
+                gfx.DrawString("Via " + via, fArial7, XBrushes.Black, 385, 760);
+                gfx.DrawString("Validade consulte nosso site", fArial7, XBrushes.Black, 306, 780);
+
+                #endregion
             }
             else
             {
-                _sessionFactory = (ISessionFactory)_allFactories[chave];
+                #region generali
+
+                gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Black, 208, 43);
+                gfx.DrawString(numero, font, XBrushes.Black, 336, 43);
+                gfx.DrawString(senha, font, XBrushes.Black, 485, 43);
+
+                //texto
+                XRect rect = new XRect(42, 65, 505, 200);
+                gfx.DrawRectangle(XPens.Transparent, XBrushes.Transparent, rect);
+                XTextFormatter tf = new XTextFormatter(gfx);
+                tf.Alignment = XParagraphAlignment.Justify;
+                tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
+
+                gfx.DrawString(certificado, font, XBrushes.Black, 371, 286);
+                gfx.DrawString(ramo, font, XBrushes.Black, 396, 315);
+                gfx.DrawString(apolice, font, XBrushes.Black, 479, 315);
+
+                gfx.DrawString(nome.ToUpper(), font, XBrushes.Black, 42, 339);
+                gfx.DrawString(estipulanteNome, font, XBrushes.Black, 396, 339);
+
+                gfx.DrawString(cpf, font, XBrushes.Black, 42, 363);
+                gfx.DrawString(nascimento, font, XBrushes.Black, 175, 363);
+                gfx.DrawString(vigencia, font, XBrushes.Black, 286, 363);
+                gfx.DrawString(vigenciaFim, font, XBrushes.Black, 400, 363);
+                gfx.DrawString(emissao, font, XBrushes.Black, 490, 363);
+
+                //dados de cobertura
+                for (int i = 0; i < rowDadosCobertura.Count; i++)
+                {
+                    if (toString(rowDadosCobertura[i][0]).Length <= 62)
+                        gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 42, 395 + (i * 10)); //horizontal - vertical
+                    else
+                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 62), font, XBrushes.Black, 42, 395 + (i * 10));
+
+                    gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 193, 395 + (i * 10));
+                }
+
+                //cartao
+                string via = numero.Substring(14, 1).PadLeft(3, '0');
+                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 715);
+                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 730);
+                gfx.DrawString(produto.ToUpper(), fArialBold7, XBrushes.Black, 306, 760);
+                gfx.DrawString("Via " + via, fArial7, XBrushes.Black, 385, 760);
+                gfx.DrawString("Validade consulte nosso site", fArial7, XBrushes.Black, 306, 780);
+
+                #region comentado
+
+                //gfx.DrawString(certificado, font, XBrushes.Black, 415, 325);
+                //gfx.DrawString(ramo, font, XBrushes.Black, 452, 354);
+                //gfx.DrawString(apolice, fontMenor, XBrushes.Black, 517, 354);
+
+                //gfx.DrawString(nome, font, XBrushes.Black, 85, 377);
+                //gfx.DrawString(estipulanteNome, font, XBrushes.Black, 436, 377);
+
+                //gfx.DrawString(cpf, font, XBrushes.Black, 83, 401);
+                //gfx.DrawString(nascimento, font, XBrushes.Black, 213, 401);
+                //gfx.DrawString(vigencia, font, XBrushes.Black, 313, 401);
+                //gfx.DrawString(vigenciaFim, font, XBrushes.Black, 430, 401);
+                //gfx.DrawString(emissao, font, XBrushes.Black, 530, 401);
+
+                //for (int i = 0; i < rowDadosCobertura.Count; i++)
+                //{
+                //    if (toString(rowDadosCobertura[i][0]).Length <= 62)
+                //        gfx.DrawString(toString(rowDadosCobertura[i][0]), fontMenor, XBrushes.Black, 83, 433 + (i * 10)); //horizontal - vertical
+                //    else
+                //        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 62), fontMenor, XBrushes.Black, 83, 433 + (i * 10));
+
+                //    gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), fontMenor, XBrushes.Black, 234, 433 + (i * 10));
+                //}
+                #endregion
+
+                #endregion
             }
 
-            ISession sessao = _sessionFactory.OpenSession();
-            sessao.FlushMode = FlushMode.Commit;
+            if (File.Exists(pdfNovo)) File.Delete(pdfNovo);
 
-            return sessao;
-        }
+            PDFNewDoc.Save(pdfNovo);
 
-        static ISessionFactory CriarSessaoNHibernate()
-        {
-            string connString = ConfigurationManager.ConnectionStrings["Contexto"].ConnectionString;
-
-            var f = Fluently.Configure().Database((MsSqlConfiguration.MsSql2008.Dialect<MsSql2008Dialect>().ConnectionString(connString).ShowSql()))
-                    .ExposeConfiguration(p => p.Properties["command_timeout"] = "1000") //timeout
-                    .ExposeConfiguration(p => p.Properties["hibernate.cache.use_query_cache"] = "false") //sem cache 
-                    .ExposeConfiguration(x => x.SetInterceptor(new SqlStatementInterceptor()))
-                    .Mappings(m => m.FluentMappings.AddFromAssemblyOf<MedProj.Entidades.Map.NHibernate.UsuarioMap>().Conventions.Setup(x => x.Add(AutoImport.Never())));
-
-            _config = f.BuildConfiguration();
-            return f.BuildSessionFactory();
-        }
-
-        string dddFone(string ddd, string fone)
-        {
-            if (string.IsNullOrWhiteSpace(fone))
-                return string.Empty;
-            else if (!string.IsNullOrWhiteSpace(ddd))
-                return string.Concat("(", ddd, ") ", fone);
-            else if (fone.IndexOf('(') > -1)
-                return fone;
-            else
-                return string.Concat("(00) ", fone);
-        }
-
-        int traduzSexo(Object param)
-        {
-            if (param == null || param == DBNull.Value)
-                return 0;
-
-            if (Convert.ToString(param).ToUpper() == "M")
-                return 1;
-            else
-                return 0;
+            return string.Concat(ConfigurationManager.AppSettings["appUrl"], "files/pdfcarteira/", pdfNome);
         }
 
         #endregion
+
+        #region Relação de associados 
+
+        [WebMethod]
+        public string ObterRelacaoSegurado(string idPJ, string token)
+        {
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+            if (string.IsNullOrEmpty(idPJ)) return retorno("erro", "Parâmetro idPJ não enviado");
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                string sql = string.Concat(
+                    "select beneficiario_id, beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contrato_senha, contrato_produto from beneficiario ",
+                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
+                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
+                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
+                    "   inner join operadora on contrato_operadoraId=operadora_id ",
+                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
+                    "   inner join associadopj_beneficiario on assocbenef_beneficiarioId = beneficiario_id",
+                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+                    " where ",
+//                  "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+                    "   assocbenef_associadopjId = ", idPJ,
+                    " order by beneficiario_nome ");
+
+                DataTable dt = LocatorHelper.Instance.ExecuteQuery(sql, "result", pm).Tables[0];
+
+                if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
+                {
+                    dt.Dispose();
+                    pm.Dispose();
+                    return retorno("erro", "Nenhum registro localizado.");
+                }
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("<beneficiarios>");
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    sb.Append("<beneficiario>");
+
+                    sb.Append("<id><![CDATA[");
+                    sb.Append(row["beneficiario_id"]);
+                    sb.Append("]]></id>");
+
+                    sb.Append("<nome><![CDATA[");
+                    sb.Append(row["beneficiario_nome"]);
+                    sb.Append("]]></nome>");
+
+                    sb.Append("<cpf><![CDATA[");
+                    sb.Append(row["beneficiario_cpf"]);
+                    sb.Append("]]></cpf>");
+
+                    sb.Append("</beneficiario>");
+                }
+
+                sb.Append("</beneficiarios>");
+
+                dt.Dispose();
+                pm.Dispose();
+                return retorno("ok", sb.ToString(), true);
+            }
+        }
+
+        [WebMethod]
+        public string InserirSegurado(string idPJ, SeguradoDTO segurado, string token)
+        {
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+            if (string.IsNullOrEmpty(idPJ)) return retorno("erro", "Parâmetro idPJ não enviado");
+            if (segurado == null) return retorno("erro", "Parâmetro segurado não enviado");
+
+            string erro = "";
+            if (!segurado.Validar(out erro)) return retorno("erro", erro);
+
+            return "";
+        }
+
+        [WebMethod]
+        public string AlterarSegurado(string idPJ, SeguradoDTO segurado, string token)
+        {
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+            if (string.IsNullOrEmpty(idPJ)) return retorno("erro", "Parâmetro idPJ não enviado");
+            if (segurado == null) return retorno("erro", "Parâmetro segurado não enviado");
+
+            string erro = "";
+            if (!segurado.Validar(out erro)) return retorno("erro", erro);
+
+            return "";
+        }
+
+        [WebMethod]
+        public string ExcluirSegurado(string idPJ, SeguradoDTO segurado, string token)
+        {
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+            if (string.IsNullOrEmpty(idPJ)) return retorno("erro", "Parâmetro idPJ não enviado");
+            if (segurado == null) return retorno("erro", "Parâmetro segurado não enviado");
+
+            string erro = "";
+            if (!segurado.Validar(out erro)) return retorno("erro", erro);
+
+            return "";
+        }
+
+        #endregion
+
+        #region testes ----------
 
         //[WebMethod()]
         public string ObterBoletoUrl_TESTE(string token, string idCobranca)
@@ -3147,6 +3268,8 @@ Dornelas
             }
         }
 
+        #endregion
+
         [Serializable]
         public class CartaoDTO
         {
@@ -3270,6 +3393,194 @@ Dornelas
 
                 return true;
             }
+        }
+
+        [Serializable]
+        public class SeguradoDTO
+        {
+            public string PRODUTO { get; set; }
+            public string MATRICULA { get; set; }
+            public string RAMO { get; set; }
+            public string APOLICE { get; set; }
+            public DateTime DT_ADMISSAO { get; set; }
+            public DateTime DT_VIGENCIA { get; set; }
+            public string CPF_TITULAR { get; set; }
+            public string NOME_BENEFICIARIO { get; set; }
+            public DateTime DT_NASCIMENTO { get; set; }
+            public char SEXO { get; set; }
+            public string DDD1 { get; set; }
+            public string FONE1 { get; set; }
+            public string RAMAL1 { get; set; }
+            public string DDD_CEL { get; set; }
+            public string FONE_CEL { get; set; }
+            public string EMAIL { get; set; }
+            public string CEP { get; set; }
+            public string LOGRADOURO { get; set; }
+            public string NUMERO { get; set; }
+            public string COMPLEMENTO { get; set; }
+            public string BAIRRO { get; set; }
+            public string CIDADE { get; set; }
+            public string UF { get; set; }
+
+            public string ContratoAdmID { get; set; }
+            public string AssociadoPjID { get; set; }
+            public string OperadoraID { get; set; }
+            public string FilialID { get; set; }
+            public string PlanoID { get; set; }
+
+            public bool Validar(out string erro)
+            {
+                erro = "";
+
+                if (string.IsNullOrEmpty(ContratoAdmID))
+                {
+                    erro = "ContratoAdmID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(AssociadoPjID))
+                {
+                    erro = "AssociadoPjID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(OperadoraID))
+                {
+                    erro = "OperadoraID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(FilialID))
+                {
+                    erro = "FilialID não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(PlanoID))
+                {
+                    erro = "ContratoAdmID não PlanoID";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(PRODUTO))
+                {
+                    erro = "PRODUTO não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(MATRICULA))
+                {
+                    erro = "MATRICULA não informada";
+                    return false;
+                }
+
+                if (DT_ADMISSAO == DateTime.MinValue)
+                {
+                    erro = "DT_ADMISSAO não informada";
+                    return false;
+                }
+
+                if (DT_VIGENCIA == DateTime.MinValue)
+                {
+                    erro = "DT_VIGENCIA não informada";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(CPF_TITULAR)) //todo: validar cpf
+                {
+                    erro = "CPF_TITULAR não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(NOME_BENEFICIARIO))
+                {
+                    erro = "NOME_BENEFICIARIO não informado";
+                    return false;
+                }
+
+                if (DT_NASCIMENTO == DateTime.MinValue)
+                {
+                    erro = "DT_NASCIMENTO não informada";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(CEP))
+                {
+                    erro = "CEP não informado";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(LOGRADOURO))
+                {
+                    erro = "LOGRADOURO não informado";
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+
+
+        private static NHibernate.Cfg.Configuration _config = null;
+        private static Hashtable _allFactories = new Hashtable();
+
+        protected static ISession ObterSessao()
+        {
+            string chave = "1";
+            ISessionFactory _sessionFactory = null;
+
+            if (!_allFactories.ContainsKey(chave))
+            {
+                _sessionFactory = CriarSessaoNHibernate();
+                _allFactories.Add(chave, _sessionFactory);
+            }
+            else
+            {
+                _sessionFactory = (ISessionFactory)_allFactories[chave];
+            }
+
+            ISession sessao = _sessionFactory.OpenSession();
+            sessao.FlushMode = FlushMode.Commit;
+
+            return sessao;
+        }
+
+        static ISessionFactory CriarSessaoNHibernate()
+        {
+            string connString = ConfigurationManager.ConnectionStrings["Contexto"].ConnectionString;
+
+            var f = Fluently.Configure().Database((MsSqlConfiguration.MsSql2008.Dialect<MsSql2008Dialect>().ConnectionString(connString).ShowSql()))
+                    .ExposeConfiguration(p => p.Properties["command_timeout"] = "1000") //timeout
+                    .ExposeConfiguration(p => p.Properties["hibernate.cache.use_query_cache"] = "false") //sem cache 
+                    .ExposeConfiguration(x => x.SetInterceptor(new SqlStatementInterceptor()))
+                    .Mappings(m => m.FluentMappings.AddFromAssemblyOf<MedProj.Entidades.Map.NHibernate.UsuarioMap>().Conventions.Setup(x => x.Add(AutoImport.Never())));
+
+            _config = f.BuildConfiguration();
+            return f.BuildSessionFactory();
+        }
+
+        string dddFone(string ddd, string fone)
+        {
+            if (string.IsNullOrWhiteSpace(fone))
+                return string.Empty;
+            else if (!string.IsNullOrWhiteSpace(ddd))
+                return string.Concat("(", ddd, ") ", fone);
+            else if (fone.IndexOf('(') > -1)
+                return fone;
+            else
+                return string.Concat("(00) ", fone);
+        }
+
+        int traduzSexo(Object param)
+        {
+            if (param == null || param == DBNull.Value)
+                return 0;
+
+            if (Convert.ToString(param).ToUpper() == "M")
+                return 1;
+            else
+                return 0;
         }
     }
 }

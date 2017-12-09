@@ -328,6 +328,10 @@
                 agenda.Operadora.ID         = Convert.ToInt64(cboOperadora.SelectedValue);
                 agenda.Plano.ID             = Convert.ToInt64(cboPlano.SelectedValue);
 
+                if (txtContratoPJ.Text.Trim() != "" && txtContratoPJId.Value.Trim() != "")
+                {
+                }
+
                 AgendaImportacaoFacade.Instancia.Salvar(agenda);
 
                 //Só envia arquivo durante a criação da agenda, não permite alterar

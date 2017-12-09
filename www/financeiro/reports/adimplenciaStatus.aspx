@@ -38,6 +38,7 @@
                                         <asp:ListItem Text="Adimplentes" Value="Adimplentes" Selected="True" />
                                         <asp:ListItem Text="Inadimplentes" Value="Inadimplentes" Selected="False" />
                                         <asp:ListItem Text="Cobranças não geradas" Value="NaoGeradas" Selected="False" />
+                                        <asp:ListItem Text="Cobranças geradas" Value="Geradas" Selected="False" />
                                     </asp:DropDownList>
                                 </div>
                                 <div class="col-md-3" style="padding-left:0px;">

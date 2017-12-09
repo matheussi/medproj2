@@ -52,6 +52,7 @@
 
             gridContratos.DataSource = lista;
             gridContratos.DataBind();
+            pnlContratos.Visible = true;
         }
 
         protected void lnkNovo_Click(object sender, EventArgs e)
@@ -184,10 +185,10 @@
                 //UIHelper.AuthWebCtrl(((TextBox)e.Row.Cells[3].Controls[1]), new String[] { Perfil.Atendimento_Liberacao_Vencimento, Perfil.ConsulPropBenefProdLiberBoletoIDKey, Perfil.OperadorLiberBoletoIDKey, Perfil.SupervidorIDKey });
 
                 ///////////////////////////////////////////
-                Panel panel = (Panel)e.Row.Cells[1].FindControl("pnlComposite");
-                Literal lit = (Literal)panel.FindControl("litComposite");
+                //Panel panel = (Panel)e.Row.Cells[1].FindControl("pnlComposite");
+                //Literal lit = (Literal)panel.FindControl("litComposite");
 
-                lit.Text = ((Cobranca)e.Row.DataItem).ComposicaoResumo;
+                //lit.Text = ((Cobranca)e.Row.DataItem).ComposicaoResumo;
                 ///////////////////////////////////////////
 
                 //if (Server.HtmlDecode(e.Row.Cells[5].Text) == "Não")

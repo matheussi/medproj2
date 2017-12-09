@@ -124,12 +124,21 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-xs-2 control-label">Contrato</label>
+                        <label class="col-xs-2 control-label">Contrato ADM</label>
                         <div class="col-xs-3"><asp:DropDownList SkinID="comboPadrao1" AutoPostBack="True" Width="100%" runat="server" ID="cboContrato" OnSelectedIndexChanged="cboContrato_SelectedIndexChanged" /></div>
                         <label class="col-xs-2 control-label">Plano</label>
                         <div class="col-xs-3">
                             <asp:DropDownList SkinID="comboPadrao1" Width="100%" runat="server" ID="cboPlano" AutoPostBack="false" />
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-xs-2 control-label">Contrato PJ</label>
+                        <div class="col-xs-3">
+                            <asp:TextBox SkinID="txtPadrao" Width="100%" runat="server" ID="txtContratoPJ"  />
+                            <input type="hidden" name="txtContratoPJId" id="txtContratoPJId" runat="server" />
+                        </div>
+                        <%--<div class="col-xs-3"><asp:DropDownList SkinID="comboPadrao1" Width="100%" runat="server" ID="cboContratoPJ"  /></div>--%>
                     </div>
 
                     <div class="form-group">
@@ -219,5 +228,59 @@
             chamada();
         }
         */
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(configAutocomplete);
+
+            configAutocomplete(null, null);
+        });
+
+        function configAutocomplete(sender, args) {
+            $("#<%= txtContratoPJ.ClientID %>").autocomplete
+            ({
+                source: function (request, response) {
+
+                    $.ajax({
+                        url: "../../proxy/proxyCarregaContrato.aspx",
+                        dataType: "json",
+                        data: {
+                            featureClass: "P",
+                            style: "full",
+                            maxRows: 12,
+                            name_startsWith: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data.Contratos, function (item) {
+                                //alert(item.Titular);
+                                return {
+
+                                    label: item.Titular,
+                                    value: item.Titular,
+                                    data: item
+                                }
+                            }));
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    showItem(ui.item ? ui.item : undefined);
+                },
+                search: function (event, ui) {
+                    showItem(ui.item ? ui.item : undefined);
+                }
+            });
+        }
+        function showItem(item) {
+            if (item != null && item != undefined) {
+                document.getElementById('<%= txtContratoPJId.ClientID %>').value = item.data.ID;
+            }
+            else {
+                document.getElementById('<%= txtContratoPJId.ClientID %>').value = '';
+            }
+        }
     </script>
 </asp:Content>

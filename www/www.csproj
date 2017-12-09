@@ -729,6 +729,7 @@
     <Content Include="boleto\include\layout_itau.php" />
     <Content Include="boleto\include\layout_itau.php.back" />
     <Content Include="boleto\include\layout_itau.php.old" />
+    <Content Include="proxy\proxyCarregaContrato.aspx" />
     <Content Include="ws\boleto.asmx" />
     <Content Include="_testEmail.aspx" />
     <Content Include="ckeditor\.htaccess" />
@@ -1420,6 +1421,13 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="proxy\proxyCarregaContrato.aspx.cs">
+      <DependentUpon>proxyCarregaContrato.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="proxy\proxyCarregaContrato.aspx.designer.cs">
+      <DependentUpon>proxyCarregaContrato.aspx</DependentUpon>
     </Compile>
     <Compile Include="proxy\proxyCarregaEspecialidades.aspx.cs">
       <DependentUpon>proxyCarregaEspecialidades.aspx</DependentUpon>

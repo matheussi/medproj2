@@ -45,6 +45,7 @@
         public virtual bool Processado { get; set; }
 
         public virtual string Arquivo     { get; set; }
+        public virtual long ContratoPjId  { get; set; }
 
         public virtual Usuario Autor { get; set; }
 
