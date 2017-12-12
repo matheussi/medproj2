@@ -79,6 +79,14 @@
             {
                 litErro.Text = string.Concat("&nbsp;<a style='color:red'>(Erro: ", agenda.Erro, ")</a>");
             }
+
+            if (agenda.ContratoPjId > 0)
+            {
+                txtContratoPJId.Value = agenda.ContratoPjId.ToString();
+
+                var titular = Entity.ContratoBeneficiario.CarregarTitular(agenda.ContratoPjId, null);
+                txtContratoPJ.Text = titular.BeneficiarioNome;
+            }
         }
 
         Boolean HaItemSelecionado(DropDownList combo)
@@ -330,6 +338,7 @@
 
                 if (txtContratoPJ.Text.Trim() != "" && txtContratoPJId.Value.Trim() != "")
                 {
+                    agenda.ContratoPjId = Convert.ToInt64(txtContratoPJId.Value);
                 }
 
                 AgendaImportacaoFacade.Instancia.Salvar(agenda);
