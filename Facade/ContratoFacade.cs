@@ -1029,6 +1029,20 @@
             return dt;
         }
 
+        public DataTable CarregaPor(string estipulanteId, string contratoAdmId, string planoId)
+        {
+            string sql = String.Concat("select contrato_id as ID,contrato_numero as Numero, beneficiario_nome as Titular, beneficiario_cpf as Documento ",
+                "FROM contrato ",
+                " inner JOIN contrato_beneficiario ON contrato_id=contratobeneficiario_contratoId AND contratobeneficiario_ativo=1 AND contratobeneficiario_tipo=", Convert.ToInt32(ContratoBeneficiario.TipoRelacao.Titular),
+                " inner JOIN beneficiario ON beneficiario_id=contratobeneficiario_beneficiarioId AND contratobeneficiario_ativo=1 ",
+                "WHERE contrato_tipoPessoa=1 and contrato_cancelado=0 and contrato_inativo=0 and contrato_estipulanteId=", estipulanteId, " and contrato_contratoAdmId=", contratoAdmId, //" and contrato_planoId=", planoId,
+                " ORDER BY beneficiario_nome ");
+
+            var dt = LocatorHelper.Instance.ExecuteQuery(sql, "result").Tables[0];
+
+            return dt;
+        }
+
         public DataTable CarregaSomentePjs()
         {
             string qry = string.Concat(

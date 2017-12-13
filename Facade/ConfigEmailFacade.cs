@@ -177,7 +177,7 @@
                         "   where ", //contrato_id=143274 and ",
                         "       contrato_tipoPessoa = 1 and cei_cobrancaId is null and cobranca_pago = 1", dataCriacaoCriterio);
 
-                //TODO  para resolver o problema que ocorrerá de um novo aviso de pagamento enviar todas 
+                //TODO!  para resolver o problema que ocorrerá de um novo aviso de pagamento enviar todas 
                 //      as cobrancas, ja avisadas, novamente, fazer and cobranca_datacriacao > config.datacriacao
             }
             else if (config.Tipo == TipoConfig.AvisoDeVencimentoProximo)
@@ -219,7 +219,7 @@
                 DateTime venctoReferencia = DateTime.Now.AddDays(config.DiasAntesVencimento * -1);
 
                 qry = string.Concat(
-                        "select top 50 beneficiario_id,beneficiario_nome,beneficiario_email,cei_cobrancaId,cobranca_id,cobranca_valor,cobranca_dataPagto,cobranca_dataVencimento,cobranca_pago,cobranca_propostaId,cobranca_qtdVidas ",
+                        "select top 50 beneficiario_id,beneficiario_nome,beneficiario_email,cei_cobrancaId,cobranca_id,cobranca_valor,cobranca_dataPagto,cobranca_dataVencimento,cobranca_pago,cobranca_propostaId,cobranca_qtdVidas,cobranca_competencia ",
                         "   from beneficiario ",
                         "       inner join contrato_beneficiario on beneficiario_id=contratobeneficiario_beneficiarioId and contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 ",
                         "       inner join cobranca on cobranca_propostaid = contratobeneficiario_contratoid ",
@@ -310,9 +310,10 @@
                             if(dr["cobranca_dataPagto"] != DBNull.Value)
                                 vo.CobrancaDtPagto  = Convert.ToDateTime(dr["cobranca_dataPagto"], cinfo);
 
-                            vo.CobrancaDtVenct  = Convert.ToDateTime(dr["cobranca_dataVencimento"], cinfo);
-                            vo.CobrancaValor    = Convert.ToDecimal(dr["cobranca_valor"], cinfo);
-                            vo.PropostaID       = Convert.ToInt64(dr["cobranca_propostaId"]);
+                            vo.CobrancaDtVenct     = Convert.ToDateTime(dr["cobranca_dataVencimento"], cinfo);
+                            vo.CobrancaValor       = Convert.ToDecimal(dr["cobranca_valor"], cinfo);
+                            vo.PropostaID          = Convert.ToInt64(dr["cobranca_propostaId"]);
+                            vo.CobrancaCompetencia = CToString(dr["cobranca_competencia"]);
 
                             if (dr["cobranca_qtdVidas"] != DBNull.Value)
                                 vo.QtdVidas     = Convert.ToInt32(dr["cobranca_qtdVidas"]);
