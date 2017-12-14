@@ -595,12 +595,16 @@
                             else
                                 adicionaItemLog(agenda, ref log, cb, i, string.Format("CPF: {0}", cpf), Entidades.Enuns.AgendaImportacaoItemLogStatus.Alerta, "CEP invalido");
 
-                            lista.Add(
-                                new AssociadoPJ_X_Beneficiario
-                                {
-                                    AssociadoPjId = contrato.EstipulanteID.ToString(),
-                                    BeneficiarioId = Convert.ToString(beneficiario.ID)
-                            });
+                            if (agenda.ContratoPjId > 0)
+                            {
+                                lista.Add
+                                (
+                                    new AssociadoPJ_X_Beneficiario
+                                    {
+                                        AssociadoPjId = agenda.ContratoPjId.ToString(), //contrato.EstipulanteID.ToString(),
+                                        BeneficiarioId = Convert.ToString(beneficiario.ID)
+                                    });
+                            }
                         }
 
                         agenda.DataConclusao = DateTime.Now;
@@ -608,17 +612,24 @@
 
                         log.ForEach(l => sessao.Save(l));
 
-                        //salva a associação beneficiário x associado pj, sobrescrevendo a anterior
-                        if (lista != null && lista.Count > 0)
-                        {
-                            cmdAux.CommandText = "delete from associadopj_beneficiario where assocbenef_associadopjId=" + lista[0].AssociadoPjId;
-                            cmdAux.ExecuteNonQuery();
+                        //SALVA a associação beneficiário x associado pj, sobrescrevendo a anterior
+                        //cmdAux.CommandText = string.Concat("select contrato_id from contrato where contrato_estipulanteid=", agenda.AssociadoPj.ID, " and contrato_contratoadmid=", agenda.Contrato.ID);
+                        //object id = cmdAux.ExecuteScalar();
 
-                            foreach (var assoc in lista)
+                        if(agenda.ContratoPjId > 0)
+                        {
+                            long id = agenda.ContratoPjId;
+                            if (lista != null && lista.Count > 0)
                             {
-                                cmdAux.CommandText = string.Concat(
-                                    "insert into associadopj_beneficiario (assocbenef_associadopjId,assocbenef_beneficiarioId) values (", assoc.AssociadoPjId, ",", assoc.BeneficiarioId, ")");
+                                cmdAux.CommandText = "delete from associadopj_beneficiario where assocbenef_associadopjId=" + id;
                                 cmdAux.ExecuteNonQuery();
+
+                                foreach (var assoc in lista)
+                                {
+                                    cmdAux.CommandText = string.Concat(
+                                        "insert into associadopj_beneficiario (assocbenef_associadopjId,assocbenef_beneficiarioId) values (", id, ",", assoc.BeneficiarioId, ")");
+                                    cmdAux.ExecuteNonQuery();
+                                }
                             }
                         }
 

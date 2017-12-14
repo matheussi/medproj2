@@ -57,6 +57,7 @@
         public DateTime CobrancaDtPagto { get; set; }
         public DateTime CobrancaDtVenct { get; set; }
         public bool CobrancaPAGA        { get; set; }
+        public string CobrancaCompetencia { get; set; }
         public int QtdVidas             { get; set; }
         public string ERRO              { get; set; }
     }

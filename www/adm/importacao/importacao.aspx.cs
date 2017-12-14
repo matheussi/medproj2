@@ -82,10 +82,13 @@
 
             if (agenda.ContratoPjId > 0)
             {
-                txtContratoPJId.Value = agenda.ContratoPjId.ToString();
+                if (cboContratoPJ.Items.FindByValue(agenda.ContratoPjId.ToString()) != null)
+                    cboContratoPJ.SelectedValue = agenda.ContratoPjId.ToString();
 
-                var titular = Entity.ContratoBeneficiario.CarregarTitular(agenda.ContratoPjId, null);
-                txtContratoPJ.Text = titular.BeneficiarioNome;
+                //txtContratoPJId.Value = agenda.ContratoPjId.ToString();
+
+                //var titular = Entity.ContratoBeneficiario.CarregarTitular(agenda.ContratoPjId, null);
+                //txtContratoPJ.Text = titular.BeneficiarioNome;
             }
         }
 
@@ -189,6 +192,27 @@
             }
         }
 
+        void carregaContratos()
+        {
+            cboContratoPJ.Items.Clear();
+            cboContratoPJ.Items.Add(new ListItem("selecione", "-1"));
+
+            if (HaItemSelecionado(cboEstipulante) && HaItemSelecionado(cboContrato)) // && HaItemSelecionado(cboPlano))
+            {
+                var dt = ContratoFacade.Instance.CarregaPor(cboEstipulante.SelectedValue, cboContrato.SelectedValue, cboPlano.SelectedValue);
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    cboContratoPJ.Items.Add
+                    (
+                        new ListItem(string.Concat(row["Titular"], " (", row["Documento"], ")"), Convert.ToString(row["ID"]))
+                    );
+                }
+
+                dt.Dispose();
+            }
+        }
+
         void ExibirTiposDeAcomodacao(DropDownList combo, Boolean comum, Boolean particular, Boolean itemSELECIONE)
         {
             combo.Items.Clear();
@@ -206,24 +230,28 @@
         {
             this.CarregaContratoADM();
             this.CarregaPlanos();
+            this.carregaContratos();
         }
 
         protected void cboOperadora_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.CarregaContratoADM();
             this.CarregaPlanos();
+            this.carregaContratos();
             //this.CarregaEstadoCivil();
         }
 
         protected void cboContrato_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.CarregaPlanos();
+            this.carregaContratos();
             //this.CarregaOpcoesParaAgregadosOuDependentes();
         }
 
         protected void cboPlano_SelectedIndexChanged(object sender, EventArgs e)
         {
             //this.CarregaAcomodacoes();
+            this.carregaContratos();
         }
 
 
@@ -336,10 +364,14 @@
                 agenda.Operadora.ID         = Convert.ToInt64(cboOperadora.SelectedValue);
                 agenda.Plano.ID             = Convert.ToInt64(cboPlano.SelectedValue);
 
-                if (txtContratoPJ.Text.Trim() != "" && txtContratoPJId.Value.Trim() != "")
-                {
-                    agenda.ContratoPjId = Convert.ToInt64(txtContratoPJId.Value);
-                }
+                //if (txtContratoPJ.Text.Trim() != "" && txtContratoPJId.Value.Trim() != "")
+                //{
+                //    agenda.ContratoPjId = Convert.ToInt64(txtContratoPJId.Value);
+                //}
+                if (cboContratoPJ.SelectedIndex > 0)
+                    agenda.ContratoPjId = Convert.ToInt64(cboContratoPJ.SelectedValue);
+                else
+                    agenda.ContratoPjId = 0;
 
                 AgendaImportacaoFacade.Instancia.Salvar(agenda);
 
@@ -400,31 +432,78 @@
 
         protected void lnkArquivoLog_Click(object sender, EventArgs e)
         {
-            List<AgendaImportacaoItemLog> log = AgendaImportacaoFacade.Instancia.CarregarLog(Convert.ToInt64(this.idAgenda));
+            //List<AgendaImportacaoItemLog> log = AgendaImportacaoFacade.Instancia.CarregarLog(Convert.ToInt64(this.idAgenda));
+            DataTable log = AgendaImportacaoFacade.Instancia.CarregarLogV2(Convert.ToInt64(this.idAgenda));
 
-            if (log == null) return;
+            if (log == null || log.Rows.Count == 0) return;
 
             var csvExp = new CsvExport();
 
-            foreach (AgendaImportacaoItemLog item in log)
+            foreach (DataRow item in log.Rows)
             {
                 csvExp.AddRow();
 
-                if (item.Titular != null && item.Titular.Contrato != null)
-                {
-                    csvExp["NumeroCartao"] = string.Concat("'", item.Titular.Contrato.Numero);//todo: denis discutir com marcio se é bom mostrar a senha
-                    csvExp["Senha"] = string.Concat("'", item.Titular.Contrato.Senha);
-                }
-                else
-                {
-                    csvExp["NumeroCartao"] = "";
-                    csvExp["Senha"]        = "";
-                }
+                csvExp["Linha"] = (Util.CTipos.CToInt(item["LINHA"]) + 1).ToString();
+                csvExp["Status"] = Convert.ToString(item["STATUS"]) == "1" ? "Erro" : "Ok";
+                csvExp["Mensagem"] = item["MSG"];
 
-                csvExp["Linha"]         = (item.Linha + 1).ToString();
-                csvExp["Status"]        = item.Status == AgendaImportacaoItemLogStatus.Erro ? "Erro" : "Ok";
-                csvExp["Mensagem"]      = item.Mensagem;
+                csvExp["CARTAO"] = item["CARTAO"];
+                csvExp["CPF_TITULAR"] = item["CPF_TITULAR"];
+
+                csvExp["SENHA"] = item["SENHA"];
+
+                csvExp["RAMO"] = item["RAMO"];
+                csvExp["APOLICE"] = item["APOLICE"];
+
+                csvExp["DT_NASCIMENTO"] = item["DT_NASCIMENTO"];
+                csvExp["NOME_BENEFICIARIO"] = item["NOME_BENEFICIARIO"];
+                csvExp["ABREVIADO"] = item["ABREVIADO"];
+                csvExp["RG"] = item["RG"];
+
+                csvExp["CONTRATOPJ"] = item["CONTRATOPJ"];
+                csvExp["PRODUTO"] = item["PRODUTO"];
+
+                csvExp["LOGRADOURO"] = item["LOGRADOURO"];
+                csvExp["NUMERO"] = item["NUMERO"];
+                csvExp["COMPLEMENTO"] = item["COMPLEMENTO"];
+                csvExp["BAIRRO"] = item["BAIRRO"];
+                csvExp["CEP"] = item["CEP"];
+                csvExp["CIDADE"] = item["CIDADE"];
+                csvExp["UF"] = item["UF"];
+
+                csvExp["MATRICULA"] = item["MATRICULA"];
+
+                csvExp["VIA"] = item["VIA"];
+                csvExp["CVV"] = item["CVV"];
+                csvExp["VALIDADE"] = "CONSULTE NOSSO SITE";
+
+                csvExp["INICIO_DO_RISCO"] = item["INICIO_DO_RISCO"];
+                csvExp["FIM_DA_VIGENCIA"] = item["FIM_DA_VIGENCIA"];
+                csvExp["DATA_DE_EMISSAO"] = item["DATA_DE_EMISSAO"];
+                csvExp["PATH"] = item["PATH"];
             }
+
+            #region comentado 
+            //foreach (var item in log)
+            //{
+            //    csvExp.AddRow();
+
+            //    if (item.Titular != null && item.Titular.Contrato != null)
+            //    {
+            //        csvExp["NumeroCartao"] = string.Concat("'", item.Titular.Contrato.Numero);//todo: denis discutir com marcio se é bom mostrar a senha
+            //        csvExp["Senha"] = string.Concat("'", item.Titular.Contrato.Senha);
+            //    }
+            //    else
+            //    {
+            //        csvExp["NumeroCartao"] = "";
+            //        csvExp["Senha"]        = "";
+            //    }
+
+            //    csvExp["Linha"]         = (item.Linha + 1).ToString();
+            //    csvExp["Status"]        = item.Status == AgendaImportacaoItemLogStatus.Erro ? "Erro" : "Ok";
+            //    csvExp["Mensagem"]      = item.Mensagem;
+            //}
+            #endregion
 
             string conteudo = csvExp.Export();
             string arquivo = "log_importacao.csv";
