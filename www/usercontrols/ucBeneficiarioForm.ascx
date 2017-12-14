@@ -43,10 +43,10 @@
                         </asp:BoundField>
                         
                         <asp:ButtonField Text="<img src='images/delete.png' title='inválido' alt='inválido' border='0' />" CommandName="invalido">
-                            <ItemStyle Width="1%" />
+                            
                         </asp:ButtonField>
                         <asp:ButtonField Text="<img src='images/tick.png' title='confirmar' alt='confirmar' border='0' />" CommandName="ok">
-                            <ItemStyle Width="1%" />
+                            
                         </asp:ButtonField>
                     </Columns>
                 </asp:GridView>
@@ -298,11 +298,9 @@
                     </asp:BoundField>
                     <asp:ButtonField CommandName="alterar" Text="<img src='../../images/edit.png' title='editar' alt='editar' border='0' />">
                         <HeaderStyle HorizontalAlign="Center" />
-                        <ItemStyle Width="1%" />
                     </asp:ButtonField>
                     <asp:ButtonField CommandName="excluir" Text="<img src='../../images/delete.png' title='excluir' alt='excluir' border='0' />">
                         <HeaderStyle HorizontalAlign="Center" />
-                        <ItemStyle Width="1%" />
                     </asp:ButtonField>
                 </Columns>
                 

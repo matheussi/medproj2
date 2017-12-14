@@ -65,11 +65,11 @@
                                 </asp:BoundField>
                                 <asp:ButtonField CommandName="contratos" Text="<img src='../../images/detail2.png' title='contratos' alt='contratos' border='0' />">
                                     <HeaderStyle HorizontalAlign="Left" />
-                                    <ItemStyle Width="1%" />
+                                    
                                 </asp:ButtonField>
                                 <asp:ButtonField CommandName="editar" Text="<img src='../../images/edit.png' title='editar' alt='editar' border='0' />">
                                     <HeaderStyle HorizontalAlign="Left" />
-                                    <ItemStyle Width="1%" />
+                                    
                                 </asp:ButtonField>
                             </Columns>
                         </asp:GridView>
@@ -101,7 +101,6 @@
                                     </asp:BoundField>
                                     <asp:ButtonField CommandName="editar" Text="<img src='../../images/edit.png' alt='editar' border='0' />">
                                         <HeaderStyle HorizontalAlign="Left" />
-                                        <ItemStyle Width="1%" />
                                     </asp:ButtonField>
                                 </Columns>
                             </asp:GridView>
