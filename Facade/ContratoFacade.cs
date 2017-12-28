@@ -35,7 +35,7 @@
         /// <summary>
         /// 
         /// </summary>
-        public bool Salvar(Contrato contrato, ContratoBeneficiario titular, IList<ContratoBeneficiario> dependentes, Object[] fichas, Object usuarioLiberadorID, IList<AdicionalBeneficiario> adicionalBeneficiario, Conferencia conferencia, Decimal valorTotal, out string msg)
+        public bool Salvar(Contrato contrato, ContratoBeneficiario titular, IList<ContratoBeneficiario> dependentes, Object[] fichas, Object usuarioLiberadorID, IList<AdicionalBeneficiario> adicionalBeneficiario, Conferencia conferencia, Decimal valorTotal, out string msg, object pjID)
         {
             Decimal valorTotalContrato = 0; msg = "";
             PersistenceManager pm = new PersistenceManager();
@@ -414,6 +414,29 @@
                 //    ContratoValor.InsereNovoValorSeNecessario(contrato.ID, valorTotalContrato, pm);
                 //}
                 #endregion
+
+                if (pjID != null)
+                {
+                    object relId = LocatorHelper.Instance.ExecuteScalar("select assocbenef_id from associadopj_beneficiario where assocbenef_contratoPfId=" + contrato.ID, null, null, pm);
+                    if (relId != null && relId != DBNull.Value)
+                    {
+                        NonQueryHelper.Instance.ExecuteNonQuery(
+                            string.Concat("update associadopj_beneficiario set assocbenef_data=getdate(),assocbenef_associadopjId=", pjID, ",assocbenef_beneficiarioId=", titular.BeneficiarioID, " where assocbenef_id=", relId),
+                            pm);
+                    }
+                    else
+                    {
+                        NonQueryHelper.Instance.ExecuteNonQuery(
+                            string.Concat("insert into associadopj_beneficiario (assocbenef_associadopjId,assocbenef_beneficiarioId,assocbenef_contratoPfId, assocbenef_data) values (", pjID, ",", titular.BeneficiarioID, ",", contrato.ID, ", getdate())"),
+                            pm);
+                    }
+                }
+                else
+                {
+                    NonQueryHelper.Instance.ExecuteNonQuery(
+                        string.Concat("delete from associadopj_beneficiario where assocbenef_contratoPfId=", contrato.ID),
+                        pm);
+                }
 
                 pm.Commit();
 
@@ -1027,6 +1050,33 @@
             DataTable dt = LocatorHelper.Instance.ExecuteQuery(qry, "result").Tables[0];
 
             return dt;
+        }
+
+        public DataTable CarregaDadosRelacionamentoPJ(object contratoPfId)
+        {
+            string sql = "select assocbenef_associadopjId from associadopj_beneficiario where assocbenef_contratopfid=" + contratoPfId;
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                pm.UseSingleCommandInstance();
+
+                object pjID = LocatorHelper.Instance.ExecuteScalar(sql, null, null, pm);
+
+                if (pjID == null || pjID == DBNull.Value) return null;
+
+                sql = String.Concat(
+                    "select contrato_id as ID,contrato_numero as Numero, beneficiario_nome as Titular, beneficiario_cpf as Documento ",
+                    "FROM contrato ",
+                    " inner JOIN contrato_beneficiario ON contrato_id=contratobeneficiario_contratoId AND contratobeneficiario_ativo=1 AND contratobeneficiario_tipo=", Convert.ToInt32(ContratoBeneficiario.TipoRelacao.Titular),
+                    " inner JOIN beneficiario ON beneficiario_id=contratobeneficiario_beneficiarioId AND contratobeneficiario_ativo=1 ",
+                    "WHERE contrato_id=", pjID);
+
+                var dt = LocatorHelper.Instance.ExecuteQuery(sql, "result", pm).Tables[0];
+
+                pm.CloseSingleCommandInstance();
+
+                return dt;
+            }
         }
 
         public DataTable CarregaPor(string estipulanteId, string contratoAdmId, string planoId)
