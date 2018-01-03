@@ -541,7 +541,7 @@
                                 "       and cobranca_competencia='", refe.ToString("MM/yyyy"), "'"); //"       and year(cobranca_dataVencimento)=", refe.Year);
 
                             aux = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
-                            if ((aux == null || aux == DBNull.Value || Convert.ToString(aux).Trim() == "") && DateTime.Now > new DateTime(2017, 12, 1))
+                            if ((aux == null || aux == DBNull.Value || Convert.ToString(aux).Trim() == "") && DateTime.Now > new DateTime(2018, 3, 1))
                             {
                                 CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
                                 logErr01.CobrancaValor = 0;
@@ -1652,7 +1652,7 @@
         string toString(object param)
         {
             if (param == null || param == DBNull.Value)
-                return null;
+                return "";
             else
                 return Convert.ToString(param);
         }
@@ -1910,163 +1910,164 @@ Dornelas
             return string.Concat(ConfigurationManager.AppSettings["appUrl"], "files/pdfcarteira/", pdfNome);
         }
 
-        [WebMethod()]
+        //[WebMethod()]
         public string GerarCartao(string idContrato, string modelo, string token, CartaoDTO dto)
         {
-            #region validacoes 
+            return "";
+//            #region validacoes 
 
-            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+//            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
 
-            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generalli"))
-            {
-                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generalli'.");
-            }
+//            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generali"))
+//            {
+//                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generali'.");
+//            }
 
-            if (string.IsNullOrEmpty(idContrato))
-            {
-                if (dto == null)
-                {
-                    return retorno("erro", "Parâmetros idContato e dto não enviados");
-                }
-                else
-                {
-                    string msg = "";
-                    bool ok = dto.Validar(out msg);
+//            if (string.IsNullOrEmpty(idContrato))
+//            {
+//                if (dto == null)
+//                {
+//                    return retorno("erro", "Parâmetros idContato e dto não enviados");
+//                }
+//                else
+//                {
+//                    string msg = "";
+//                    bool ok = dto.Validar(out msg);
 
-                    if (!ok)
-                    {
-                        return retorno("erro", msg);
-                    }
+//                    if (!ok)
+//                    {
+//                        return retorno("erro", msg);
+//                    }
 
-                    idContrato = Importar(dto, out msg).ToString();
+//                    idContrato = Importar(dto, out msg).ToString();
 
-                    if (idContrato == "0")
-                    {
-                        return retorno("erro", msg);
-                    }
-                    else if (idContrato == "-1")
-                    {
-                        return retorno("erro", msg); //beneficiario ja existente
+//                    if (idContrato == "0")
+//                    {
+//                        return retorno("erro", msg);
+//                    }
+//                    else if (idContrato == "-1")
+//                    {
+//                        return retorno("erro", msg); //beneficiario ja existente
 
-                        //todo: carregar o id de contrato e prosseguir?
-                    }
-                }
-            }
+//                        //todo: carregar o id de contrato e prosseguir?
+//                    }
+//                }
+//            }
 
-            #endregion
+//            #endregion
 
-            string qry = "", pdfGerado = "", cartaoGerado = "";
-            StringBuilder sb = new StringBuilder();
-            System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+//            string qry = "", pdfGerado = "", cartaoGerado = "";
+//            StringBuilder sb = new StringBuilder();
+//            System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
 
-            using (PersistenceManager pm = new PersistenceManager())
-            {
-                pm.UseSingleCommandInstance();
+//            using (PersistenceManager pm = new PersistenceManager())
+//            {
+//                pm.UseSingleCommandInstance();
 
-                //Dados básicos
-                qry = string.Concat(
-                    "select beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contrato_senha, contrato_produto from beneficiario ",
-                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
-                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
-                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
-                    "   inner join operadora on contrato_operadoraId=operadora_id ",
-                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
-                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
-                    " where ",
-//                  "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
-                    "   contrato_id=", idContrato,
-                    " order by beneficiario_nome ");
+//                //Dados básicos
+//                qry = string.Concat(
+//                    "select beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contrato_senha, contrato_produto from beneficiario ",
+//                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
+//                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
+//                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
+//                    "   inner join operadora on contrato_operadoraId=operadora_id ",
+//                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
+//                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+//                    " where ",
+////                  "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+//                    "   contrato_id=", idContrato,
+//                    " order by beneficiario_nome ");
 
-                DataTable dt = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+//                DataTable dt = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
 
-                if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
-                {
-                    pm.CloseSingleCommandInstance();
-                    return retornoPDF("erro", "", "", "Nenhum registro localizado.", true);
-                }
+//                if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
+//                {
+//                    pm.CloseSingleCommandInstance();
+//                    return retornoPDF("erro", "", "", "Nenhum registro localizado.", true);
+//                }
 
-                qry = string.Concat("select itemcobertura_descricao, itemcobertura_valor, status_",
-                    " from tabela_cobertura_item ",
-                    "   inner join tabela_cobertura on tabela_cobertura_item.itemcobertura_tabelaId = tabela_cobertura.tabela_id ",
-                    " where status_='Contratado' and tabela_contratoAdmId = ", dt.Rows[0]["contratoadm_id"]);
+//                qry = string.Concat("select itemcobertura_descricao, itemcobertura_valor, status_",
+//                    " from tabela_cobertura_item ",
+//                    "   inner join tabela_cobertura on tabela_cobertura_item.itemcobertura_tabelaId = tabela_cobertura.tabela_id ",
+//                    " where status_='Contratado' and tabela_contratoAdmId = ", dt.Rows[0]["contratoadm_id"]);
 
-                DataTable dtCobertura = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
-                pm.CloseSingleCommandInstance();
+//                DataTable dtCobertura = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+//                pm.CloseSingleCommandInstance();
 
-                if (dtCobertura == null || dtCobertura.Rows == null || dtCobertura.Rows.Count == 0)
-                {
-                    return retornoPDF("erro", "", "", "Nenhuma cobertura localizada.", true);
-                }
+//                if (dtCobertura == null || dtCobertura.Rows == null || dtCobertura.Rows.Count == 0)
+//                {
+//                    return retornoPDF("erro", "", "", "Nenhuma cobertura localizada.", true);
+//                }
 
-                pdfGerado = geraPdf(modelo, dt.Rows[0], dtCobertura.Rows);
+//                pdfGerado = geraPdf(modelo, dt.Rows[0], dtCobertura.Rows);
 
-                cartaoGerado = ""; // geraCartao(toString(dt.Rows[0]["contrato_id"]), toString(dt.Rows[0]["contrato_numero"]), toString(dt.Rows[0]["beneficiario_nome"]), toString(dt.Rows[0]["estipulante_descricao"]));
+//                cartaoGerado = ""; // geraCartao(toString(dt.Rows[0]["contrato_id"]), toString(dt.Rows[0]["contrato_numero"]), toString(dt.Rows[0]["beneficiario_nome"]), toString(dt.Rows[0]["estipulante_descricao"]));
 
-                #region comentado 
+//                #region comentado 
 
-                //List<string> idsprocessados = new List<string>();
+//                //List<string> idsprocessados = new List<string>();
 
-                //foreach (DataRow row in dt.Rows)
-                //{
-                //    if (idsprocessados.Contains(Convert.ToString(row["beneficiario_id"]))) continue;
-                //    idsprocessados.Add(Convert.ToString(row["beneficiario_id"]));
+//                //foreach (DataRow row in dt.Rows)
+//                //{
+//                //    if (idsprocessados.Contains(Convert.ToString(row["beneficiario_id"]))) continue;
+//                //    idsprocessados.Add(Convert.ToString(row["beneficiario_id"]));
 
-                //    sb.Append("<beneficiario>");
-                //    sb.Append("<nome>"); sb.Append(row["beneficiario_nome"]); sb.Append("</nome>");
-                //    sb.Append("<documento>"); sb.Append(row["beneficiario_cpf"]); sb.Append("</documento>");
-                //    sb.Append("<nomeMae>"); sb.Append(row["beneficiario_nomeMae"]); sb.Append("</nomeMae>");
-                //    sb.Append("<email>"); sb.Append(row["beneficiario_email"]); sb.Append("</email>");
+//                //    sb.Append("<beneficiario>");
+//                //    sb.Append("<nome>"); sb.Append(row["beneficiario_nome"]); sb.Append("</nome>");
+//                //    sb.Append("<documento>"); sb.Append(row["beneficiario_cpf"]); sb.Append("</documento>");
+//                //    sb.Append("<nomeMae>"); sb.Append(row["beneficiario_nomeMae"]); sb.Append("</nomeMae>");
+//                //    sb.Append("<email>"); sb.Append(row["beneficiario_email"]); sb.Append("</email>");
 
-                //    sb.Append("<contrato>");
-                //    sb.Append("<numero>"); sb.Append(row["contrato_numero"]); sb.Append("</numero>");
-                //    sb.Append("<dataCadastro>"); sb.Append(Convert.ToDateTime(row["contrato_data"], cinfo).ToString("dd/MM/yyyy")); sb.Append("</dataCadastro>");
-                //    sb.Append("<dataAdmissao>"); sb.Append(Convert.ToDateTime(row["contrato_admissao"], cinfo).ToString("dd/MM/yyyy")); sb.Append("</dataAdmissao>");
-                //    sb.Append("<dataValidade>");
+//                //    sb.Append("<contrato>");
+//                //    sb.Append("<numero>"); sb.Append(row["contrato_numero"]); sb.Append("</numero>");
+//                //    sb.Append("<dataCadastro>"); sb.Append(Convert.ToDateTime(row["contrato_data"], cinfo).ToString("dd/MM/yyyy")); sb.Append("</dataCadastro>");
+//                //    sb.Append("<dataAdmissao>"); sb.Append(Convert.ToDateTime(row["contrato_admissao"], cinfo).ToString("dd/MM/yyyy")); sb.Append("</dataAdmissao>");
+//                //    sb.Append("<dataValidade>");
 
-                //    if (row["contrato_validade"] != null && row["contrato_validade"] != DBNull.Value && Convert.ToString(row["contrato_validade"]).Trim() != "")
-                //        sb.Append(Convert.ToDateTime(row["contrato_validade"], cinfo).ToString("dd/MM/yyyy"));
+//                //    if (row["contrato_validade"] != null && row["contrato_validade"] != DBNull.Value && Convert.ToString(row["contrato_validade"]).Trim() != "")
+//                //        sb.Append(Convert.ToDateTime(row["contrato_validade"], cinfo).ToString("dd/MM/yyyy"));
 
-                //    sb.Append("</dataValidade>");
-                //    sb.Append("<apolice>"); sb.Append(row["contrato_numeroApolice"]); sb.Append("</apolice>");
-                //    sb.Append("</contrato>");
+//                //    sb.Append("</dataValidade>");
+//                //    sb.Append("<apolice>"); sb.Append(row["contrato_numeroApolice"]); sb.Append("</apolice>");
+//                //    sb.Append("</contrato>");
 
-                //    sb.Append("<contratoAdm>");
-                //    sb.Append("<nome>"); sb.Append(row["contratoadm_descricao"]); sb.Append("</nome>");
-                //    sb.Append("<diaVencimento>"); sb.Append(row["contratoADM_DTVC"]); sb.Append("</diaVencimento>");
-                //    sb.Append("</contratoAdm>");
+//                //    sb.Append("<contratoAdm>");
+//                //    sb.Append("<nome>"); sb.Append(row["contratoadm_descricao"]); sb.Append("</nome>");
+//                //    sb.Append("<diaVencimento>"); sb.Append(row["contratoADM_DTVC"]); sb.Append("</diaVencimento>");
+//                //    sb.Append("</contratoAdm>");
 
-                //    sb.Append("<operadora>");
-                //    sb.Append("<nome>"); sb.Append(row["operadora_nome"]); sb.Append("</nome>");
-                //    sb.Append("<cnpj>"); sb.Append(row["operadora_cnpj"]); sb.Append("</cnpj>");
-                //    sb.Append("<telefone>"); sb.Append(row["operadora_fone"]); sb.Append("</telefone>");
-                //    sb.Append("</operadora>");
+//                //    sb.Append("<operadora>");
+//                //    sb.Append("<nome>"); sb.Append(row["operadora_nome"]); sb.Append("</nome>");
+//                //    sb.Append("<cnpj>"); sb.Append(row["operadora_cnpj"]); sb.Append("</cnpj>");
+//                //    sb.Append("<telefone>"); sb.Append(row["operadora_fone"]); sb.Append("</telefone>");
+//                //    sb.Append("</operadora>");
 
-                //    sb.Append("<associadopj>");
-                //    sb.Append("<nome>"); sb.Append(row["estipulante_descricao"]); sb.Append("</nome>");
-                //    sb.Append("<diaVencimento>"); sb.Append(row["estipulante_dataVencimento"]); sb.Append("</diaVencimento>");
-                //    sb.Append("</associadopj>");
+//                //    sb.Append("<associadopj>");
+//                //    sb.Append("<nome>"); sb.Append(row["estipulante_descricao"]); sb.Append("</nome>");
+//                //    sb.Append("<diaVencimento>"); sb.Append(row["estipulante_dataVencimento"]); sb.Append("</diaVencimento>");
+//                //    sb.Append("</associadopj>");
 
-                //    sb.Append("<endereco>");
-                //    sb.Append("<logradouro>"); sb.Append(row["endereco_logradouro"]); sb.Append("</logradouro>");
-                //    sb.Append("<numero>"); sb.Append(row["endereco_numero"]); sb.Append("</numero>");
-                //    sb.Append("<complemento>"); sb.Append(row["endereco_complemento"]); sb.Append("</complemento>");
-                //    sb.Append("<bairro>"); sb.Append(row["endereco_bairro"]); sb.Append("</bairro>");
-                //    sb.Append("<cidade>"); sb.Append(row["endereco_cidade"]); sb.Append("</cidade>");
-                //    sb.Append("<uf>"); sb.Append(row["endereco_uf"]); sb.Append("</uf>");
-                //    sb.Append("<cep>"); sb.Append(row["endereco_cep"]); sb.Append("</cep>");
-                //    sb.Append("</endereco>");
+//                //    sb.Append("<endereco>");
+//                //    sb.Append("<logradouro>"); sb.Append(row["endereco_logradouro"]); sb.Append("</logradouro>");
+//                //    sb.Append("<numero>"); sb.Append(row["endereco_numero"]); sb.Append("</numero>");
+//                //    sb.Append("<complemento>"); sb.Append(row["endereco_complemento"]); sb.Append("</complemento>");
+//                //    sb.Append("<bairro>"); sb.Append(row["endereco_bairro"]); sb.Append("</bairro>");
+//                //    sb.Append("<cidade>"); sb.Append(row["endereco_cidade"]); sb.Append("</cidade>");
+//                //    sb.Append("<uf>"); sb.Append(row["endereco_uf"]); sb.Append("</uf>");
+//                //    sb.Append("<cep>"); sb.Append(row["endereco_cep"]); sb.Append("</cep>");
+//                //    sb.Append("</endereco>");
 
-                //    sb.Append("</beneficiario>");
-                //}
+//                //    sb.Append("</beneficiario>");
+//                //}
 
-                //retornar = sb.ToString();
-                //idsprocessados.Clear();
-                //sb.Remove(0, sb.Length);
+//                //retornar = sb.ToString();
+//                //idsprocessados.Clear();
+//                //sb.Remove(0, sb.Length);
 
-                #endregion
-            }
+//                #endregion
+//            }
 
-            return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
+//            return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
         }
 
         [WebMethod()]
@@ -2076,9 +2077,9 @@ Dornelas
 
             if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
 
-            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generalli"))
+            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generali"))
             {
-                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generalli'.");
+                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generali'.");
             }
 
             if (string.IsNullOrEmpty(idBeneficiario))
@@ -2098,15 +2099,15 @@ Dornelas
 
                 //Dados básicos
                 qry = string.Concat(
-                    "select beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contrato_senha, contrato_produto from beneficiario ",
+                    "select beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contratoadm_descricao,contrato_senha, contrato_produto from beneficiario ",
                     "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
                     "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
                     "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
                     "   inner join operadora on contrato_operadoraId=operadora_id ",
                     "   inner join estipulante on estipulante_id = contrato_estipulanteId",
-                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+//                  "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
                     " where ",
-//                  "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+                    "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
                     "   beneficiario_id=", idBeneficiario,
                     " order by beneficiario_nome ");
 
@@ -2117,13 +2118,182 @@ Dornelas
                     pm.CloseSingleCommandInstance();
                     return retornoPDF("erro", "", "", "Nenhum registro localizado.", true);
                 }
+                //else if (dt.Rows.Count > 1)
+                //{
+                //    pm.CloseSingleCommandInstance();
+                //    return retornoPDF("erro", "", "", "Mais de um contrato retornado. Utilize o metodo GerarCartaoParaContratoPF enviando o parametro idContratoPF.", true);
+                //}
 
-                qry = string.Concat("select itemcobertura_descricao, itemcobertura_valor, status_",
-                    " from tabela_cobertura_item ",
-                    "   inner join tabela_cobertura on tabela_cobertura_item.itemcobertura_tabelaId = tabela_cobertura.tabela_id ",
-                    " where status_='Contratado' and tabela_contratoAdmId = ", dt.Rows[0]["contratoadm_id"]);
+                //localiza o id do contrato PJ
+                qry = "select assocbenef_associadopjId from associadopj_beneficiario where assocbenef_beneficiarioId=" + idBeneficiario;
+                object ret = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret == null || ret == DBNull.Value)
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nenhum relacionamento PJ x PF localizado.", true);
+                }
 
-                DataTable dtCobertura = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+                //localiza o nome do beneficiario PJ
+                qry = "select beneficiario_nome from beneficiario inner join contrato_beneficiario on contratobeneficiario_beneficiarioid = beneficiario_id and contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 where contratobeneficiario_contratoid=" + ret;
+                string pjNome = "";
+                object ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret2 != null && ret2 != DBNull.Value)
+                {
+                    pjNome = toString(ret2);
+                }
+
+                //localiza o CNPJ do beneficiario PJ
+                qry = "select beneficiario_cpf from beneficiario inner join contrato_beneficiario on contratobeneficiario_beneficiarioid = beneficiario_id and contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 where contratobeneficiario_contratoid=" + ret;
+                string pjCNPJ = "";
+                ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret2 != null && ret2 != DBNull.Value)
+                {
+                    pjCNPJ = toString(ret2);
+                }
+                else
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nao foi possivel determinar o cnpj do contrato pj.", true);
+                }
+
+                #region localiza a apolice do beneficiario pj 
+
+                string pjApolice = "";
+
+                if (pjCNPJ != "")
+                {
+                    string[] cnpjGlobal = System.IO.File.ReadAllLines(ConfigurationManager.AppSettings["appCaminhoFisico"] + "global.txt");
+                    string[] cnpjIndividual = System.IO.File.ReadAllLines(ConfigurationManager.AppSettings["appCaminhoFisico"] + "individual.txt");
+
+                    foreach (var cnpj_apol in cnpjIndividual)
+                    {
+                        if (cnpj_apol.Split('-')[0].Trim() == pjCNPJ.Trim())
+                        {
+                            pjApolice = cnpj_apol.Split('-')[1].Trim();
+                            break;
+                        }
+                    }
+
+                    if (pjApolice == "")
+                    {
+                        foreach (var cnpj_apol in cnpjGlobal)
+                        {
+                            if (cnpj_apol.Split('-')[0].Trim() == pjCNPJ.Trim())
+                            {
+                                pjApolice = cnpj_apol.Split('-')[1].Trim();
+                                break;
+                            }
+                        }
+                    }
+
+                }
+
+                if (pjApolice == "")
+                {
+                    qry = "select contrato_numeroapolice from contrato where contrato_id=" + ret;
+                    ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                    if (ret != null && ret != DBNull.Value)
+                    {
+                        pjApolice = toString(ret2);
+                    }
+                }
+                #endregion
+
+                //localiza o contrato adm da pj
+                qry = "select contrato_contratoadmid from contrato where contrato_id=" + ret;
+                ret = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret == null || ret == DBNull.Value)
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nenhum relacionamento PJ x PF localizado.", true);
+                }
+
+                DataTable dtCobertura = null;
+
+                #region exceções VEGA 
+                if (idBeneficiario == "213610") //ANGELO MARCIO BARRETO
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "5.500,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213611") //CARLOS DE ALMEIDA MARTINS
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "30.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213612") //CARLOS DE SOUZA LIMA 
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "30.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213613") //JOAQUIM ARANTES PINTES
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "30.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213614") //MANOEL JOAQUIM DIAS NETO
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "40.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213615") //MARIA ELIZABETH BEZERRA DA NOBREGA
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "20.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213616") //MARIA DILMA BEZERRA DA NOBREGA
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "5.500,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213617") //JOAO VITOR GOMES PORTO COSTA
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "5.500,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                #endregion
+                else
+                {
+                    qry = string.Concat("select itemcobertura_descricao, itemcobertura_valor, status_",
+                        " from tabela_cobertura_item ",
+                        "   inner join tabela_cobertura on tabela_cobertura_item.itemcobertura_tabelaId = tabela_cobertura.tabela_id ",
+                        " where status_='Contratado' and tabela_contratoAdmId = ", ret); //dt.Rows[0]["contratoadm_id"]);
+
+                    dtCobertura = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+                }
+
                 pm.CloseSingleCommandInstance();
 
                 if (dtCobertura == null || dtCobertura.Rows == null || dtCobertura.Rows.Count == 0)
@@ -2131,12 +2301,272 @@ Dornelas
                     return retornoPDF("erro", "", "", "Nenhuma cobertura localizada.", true);
                 }
 
-                pdfGerado = geraPdf(modelo, dt.Rows[0], dtCobertura.Rows);
+                //pjNome = "Teste";
+                pdfGerado = geraPdf(modelo, dt.Rows[0], dtCobertura.Rows, pjNome, pjApolice);
 
                 cartaoGerado = ""; // geraCartao(toString(dt.Rows[0]["contrato_id"]), toString(dt.Rows[0]["contrato_numero"]), toString(dt.Rows[0]["beneficiario_nome"]), toString(dt.Rows[0]["estipulante_descricao"]));
             }
 
             return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
+        }
+        [WebMethod()]
+        public string GerarCartaoParaContratoPF(string idContratoPF, string modelo, string token)
+        {
+            #region validacoes
+
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autorizacao");
+
+            if (string.IsNullOrEmpty(modelo) || (modelo.ToLower() != "capemisa" && modelo.ToLower() != "generali"))
+            {
+                return retorno("erro", "Parametro modelo dever igual a 'capemisa' ou 'generali'.");
+            }
+
+            if (string.IsNullOrEmpty(idContratoPF))
+            {
+                return retorno("erro", "Parâmetro idContratoPF não enviado");
+            }
+
+            #endregion
+
+            string qry = "", pdfGerado = "", cartaoGerado = "";
+            StringBuilder sb = new StringBuilder();
+            System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                pm.UseSingleCommandInstance();
+
+                //Dados básicos
+                qry = string.Concat(
+                    "select beneficiario_id, beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contratoadm_descricao,contrato_senha, contrato_produto from beneficiario ",
+                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
+                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
+                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
+                    "   inner join operadora on contrato_operadoraId=operadora_id ",
+                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
+//                  "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+                    " where ",
+                    "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+                    "   contrato_id=", idContratoPF,
+                    " order by beneficiario_nome ");
+
+                DataTable dt = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+
+                if (dt == null || dt.Rows == null || dt.Rows.Count == 0)
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nenhum registro localizado.", true);
+                }
+
+                string idBeneficiario = toString(dt.Rows[0]["beneficiario_id"]);
+
+                //localiza o ID do CONTRATO PJ
+                qry = "select assocbenef_associadopjId from associadopj_beneficiario where assocbenef_beneficiarioId=" + idBeneficiario + " and assocbenef_contratoPfId=" + idContratoPF;
+                object ret = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret == null || ret == DBNull.Value)
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nenhum relacionamento PJ x PF localizado.", true);
+                }
+
+                //localiza o nome do beneficiario PJ
+                qry = "select beneficiario_nome from beneficiario inner join contrato_beneficiario on contratobeneficiario_beneficiarioid = beneficiario_id and contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 where contratobeneficiario_contratoid=" + ret;
+                string pjNome = "";
+                object ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret2 != null && ret2 != DBNull.Value)
+                {
+                    pjNome = toString(ret2);
+                }
+
+                //localiza o CNPJ do beneficiario PJ
+                qry = "select beneficiario_cpf from beneficiario inner join contrato_beneficiario on contratobeneficiario_beneficiarioid = beneficiario_id and contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 where contratobeneficiario_contratoid=" + ret;
+                string pjCNPJ = "";
+                ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret2 != null && ret2 != DBNull.Value)
+                {
+                    pjCNPJ = toString(ret2);
+                }
+                else
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nao foi possivel determinar o cnpj do contrato pj.", true);
+                }
+
+                #region localiza a apolice do beneficiario pj 
+
+                string pjApolice = "";
+
+                if (pjCNPJ != "")
+                {
+                    string[] cnpjGlobal = System.IO.File.ReadAllLines(ConfigurationManager.AppSettings["appCaminhoFisico"] + "global.txt");
+                    string[] cnpjIndividual = System.IO.File.ReadAllLines(ConfigurationManager.AppSettings["appCaminhoFisico"] + "individual.txt");
+
+                    foreach (string cnpj_apol in cnpjIndividual)
+                    {
+                        if (cnpj_apol.Split('-')[0].Trim() == pjCNPJ.Trim())
+                        {
+                            pjApolice = cnpj_apol.Split('-')[1].Trim();
+                            break;
+                        }
+                    }
+
+                    if (pjApolice == "")
+                    {
+                        foreach (string cnpj_apol in cnpjGlobal)
+                        {
+                            if (cnpj_apol.Split('-')[0].Trim() == pjCNPJ.Trim())
+                            {
+                                pjApolice = cnpj_apol.Split('-')[1].Trim();
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (pjApolice == "")
+                {
+                    qry = "select contrato_numeroapolice from contrato where contrato_id=" + ret;
+                    ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                    if (ret != null && ret != DBNull.Value)
+                    {
+                        pjApolice = toString(ret2);
+                    }
+                }
+                #endregion
+
+                ////localiza a apolice do beneficiario PJ
+                //qry = "select contrato_numeroapolice from contrato where contrato_id=" + ret;
+                //string pjApolice = "";
+                //ret2 = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                //if (ret2 != null && ret2 != DBNull.Value)
+                //{
+                //    pjApolice = toString(ret2);
+                //}
+
+                //localiza o contrato adm da PJ
+                qry = "select contrato_contratoadmid from contrato where contrato_id=" + ret;
+                ret = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                if (ret == null || ret == DBNull.Value)
+                {
+                    pm.CloseSingleCommandInstance();
+                    return retornoPDF("erro", "", "", "Nenhum relacionamento PJ x PF localizado.", true);
+                }
+
+                DataTable dtCobertura = null;
+
+                #region exceções VEGA 
+                if (idBeneficiario == "213610") //ANGELO MARCIO BARRETO
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "5.500,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213611") //CARLOS DE ALMEIDA MARTINS
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "30.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213612") //CARLOS DE SOUZA LIMA 
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "30.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213613") //JOAQUIM ARANTES PINTES
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "30.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213614") //MANOEL JOAQUIM DIAS NETO
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "40.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213615") //MARIA ELIZABETH BEZERRA DA NOBREGA
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "20.000,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213616") //MARIA DILMA BEZERRA DA NOBREGA
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "5.500,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                else if (idBeneficiario == "213617") //JOAO VITOR GOMES PORTO COSTA
+                {
+                    dtCobertura = preparaDataTableCoberturasIndifiduais(ref dtCobertura);
+                    DataRow row1 = dtCobertura.NewRow();
+                    row1["itemcobertura_descricao"] = "MORTE QUALQUER CAUSA";
+                    row1["itemcobertura_valor"] = "5.500,00";
+                    row1["status_"] = "Contratado";
+                    dtCobertura.Rows.InsertAt(row1, 0);
+                }
+                #endregion
+                else
+                {
+                    qry = string.Concat("select itemcobertura_descricao, itemcobertura_valor, status_",
+                        " from tabela_cobertura_item ",
+                        "   inner join tabela_cobertura on tabela_cobertura_item.itemcobertura_tabelaId = tabela_cobertura.tabela_id ",
+                        " where status_='Contratado' and tabela_contratoAdmId = ", ret); //dt.Rows[0]["contratoadm_id"]);
+
+                    dtCobertura = LocatorHelper.Instance.ExecuteQuery(qry, "result", pm).Tables[0];
+                }
+
+                pm.CloseSingleCommandInstance();
+
+                if (dtCobertura == null || dtCobertura.Rows == null || dtCobertura.Rows.Count == 0)
+                {
+                    return retornoPDF("erro", "", "", "Nenhuma cobertura localizada.", true);
+                }
+
+                pdfGerado = geraPdf(modelo, dt.Rows[0], dtCobertura.Rows, pjNome, pjApolice);
+
+                cartaoGerado = ""; // geraCartao(toString(dt.Rows[0]["contrato_id"]), toString(dt.Rows[0]["contrato_numero"]), toString(dt.Rows[0]["beneficiario_nome"]), toString(dt.Rows[0]["estipulante_descricao"]));
+            }
+
+            return retornoPDF("ok", pdfGerado, cartaoGerado, "", true);
+        }
+
+        DataTable preparaDataTableCoberturasIndifiduais(ref DataTable dt)
+        {
+            dt = new DataTable();
+            dt.Columns.Add("itemcobertura_descricao");
+            dt.Columns.Add("itemcobertura_valor");
+            dt.Columns.Add("status_");
+
+            DataRow row2 = dt.NewRow();
+            row2["itemcobertura_descricao"] = "ASSISTENCIA FUNERAL INDIVIDUAL";
+            row2["itemcobertura_valor"] = "3.000,00";
+            row2["status_"] = "Contratado";
+            dt.Rows.Add(row2);
+
+            return dt;
         }
 
         long Importar(CartaoDTO dto, out string mensagem)
@@ -2392,7 +2822,7 @@ Dornelas
             }
         }
 
-        string geraPdf(string modelo, DataRow rowDadosBasicos, DataRowCollection rowDadosCobertura)
+        string geraPdf(string modelo, DataRow rowDadosBasicos, DataRowCollection rowDadosCobertura, string pjNome = "", string pjApolice = "")
         {
             #region text
 
@@ -2429,11 +2859,20 @@ Dornelas
 
             string senha = toString(rowDadosBasicos["contrato_senha"]);
             string ramo = toString(rowDadosBasicos["contrato_ramo"]);
-            string apolice = toString(rowDadosBasicos["contrato_numeroApolice"]);
+
+            string apolice = pjApolice;
+            if (string.IsNullOrEmpty(apolice)) toString(rowDadosBasicos["contrato_numeroApolice"]);
+
             string certificado = toString(rowDadosBasicos["contrato_numeroMatricula"]);
             string vigencia = toDate(rowDadosBasicos["contrato_vigencia"]).ToString("dd/MM/yyyy"); //inicio do risco
-            string vigenciaFim = toDate(rowDadosBasicos["contrato_vigencia"]).AddYears(1).ToString("dd/MM/yyyy"); //Fim Vigência
-            string estipulanteNome = toString(rowDadosBasicos["estipulante_descricao"]);
+            string vigenciaFim = ""; // toDate(rowDadosBasicos["contrato_vigencia"]).AddYears(1).ToString("dd/MM/yyyy"); //Fim Vigência
+
+            string estipulanteNome = "";
+            if (string.IsNullOrEmpty(pjNome))
+                estipulanteNome = toString(rowDadosBasicos["contratoadm_descricao"]); // toString(rowDadosBasicos["estipulante_descricao"]);
+            else
+                estipulanteNome = pjNome;
+
             string emissao = toDate(rowDadosBasicos["beneficiario_data"]).ToString("dd/MM/yyyy");
             string contratoId = toString(rowDadosBasicos["contrato_id"]);
             string produto = toString(rowDadosBasicos["contrato_produto"]);
@@ -2448,7 +2887,7 @@ Dornelas
             if (modelo.ToLower() == "capemisa")
                 indicePagina = 0; //pdfOriginal = caminhoPdfs + "mod-capemisa.pdf";
             else
-                indicePagina = 1; // pdfOriginal = caminhoPdfs + "mod-generalli.pdf";
+                indicePagina = 1; // pdfOriginal = caminhoPdfs + "mod-generali.pdf";
 
             pdfOriginal = caminhoPdfs + "mod.pdf";
 
@@ -2476,7 +2915,7 @@ Dornelas
 
             CultureInfo cinfo = new CultureInfo("pt-Br");
 
-            if (modelo == "capemisa")
+            if (modelo.ToLower() == "capemisa")
             {
                 #region capemisa
 
@@ -2491,6 +2930,11 @@ Dornelas
                 XTextFormatter tf = new XTextFormatter(gfx);
                 tf.Alignment = XParagraphAlignment.Justify;
                 tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
+
+                if (ramo == null) ramo = "";
+                if (apolice == null) apolice = "";
+
+                if (estipulanteNome.Length > 39) estipulanteNome = estipulanteNome.Substring(0, 39);
 
                 gfx.DrawString(certificado, font, XBrushes.Black, 371, 297);
                 gfx.DrawString(ramo, font, XBrushes.Black, 316, 321);
@@ -2507,10 +2951,10 @@ Dornelas
 
                 for (int i = 0; i < rowDadosCobertura.Count; i++)
                 {
-                    if (toString(rowDadosCobertura[i][0]).Length <= 45)
+                    if (toString(rowDadosCobertura[i][0]).Length <= 31)
                         gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 42, 395 + (i * 10)); //horizontal - vertical
                     else
-                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 45), font, XBrushes.Black, 42, 395 + (i * 10));
+                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 31), font, XBrushes.Black, 42, 395 + (i * 10));
 
                     gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 177, 395 + (i * 10));
 
@@ -2526,9 +2970,10 @@ Dornelas
                 }
 
                 //CARTAO
+                if (produto == null) produto = "";
                 string via = numero.Replace(".","").Substring(14, 1).PadLeft(3, '0');
-                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 715);
-                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 730);
+                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 725); //, 715
+                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 740); //, 730
                 gfx.DrawString(produto.ToUpper(), fArialBold7, XBrushes.Black, 306, 760);
                 gfx.DrawString("Via " + via, fArial7, XBrushes.Black, 385, 760);
                 gfx.DrawString("Validade consulte nosso site", fArial7, XBrushes.Black, 306, 780);
@@ -2538,6 +2983,8 @@ Dornelas
             else
             {
                 #region generali
+
+                if (estipulanteNome.Length > 34) estipulanteNome = estipulanteNome.Substring(0, 34);
 
                 gfx.DrawString(nome.Split(' ')[0], font, XBrushes.Black, 208, 43);
                 gfx.DrawString(numero, font, XBrushes.Black, 336, 43);
@@ -2549,6 +2996,10 @@ Dornelas
                 XTextFormatter tf = new XTextFormatter(gfx);
                 tf.Alignment = XParagraphAlignment.Justify;
                 tf.DrawString(text, fontTexto, XBrushes.Black, rect, XStringFormats.TopLeft);
+
+                if (ramo == null) ramo = "";
+                if (apolice == null) apolice = "";
+                if (certificado == null) certificado = "";
 
                 gfx.DrawString(certificado, font, XBrushes.Black, 371, 286);
                 gfx.DrawString(ramo, font, XBrushes.Black, 396, 315);
@@ -2566,18 +3017,21 @@ Dornelas
                 //dados de cobertura
                 for (int i = 0; i < rowDadosCobertura.Count; i++)
                 {
-                    if (toString(rowDadosCobertura[i][0]).Length <= 62)
+                    if (toString(rowDadosCobertura[i][0]).Length <= 35)
                         gfx.DrawString(toString(rowDadosCobertura[i][0]), font, XBrushes.Black, 42, 395 + (i * 10)); //horizontal - vertical
                     else
-                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 62), font, XBrushes.Black, 42, 395 + (i * 10));
+                        gfx.DrawString(toString(rowDadosCobertura[i][0]).Substring(0, 35), font, XBrushes.Black, 42, 395 + (i * 10));
 
                     gfx.DrawString(toDecimal(rowDadosCobertura[i][1], cinfo).ToString("N2"), font, XBrushes.Black, 193, 395 + (i * 10));
                 }
 
                 //cartao
-                string via = numero.Substring(14, 1).PadLeft(3, '0');
-                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 715);
-                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 730);
+                if (produto == null) produto = "";
+
+                //string via = numero.Substring(14, 1).PadLeft(3, '0');
+                string via = numero.Replace(".", "").Substring(14, 1).PadLeft(3, '0');
+                gfx.DrawString(numero, fCartaoNome, XBrushes.Black, 306, 725); //, 715
+                gfx.DrawString(nome.ToUpper(), fCartaoNome, XBrushes.Black, 306, 740); //, 730
                 gfx.DrawString(produto.ToUpper(), fArialBold7, XBrushes.Black, 306, 760);
                 gfx.DrawString("Via " + via, fArial7, XBrushes.Black, 385, 760);
                 gfx.DrawString("Validade consulte nosso site", fArial7, XBrushes.Black, 306, 780);
@@ -2622,6 +3076,33 @@ Dornelas
 
         #region Relação de associados 
 
+        public DataTable ObterRelacaoSegurado_DT(string idPJ, string token)
+        {
+            if (token != this.TokenGuid) return null;
+            if (string.IsNullOrEmpty(idPJ)) return null;
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                string sql = string.Concat(
+                    "select beneficiario_id, beneficiario_nome,contrato_numero,beneficiario_cpf,beneficiario_dataNascimento,contrato_ramo,contrato_numeroApolice,contrato_numeroMatricula,contrato_vigencia,contrato_vigencia,estipulante_descricao,beneficiario_data,contrato_id,contratoadm_id, contrato_senha, contrato_produto from beneficiario ",
+                    "   inner join contrato_beneficiario on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_beneficiarioId = beneficiario_id ",
+                    "   inner join contrato on contratobeneficiario_ativo=1 and contratobeneficiario_tipo=0 and contratobeneficiario_contratoId = contrato_id ",
+                    "   inner join contratoadm on contratoadm_id = contrato_contratoAdmId ",
+                    "   inner join operadora on contrato_operadoraId=operadora_id ",
+                    "   inner join estipulante on estipulante_id = contrato_estipulanteId",
+                    "   inner join associadopj_beneficiario on assocbenef_beneficiarioId = beneficiario_id",
+//                  "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+                    " where ",
+                    "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+                    "   assocbenef_associadopjId = ", idPJ,
+                    " order by beneficiario_nome ");
+
+                DataTable dt = LocatorHelper.Instance.ExecuteQuery(sql, "result", pm).Tables[0];
+
+                return dt;
+            }
+        }
+
         [WebMethod]
         public string ObterRelacaoSegurado(string idPJ, string token)
         {
@@ -2638,9 +3119,9 @@ Dornelas
                     "   inner join operadora on contrato_operadoraId=operadora_id ",
                     "   inner join estipulante on estipulante_id = contrato_estipulanteId",
                     "   inner join associadopj_beneficiario on assocbenef_beneficiarioId = beneficiario_id",
-                    "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
+//                  "   left join endereco on endereco_donoId=beneficiario_id and endereco_donoTipo=0",
                     " where ",
-//                  "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
+                    "   contrato_cancelado <> 1 and contrato_inativo <> 1 and ",
                     "   assocbenef_associadopjId = ", idPJ,
                     " order by beneficiario_nome ");
 
@@ -2671,6 +3152,10 @@ Dornelas
                     sb.Append("<cpf><![CDATA[");
                     sb.Append(row["beneficiario_cpf"]);
                     sb.Append("]]></cpf>");
+
+                    sb.Append("<contratoid><![CDATA[");
+                    sb.Append(row["contrato_id"]);
+                    sb.Append("]]></contratoid>");
 
                     sb.Append("</beneficiario>");
                 }
@@ -2725,6 +3210,529 @@ Dornelas
         #endregion
 
         #region testes ----------
+
+        //[WebMethod]////////////////////
+        public string GerarBoletoV2_Teste(string token, string idContrato, string qtdVidas, string vencimento, string competencia)
+        {
+            token = this.TokenGuid;
+            idContrato = "218033";
+            qtdVidas = "27";
+            competencia = "12/2017";
+            vencimento = "10/12/2017";
+
+            if (token != this.TokenGuid) return retorno("erro", "Erro de autenticacao");
+
+            string[] arr = vencimento.Split('/');
+            if (arr.Length != 3)
+            {
+                return retorno("erro", "Data de vencimento não estava em um formato válido: dd/MM/yyyy");
+            }
+
+            if (string.IsNullOrEmpty(competencia) || competencia.Length != 7)
+            {
+                return retorno("erro", "Competencia não estava em um formato válido: MM/yyyy");
+            }
+
+            try
+            {
+                DateTime dtComp = new DateTime(toInt(competencia.Split('/')[1]), toInt(competencia.Split('/')[0]), 1);
+            }
+            catch
+            {
+                return retorno("erro", "Competencia não estava em um formato válido: MM/yyyy");
+            }
+
+            DateTime dataVencimento = new DateTime(
+                Convert.ToInt32(arr[2]), Convert.ToInt32(arr[1]), Convert.ToInt32(arr[0]), 23, 59, 59, 900);
+
+            string boletoUrl = "", status = "", instrucoes = "";
+            bool calculaJuro = false;
+
+            using (PersistenceManager pm = new PersistenceManager())
+            {
+                pm.BeginTransactionContext();
+
+                try
+                {
+                    var contrato = new Contrato(idContrato);
+                    pm.Load(contrato);
+
+                    if (contrato.Cancelado || contrato.Inativo)
+                    {
+                        CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                        logErr01.CobrancaValor = 0;
+                        logErr01.PropostaID = idContrato;
+                        logErr01.DataEnviada = vencimento;
+                        logErr01.Vidas = toInt(qtdVidas);
+                        logErr01.Msg = "Contrato inativo: " + contrato.ID;
+                        logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                        pm.Save(logErr01);
+
+                        pm.Rollback();
+                        return retorno("erro", "Contrato inativo: " + contrato.ID);
+                    }
+
+                    #region Verifica se o ja há uma cobrança paga para a competencia
+
+                    object aux = LocatorHelper.Instance.ExecuteScalar(
+                        string.Concat("select cobranca_id from cobranca where cobranca_pago=1 and cobranca_propostaId=", contrato.ID, " and (cobranca_cancelada is null or cobranca_cancelada=0) and cobranca_competencia='", competencia, "'"),
+                        null, null, pm);
+
+                    if (aux != null && aux != DBNull.Value && Convert.ToString(aux).Trim() != "")
+                    {
+                        CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                        logErr01.CobrancaValor = 0;
+                        logErr01.PropostaID = idContrato;
+                        logErr01.DataEnviada = vencimento;
+                        logErr01.Vidas = toInt(qtdVidas);
+                        logErr01.Msg = "Competencia ja liquidada: " + competencia;
+                        logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                        pm.Save(logErr01);
+
+                        pm.Rollback();
+                        return retorno("erro", "Competencia ja liquidada: " + competencia);
+                    }
+                    #endregion
+
+                    string erro = "";
+                    decimal valorPorVida = this.calulaValorPorVida(pm, contrato, vencimento, out erro);
+                    if (valorPorVida == 0)
+                    {
+                        pm.Rollback();
+                        return retorno("erro", erro);
+                    }
+
+                    int diaVenctoProjeto = this.toInt(LocatorHelper.Instance.ExecuteScalar(
+                        string.Concat("select contratoADM_DTVC from contratoadm where contratoadm_id=", contrato.ContratoADMID),
+                        null, null, pm));
+
+                    #region IUGU - Customer =====================================
+
+                    var titular = ContratoBeneficiario.CarregarTitular(contrato.ID, pm);
+
+                    if (string.IsNullOrEmpty(contrato.IuguCustumerId) && contrato.IuguHabilitado)
+                    {
+                        //TODO: Denis COMENTAr linha abaixo
+                        //titular.BeneficiarioEmail = "matheussi@gmail.com";
+
+                        //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                        using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                        {
+                            contrato.IuguCustumerId = proxy.ObterCustomer(
+                                null, Convert.ToString(contrato.ID), titular.BeneficiarioEmail, titular.BeneficiarioNome, token);
+
+                            contrato.AtualizarIuguCustomerId(pm);
+                        }
+                    }
+
+                    #endregion ====================================================
+
+                    #region IUGU - Subscription =====================================
+
+                    if (string.IsNullOrEmpty(contrato.IuguSubscriptionId) && contrato.IuguHabilitado)
+                    {
+                        //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                        using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                        {
+                            string msg = "";
+                            bool ok = proxy.ObterSubscription(contrato.IuguCustumerId, token, out msg);
+
+                            if (ok)
+                            {
+                                contrato.IuguSubscriptionId = msg;
+                                contrato.AtualizarIuguSubscriptonId(pm);
+                            }
+                            else
+                            {
+                                pm.Rollback();
+                                return retorno("erro", msg);
+                            }
+                        }
+                    }
+
+                    #endregion ====================================================
+
+                    //TODO: denis, voltar o que estava antes?
+                    var cobrancas = Cobranca.CarregarTodas(idContrato, true, pm); //var cobrancas = Cobranca.CarregarTodas(idContrato, false, pm);
+                    int ultimaParcela = 1;
+
+                    if (cobrancas != null && cobrancas.Count > 0) ultimaParcela = cobrancas.Max(c => c.Parcela) + 1;
+
+                    decimal acrescimoOuDesconto = 0;
+                    int acrescimoOuDescontoTipo = -1;
+
+                    #region calcula acréscimos ou descontos de contrato
+
+                    if (contrato.DescontoAcrescimoTipo != 0)
+                    {
+                        if (contrato.DescontoAcrescimoData == DateTime.MinValue ||
+                            contrato.DescontoAcrescimoData >= DateTime.Now)
+                        {
+                            if (contrato.DescontoAcrescimoTipo == 1)
+                            {
+                                acrescimoOuDescontoTipo = 1;
+                                acrescimoOuDesconto = contrato.DescontoAcrescimoValor;
+                            }
+                            else
+                            {
+                                acrescimoOuDescontoTipo = 2;
+                                acrescimoOuDesconto = (-1 * contrato.DescontoAcrescimoValor);
+                            }
+                        }
+
+                        if (contrato.DescontoAcrescimoData == DateTime.MinValue)
+                        {
+                            contrato.DescontoAcrescimoTipo = 0;
+                            pm.Save(contrato);//////////////////////////////////
+                        }
+                    }
+                    #endregion
+
+
+                    //salva a cobranca
+                    Cobranca cobranca = new Cobranca();
+                    cobranca.Parcela = ultimaParcela;
+                    cobranca.DataVencimento = dataVencimento;
+                    if (acrescimoOuDesconto > decimal.Zero) cobranca.AcrescimoDeContrato = acrescimoOuDesconto;
+                    if (acrescimoOuDescontoTipo > -1) cobranca.AcrescimoDeContratoTipo = acrescimoOuDescontoTipo;
+
+                    if (cobranca.Parcela <= 1)
+                    {
+                        #region comentado
+                        //aux = LocatorHelper.Instance.ExecuteScalar(
+                        //    string.Concat("select estipulante_dataVencimento from estipulante where estipulante_id=", contrato.EstipulanteID),
+                        //    null, null, pm);
+
+                        //if (aux != null && aux != DBNull.Value)
+                        //{
+                        //    if (dataVencimento.Month == DateTime.Now.Month &&
+                        //        dataVencimento.Day > Convert.ToInt32(aux))
+                        //    {
+                        //        cobranca.DataVencimento = DateTime.Now.AddDays(2);
+                        //        cobranca.DataVencimento = new DateTime(cobranca.DataVencimento.Year, cobranca.DataVencimento.Month, cobranca.DataVencimento.Day, 23, 59, 59, 990);
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    if (dataVencimento < DateTime.Now)
+                        //    {
+                        //        cobranca.DataVencimento = DateTime.Now.AddDays(2);
+                        //        cobranca.DataVencimento = new DateTime(cobranca.DataVencimento.Year, cobranca.DataVencimento.Month, cobranca.DataVencimento.Day, 23, 59, 59, 990);
+                        //    }
+                        //}
+                        #endregion
+
+                        cobranca.Parcela = 1;
+
+                        cobranca.DataVencimento = calcula1oVencimento(dataVencimento, diaVenctoProjeto);
+
+                        #region comentado 2
+                        //regras dos dias 28,29,30 e 31
+                        #endregion
+                    }
+                    else
+                    {
+                        string qry = "";
+                        //Regra 2: não pode gerar uma cobrança para um mês em que ja há cobrança
+                        try
+                        {
+                            qry = string.Concat(
+                                "select cobranca_id from ",
+                                "   cobranca where ",
+                                "       (cobranca_cancelada is null or cobranca_cancelada=0) and cobranca_propostaid=", contrato.ID,
+                                "       and cobranca_competencia='", competencia, "'");
+
+                            aux = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                            if (aux != null && aux != DBNull.Value && Convert.ToString(aux).Trim() != "")
+                            {
+                                CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                                logErr01.CobrancaValor = 0;
+                                logErr01.PropostaID = idContrato;
+                                logErr01.DataEnviada = vencimento;
+                                logErr01.Vidas = toInt(qtdVidas);
+                                logErr01.Msg = "Ja existe uma cobranca gerada para a competencia " + competencia;
+                                logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                                pm.Save(logErr01);
+
+                                pm.Rollback();
+
+                                return retorno("erro", "Ja existe uma cobranca gerada para a competencia " + competencia);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            pm.Rollback();
+
+                            return retorno("erro", ex.Message);
+                        }
+
+                        #region Regra 1: não pode gerar uma cobrança se não houver cobrança gerada no mês anterior
+                        try
+                        {
+                            DateTime refe = new DateTime(
+                                toInt(competencia.Split('/')[1]), toInt(competencia.Split('/')[0]), 1).AddMonths(-1);
+
+                            qry = string.Concat(
+                                "select cobranca_id from ",
+                                "   cobranca where ",
+                                "       cobranca_propostaid=", contrato.ID, //cobranca_cancelada=0 and 
+                                "       and cobranca_competencia='", refe.ToString("MM/yyyy"), "'"); //"       and year(cobranca_dataVencimento)=", refe.Year);
+
+                            aux = LocatorHelper.Instance.ExecuteScalar(qry, null, null, pm);
+                            if ((aux == null || aux == DBNull.Value || Convert.ToString(aux).Trim() == "") && DateTime.Now > new DateTime(2018, 2, 1))
+                            {
+                                CobrancaLog.CobrancaCriadaLog logErr01 = new CobrancaLog.CobrancaCriadaLog();
+                                logErr01.CobrancaValor = 0;
+                                logErr01.PropostaID = idContrato;
+                                logErr01.DataEnviada = vencimento;
+                                logErr01.Vidas = toInt(qtdVidas);
+                                logErr01.Msg = "Sem cobranca na comp. anterior: " + refe.ToString("MM/yyyy");
+                                logErr01.Origem = (int)CobrancaLog.Fonte.WebService;
+                                pm.Save(logErr01);
+
+                                pm.Rollback();
+
+                                return retorno("erro", "Nao identificamos cobranca gerada na competencia anterior: " + refe.ToString("MM/yyyy"));
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            pm.Rollback();
+
+                            return retorno("erro", ex.Message);
+                        }
+                        #endregion
+
+                        // Parcelas 2 em diante: só podem ser geradas entre o dia 1 do mes de vencimento e 
+                        // 15 dias após a data de vencimento
+
+                        DateTime vencimentoPROJETO = new DateTime(dataVencimento.Year, dataVencimento.Month, diaVenctoProjeto, 23, 59, 59, 995);
+
+                        // Intervarlo permitido para geração de cobranças
+                        DateTime inicioPeriodo = new DateTime(dataVencimento.Year, dataVencimento.Month, 1);
+                        DateTime fimPeriodo = new DateTime(vencimentoPROJETO.AddDays(15).Year, vencimentoPROJETO.AddDays(15).Month, vencimentoPROJETO.AddDays(15).Day, 23, 59, 59, 990); //new DateTime(dataVencimento.AddDays(15).Year, dataVencimento.AddDays(15).Month, dataVencimento.AddDays(15).Day, 23, 59, 59, 990);
+
+                        if (DateTime.Now < inicioPeriodo || DateTime.Now > fimPeriodo)
+                        {
+                            //Emissão fora do periodo permitido
+                            pm.Rollback();
+                            return retorno("erro", "Emissão fora do periodo permitido que é de " + inicioPeriodo.ToString("dd/MM/yyyy") + " a " + fimPeriodo.ToString("dd/MM/yyyy"));
+                        }
+
+                        // Se a cobrança for emitida após o vencimento original, mas dentro do período permitido 
+                        if (DateTime.Now.Day > vencimentoPROJETO.Day && DateTime.Now.Day <= fimPeriodo.Day) //if (DateTime.Now.Day > dataVencimento.Day && DateTime.Now.Day <= fimPeriodo.Day)
+                        {
+                            DateTime novoVencimento = new DateTime(
+                                DateTime.Now.AddDays(2).Year,
+                                DateTime.Now.AddDays(2).Month,
+                                DateTime.Now.AddDays(2).Day, 23, 59, 59, 900);
+
+                            cobranca.DataVencimento = novoVencimento;
+
+                            instrucoes = "1";
+                            calculaJuro = true;
+                        }
+                    }
+
+                    //Devido à margem para registro no banco ...
+                    DateTime validadePagto = LC.Web.PadraoSeguros.Facade.CobrancaFacade.Instancia.calculaValidadeBoleto(cobranca.DataCriacao);
+                    if (cobranca.DataVencimento < validadePagto)
+                    {
+                        cobranca.DataVencimento = new DateTime(
+                            validadePagto.AddDays(1).Year,
+                            validadePagto.AddDays(1).Month,
+                            validadePagto.AddDays(1).Day, 23, 59, 59, 900);
+                    }
+
+                    cobranca.Valor = (valorPorVida * Convert.ToDecimal(qtdVidas));
+
+                    if (calculaJuro)
+                    {
+                        cobranca.CalculaJurosMulta(dataVencimento);
+                    }
+
+                    cobranca.Valor += acrescimoOuDesconto;
+
+                    cobranca.Tipo = Convert.ToInt32(Cobranca.eTipo.Normal);
+                    cobranca.CobrancaRefID = null;
+                    cobranca.DataPgto = DateTime.MinValue;
+                    cobranca.ValorPgto = Decimal.Zero;
+                    cobranca.Pago = false;
+                    cobranca.PropostaID = idContrato;
+                    cobranca.Cancelada = false;
+                    cobranca.QtdVidas = Convert.ToInt32(qtdVidas);
+                    cobranca.Competencia = competencia;
+
+                    #region Verifica se tem configuração de adicional para o boleto
+
+                    if (contrato.IuguHabilitado == false) //somente para quem não é iugu
+                    {
+                        DataTable dt = LC.Web.PadraoSeguros.Facade.CobrancaFacade.Instancia.CarregaAdicionais(contrato, pm);
+                        System.Globalization.CultureInfo cinfo = new System.Globalization.CultureInfo("pt-Br");
+
+                        if (dt != null)
+                        {
+                            if (toDecimal(dt.Rows[0]["Valor"], cinfo) > decimal.Zero)
+                            {
+                                cobranca.AdicionalID = toInt(dt.Rows[0]["ID"]);
+                                cobranca.Valor += toDecimal(dt.Rows[0]["Valor"], cinfo);
+                                cobranca.InstrucaoAdicional = string.Concat(toString(dt.Rows[0]["Texto"]), " ", toDecimal(dt.Rows[0]["Valor"], cinfo).ToString("C"));
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    pm.Save(cobranca);
+
+                    #region IUGU - Boleto =========================================
+
+                    if (contrato.IuguHabilitado && !string.IsNullOrEmpty(contrato.IuguCustumerId))
+                    {
+                        var ends = Endereco.CarregarPorDono(titular.BeneficiarioID, Endereco.TipoDono.Beneficiario, pm);
+
+                        if (ends == null || ends.Count == 0)
+                        {
+                            pm.Rollback();
+                            return retorno("erro", "Não foi possível localizar o endereço do beneficiário");
+                        }
+
+                        iugu_srv.PagadorVO vo = new iugu_srv.PagadorVO();
+                        vo.bairro = ends[0].Bairro;
+                        vo.cep = ends[0].CEP;
+                        vo.cidade = ends[0].Cidade;
+                        vo.cpfOuCnpj = titular.BeneficiarioCPF;
+                        vo.email = titular.BeneficiarioEmail;
+                        vo.estado = ends[0].UF;
+                        vo.nome = titular.BeneficiarioNome;
+                        vo.numero = ends[0].Numero;
+                        vo.pais = "Brasil";
+                        vo.rua = ends[0].Logradouro;
+
+                        #region IUGU - Itens ====================================================================
+
+                        //string[][] itens = null; // new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
+
+                        //if (contrato.IuguHabilitado)
+                        //{
+                        //    var itensProduto = Produto.CarregarItensVigentes(contrato.ContratoADMID, pm);
+                        //    if (itensProduto != null)
+                        //    {
+                        //        itens = new string[1 + itensProduto.Count][];
+                        //        itens[0] = new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                        //        for (int k = 0; k < itensProduto.Count; k++) //foreach (var itemProd in itensProduto)
+                        //        {
+                        //            itens[k + 1] = new string[] { itensProduto[k].Nome, itensProduto[k].Valor.ToString("N2").Replace(".", "").Replace(",", "") };
+
+                        //            cobranca.Valor += itensProduto[k].Valor;
+                        //        }
+
+                        //        ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, pm);
+                        //    }
+                        //    else
+                        //    {
+                        //        itens = new string[][] { new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } };
+                        //    }
+                        //}
+                        #endregion
+
+                        #region IUGU - Itens ====================================================================
+
+                        string[][] itens = null;
+
+                        if (contrato.IuguHabilitado)
+                        {
+                            var itensProduto = Produto.CarregarItensVigentes(contrato.ContratoADMID, pm);
+                            if (itensProduto != null)
+                            {
+                                for (int k = 0; k < itensProduto.Count; k++) //foreach (var itemProd in itensProduto)
+                                {
+                                    cobranca.Valor += (itensProduto[k].Valor * Convert.ToDecimal(cobranca.QtdVidas));
+                                }
+
+                                ProdutoITEM_Cobranca.SalvarRelacionamento(cobranca.ID, itensProduto, cobranca.QtdVidas, pm); //TODO:gravar qtd de vidas tb
+                            }
+
+                            //itens = new string[][] 
+                            //{
+                            //    new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } 
+                            //};
+                            itens = new string[][] 
+                            {
+                                new string[] { "Clube Azul", cobranca.Valor.ToString("N2").Replace(".", "").Replace(",", "") } ,
+                                new string[] { "Custo de cobrança", System.Configuration.ConfigurationManager.AppSettings["iugu_taxa"] } 
+                            };
+                        }
+                        #endregion
+
+                        //using (iugu_srv_test.iugu_interop proxy = new iugu_srv_test.iugu_interop())
+                        using (iugu_srv.iugu_interop proxy = new iugu_srv.iugu_interop())
+                        {
+                            string msg = "";
+                            string boletoIdCrypto = new Util.Crypto.SecureQueryString().Encrypt(Convert.ToString(cobranca.ID));
+                            bool iuguOk = proxy.NovoBoletoAsync(contrato.IuguCustumerId, contrato.IuguSubscriptionId, cobranca.DataVencimento, itens, vo, boletoIdCrypto, out msg);
+
+                            if (iuguOk)
+                            {
+                                cobranca.Iugu_Id = msg.Split(new string[] { "___" }, StringSplitOptions.None)[1];
+                                cobranca.Iugu_Url = msg.Split(new string[] { "___" }, StringSplitOptions.None)[0];
+                                cobranca.ArquivoIDUltimoEnvio = -10;
+                                pm.Save(cobranca);
+                            }
+                            else
+                            {
+                                pm.Rollback();
+                                return retorno("erro", msg);
+                            }
+                        }
+                    }
+                    #endregion
+
+                    //atualiza a qtd de vidas na proposta
+                    string sql = string.Concat("update contrato set contrato_qtdVidas=", qtdVidas, " where contrato_id=", idContrato);
+                    NonQueryHelper.Instance.ExecuteNonQuery(sql, pm);
+
+                    ContratoBeneficiario cb = ContratoBeneficiario.CarregarTitular(idContrato, pm);
+
+                    CobrancaLog.CobrancaCriadaLog log = new CobrancaLog.CobrancaCriadaLog();
+                    log.CobrancaID = cobranca.ID;
+                    log.CobrancaValor = cobranca.Valor;
+                    log.PropostaID = idContrato;
+                    log.CobrancaVencimento = cobranca.DataVencimento;
+                    log.DataEnviada = vencimento;
+                    log.Vidas = toInt(qtdVidas);
+                    log.Origem = (int)CobrancaLog.Fonte.WebService;
+
+                    try
+                    {
+                        pm.Save(log);
+                    }
+                    catch
+                    {
+                    }
+
+                    pm.Rollback();
+
+                    if (contrato.IuguHabilitado && !string.IsNullOrEmpty(cobranca.Iugu_Url))
+                    {
+                        status = "ok";
+                        boletoUrl = cobranca.Iugu_Url;
+                    }
+                    else
+                        boletoUrl = this.BoletoURL(cobranca, cb, out status, instrucoes);
+                }
+                catch (Exception ex)
+                {
+                    pm.Rollback();
+                    return retorno("erro", ex.Message);
+                }
+
+
+
+                return retorno(status, boletoUrl);
+            }
+        }
 
         //[WebMethod()]
         public string ObterBoletoUrl_TESTE(string token, string idCobranca)
