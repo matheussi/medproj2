@@ -85,13 +85,22 @@ namespace MedProj.www.adm.importacao {
         protected global::System.Web.UI.WebControls.DropDownList cboPlano;
         
         /// <summary>
-        /// cboContratoPJ control.
+        /// txtContratoPJ control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList cboContratoPJ;
+        protected global::System.Web.UI.WebControls.TextBox txtContratoPJ;
+        
+        /// <summary>
+        /// txtContratoPJId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden txtContratoPJId;
         
         /// <summary>
         /// chkNaoCriticarCpf control.

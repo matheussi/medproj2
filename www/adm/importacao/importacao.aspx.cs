@@ -82,13 +82,13 @@
 
             if (agenda.ContratoPjId > 0)
             {
-                if (cboContratoPJ.Items.FindByValue(agenda.ContratoPjId.ToString()) != null)
-                    cboContratoPJ.SelectedValue = agenda.ContratoPjId.ToString();
+                //if (cboContratoPJ.Items.FindByValue(agenda.ContratoPjId.ToString()) != null)
+                //    cboContratoPJ.SelectedValue = agenda.ContratoPjId.ToString();
 
-                //txtContratoPJId.Value = agenda.ContratoPjId.ToString();
+                txtContratoPJId.Value = agenda.ContratoPjId.ToString();
 
-                //var titular = Entity.ContratoBeneficiario.CarregarTitular(agenda.ContratoPjId, null);
-                //txtContratoPJ.Text = titular.BeneficiarioNome;
+                var titular = Entity.ContratoBeneficiario.CarregarTitular(agenda.ContratoPjId, null);
+                txtContratoPJ.Text = titular.BeneficiarioNome;
             }
         }
 
@@ -194,23 +194,23 @@
 
         void carregaContratos()
         {
-            cboContratoPJ.Items.Clear();
-            cboContratoPJ.Items.Add(new ListItem("selecione", "-1"));
+            //cboContratoPJ.Items.Clear();
+            //cboContratoPJ.Items.Add(new ListItem("selecione", "-1"));
 
-            if (HaItemSelecionado(cboEstipulante) && HaItemSelecionado(cboContrato)) // && HaItemSelecionado(cboPlano))
-            {
-                var dt = ContratoFacade.Instance.CarregaPor(cboEstipulante.SelectedValue, cboContrato.SelectedValue, cboPlano.SelectedValue);
+            //if (HaItemSelecionado(cboEstipulante) && HaItemSelecionado(cboContrato)) // && HaItemSelecionado(cboPlano))
+            //{
+            //    var dt = ContratoFacade.Instance.CarregaPor(cboEstipulante.SelectedValue, cboContrato.SelectedValue, cboPlano.SelectedValue);
 
-                foreach (DataRow row in dt.Rows)
-                {
-                    cboContratoPJ.Items.Add
-                    (
-                        new ListItem(string.Concat(row["Titular"], " (", row["Documento"], ")"), Convert.ToString(row["ID"]))
-                    );
-                }
+            //    foreach (DataRow row in dt.Rows)
+            //    {
+            //        cboContratoPJ.Items.Add
+            //        (
+            //            new ListItem(string.Concat(row["Titular"], " (", row["Documento"], ")"), Convert.ToString(row["ID"]))
+            //        );
+            //    }
 
-                dt.Dispose();
-            }
+            //    dt.Dispose();
+            //}
         }
 
         void ExibirTiposDeAcomodacao(DropDownList combo, Boolean comum, Boolean particular, Boolean itemSELECIONE)
@@ -364,14 +364,14 @@
                 agenda.Operadora.ID         = Convert.ToInt64(cboOperadora.SelectedValue);
                 agenda.Plano.ID             = Convert.ToInt64(cboPlano.SelectedValue);
 
-                //if (txtContratoPJ.Text.Trim() != "" && txtContratoPJId.Value.Trim() != "")
-                //{
-                //    agenda.ContratoPjId = Convert.ToInt64(txtContratoPJId.Value);
-                //}
-                if (cboContratoPJ.SelectedIndex > 0)
-                    agenda.ContratoPjId = Convert.ToInt64(cboContratoPJ.SelectedValue);
-                else
-                    agenda.ContratoPjId = 0;
+                if (txtContratoPJ.Text.Trim() != "" && txtContratoPJId.Value.Trim() != "")
+                {
+                    agenda.ContratoPjId = Convert.ToInt64(txtContratoPJId.Value);
+                }
+                //if (cboContratoPJ.SelectedIndex > 0)
+                //    agenda.ContratoPjId = Convert.ToInt64(cboContratoPJ.SelectedValue);
+                //else
+                //    agenda.ContratoPjId = 0;
 
                 AgendaImportacaoFacade.Instancia.Salvar(agenda);
 
@@ -433,13 +433,14 @@
         protected void lnkArquivoLog_Click(object sender, EventArgs e)
         {
             //List<AgendaImportacaoItemLog> log = AgendaImportacaoFacade.Instancia.CarregarLog(Convert.ToInt64(this.idAgenda));
-            DataTable log = AgendaImportacaoFacade.Instancia.CarregarLogV2(Convert.ToInt64(this.idAgenda));
+            var log = AgendaImportacaoFacade.Instancia.CarregarLogV2(Convert.ToInt64(this.idAgenda));
 
             if (log == null || log.Rows.Count == 0) return;
 
             var csvExp = new CsvExport();
+            DataRow[] rows = log.Select("", "LINHA asc");
 
-            foreach (DataRow item in log.Rows)
+            foreach (DataRow item in rows) //foreach (DataRow item in log.Rows)
             {
                 csvExp.AddRow();
 

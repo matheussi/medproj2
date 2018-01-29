@@ -174,8 +174,8 @@
                         "       left join contratoadm on contratoadm_id = contrato_contratoadmid ",
                         "       left join endereco on endereco_donotipo=0 and endereco_donoid=beneficiario_id ",
                         "   where ",
-                        "       importacaolog_agendaid=", agendaId,
-                        "   order by importacaolog_linha");
+                        "       importacaolog_agendaid=", agendaId); //,
+                      //"   order by importacaolog_linha");
 
                     #region DataTable
 
@@ -219,6 +219,8 @@
 
                     dt.Columns.Add("MSG");
                     dt.Columns.Add("LINHA");
+                    dt.Columns[27].DataType = typeof(Int32);
+
                     dt.Columns.Add("STATUS");
 
                     #endregion
@@ -240,7 +242,11 @@
                             nova["RAMO"] = CToString(dr["contrato_ramo"]);
                             nova["APOLICE"] = CToString(dr["contrato_numeroApolice"]);
 
-                            nova["DT_NASCIMENTO"] = Convert.ToDateTime(dr["beneficiario_dataNascimento"]).ToString("dd/MM/yyyy");
+                            if(dr["beneficiario_dataNascimento"] == DBNull.Value)
+                                nova["DT_NASCIMENTO"] = "";
+                            else
+                                nova["DT_NASCIMENTO"] = Convert.ToDateTime(dr["beneficiario_dataNascimento"]).ToString("dd/MM/yyyy");
+
                             nova["NOME_BENEFICIARIO"] = CToString(dr["beneficiario_nome"]);
                             nova["ABREVIADO"] = Abreviar2(CToString(dr["beneficiario_nome"]));
                             nova["RG"] = CToString(dr["beneficiario_rg"]);
@@ -262,13 +268,20 @@
                             nova["CVV"] = CToString(dr["numerocontrato_cv"]);
                             nova["VALIDADE"] = "CONSULTE NOSSO SITE";
 
-                            nova["INICIO_DO_RISCO"] = Convert.ToDateTime(dr["contrato_vigencia"]).ToString("dd/MM/yyyy");
-                            nova["FIM_DA_VIGENCIA"] = Convert.ToDateTime(dr["contrato_vigencia"]).AddDays(-1).ToString("dd/MM/yyyy");
-                            nova["DATA_DE_EMISSAO"] = Convert.ToDateTime(dr["contrato_admissao"]).ToString("dd/MM/yyyy");
-                            nova["PATH"]            = CToString(dr["contrato_caminhoArquivo"]);
+                            if (dr["contrato_vigencia"] == DBNull.Value)
+                                nova["INICIO_DO_RISCO"] = "";
+                            else
+                                nova["INICIO_DO_RISCO"] = Convert.ToDateTime(dr["contrato_vigencia"]).ToString("dd/MM/yyyy");
 
+                            if (dr["contrato_vigencia"] != DBNull.Value)
+                                nova["FIM_DA_VIGENCIA"] = Convert.ToDateTime(dr["contrato_vigencia"]).AddDays(-1).ToString("dd/MM/yyyy");
+
+                            if (dr["contrato_admissao"] != DBNull.Value)
+                                nova["DATA_DE_EMISSAO"] = Convert.ToDateTime(dr["contrato_admissao"]).ToString("dd/MM/yyyy");
+
+                            nova["PATH"]            = CToString(dr["contrato_caminhoArquivo"]);
                             nova["MSG"] = CToString(dr["importacaolog_mensagem"]);
-                            nova["LINHA"] = CToString(dr["importacaolog_linha"]);
+                            nova["LINHA"] = CToInt(dr["importacaolog_linha"]);
                             nova["STATUS"] = CToString(dr["importacaolog_status"]);
 
                             dt.Rows.Add(nova);
