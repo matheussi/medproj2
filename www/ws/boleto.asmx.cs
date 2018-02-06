@@ -360,6 +360,7 @@
                     decimal valorPorVida = this.calulaValorPorVida(pm, contrato, vencimento, out erro);
                     if (valorPorVida == 0)
                     {
+                        erro = "Valor por vida não informado";
                         pm.Rollback();
                         return retorno("erro", erro);
                     }
@@ -367,6 +368,13 @@
                     int diaVenctoProjeto = this.toInt(LocatorHelper.Instance.ExecuteScalar(
                         string.Concat("select contratoADM_DTVC from contratoadm where contratoadm_id=", contrato.ContratoADMID),
                         null, null, pm));
+
+                    if (diaVenctoProjeto == 0)
+                    {
+                        erro = "Dia de vencimento do projeto não informado";
+                        pm.Rollback();
+                        return retorno("erro", erro);
+                    }
 
                     #region IUGU - Customer =====================================
 

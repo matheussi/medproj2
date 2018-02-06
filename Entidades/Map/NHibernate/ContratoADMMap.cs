@@ -16,6 +16,7 @@
 
             base.Map(c => c.Ativo).Column("contratoadm_ativo");
             base.Map(c => c.Descricao).Column("contratoadm_descricao");
+            base.Map(c => c.DiaVencimento).Column("contratoADM_DTVC");
 
             base.References(c => c.Operadora).Column("contratoadm_operadoraId");
             base.References(c => c.AssociadoPJ).Column("contratoadm_estipulanteId");

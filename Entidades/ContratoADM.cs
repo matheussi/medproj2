@@ -14,6 +14,7 @@
         public virtual bool Ativo { get; set; }
         public virtual Operadora Operadora { get; set; }
         public virtual AssociadoPJ AssociadoPJ { get; set; }
+        public virtual string DiaVencimento { get; set; }
 
         public virtual string AssociadoPJNOME
         {
