@@ -139,6 +139,15 @@ namespace MedProj.www.adm.cobertura {
         protected global::System.Web.UI.WebControls.TextBox txtDescricao;
         
         /// <summary>
+        /// cboStatusItem control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList cboStatusItem;
+        
+        /// <summary>
         /// txtValorItem control.
         /// </summary>
         /// <remarks>

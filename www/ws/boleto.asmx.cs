@@ -371,7 +371,7 @@
 
                     if (diaVenctoProjeto == 0)
                     {
-                        erro = "Dia de vencimento do projeto não informado";
+                        erro = "Dia de vencimento do projeto não cadastrado";
                         pm.Rollback();
                         return retorno("erro", erro);
                     }

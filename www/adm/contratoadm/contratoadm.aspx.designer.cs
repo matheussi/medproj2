@@ -58,6 +58,15 @@ namespace MedProj.www.adm.contratoadm {
         protected global::System.Web.UI.WebControls.DropDownList cboAssociadoPJ;
         
         /// <summary>
+        /// txtDiaVencto control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDiaVencto;
+        
+        /// <summary>
         /// chkAtivo control.
         /// </summary>
         /// <remarks>

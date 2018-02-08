@@ -67,6 +67,7 @@
             chkAtivo.Checked = contrato.Ativo;
             cboOperadora.SelectedValue = contrato.Operadora.ID.ToString();
             cboAssociadoPJ.SelectedValue = contrato.AssociadoPJ.ID.ToString();
+            txtDiaVencto.Text = contrato.DiaVencimento;
 
             var plano = PlanoFacade.Instance.CarregarPorContratoAdmId(contrato.ID);
 
@@ -126,6 +127,11 @@
             c.AssociadoPJ = AssociadoPJFacade.Instance.Carregar(Util.CTipos.CTipo<long>(cboAssociadoPJ.SelectedValue));
 
             c.Ativo = chkAtivo.Checked;
+
+            if (Util.CTipos.CToInt(txtDiaVencto.Text) > 0)
+                c.DiaVencimento = Util.CTipos.CToInt(txtDiaVencto.Text).ToString();
+            else
+                c.DiaVencimento = "";
 
             c.Descricao = txtDescricao.Text;
 

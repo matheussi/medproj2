@@ -1110,6 +1110,16 @@ namespace MedProj.www.clientes.clientes
                 cboFormaEmissaoCobranca.SelectedIndex = 1;
             else
                 cboFormaEmissaoCobranca.SelectedIndex = 0;
+
+            //carrega dados de relacionamento PF => PJ
+            DataTable dt = ContratoFacade.Instance.CarregaDadosRelacionamentoPJ(this.contratoId);
+
+            if (dt != null && dt.Rows != null && dt.Rows.Count > 0)
+            {
+                txtContratoPJId.Value = CToString(dt.Rows[0]["ID"]);
+                txtContratoPJ.Text = CToString(dt.Rows[0]["Titular"]);
+                dt.Dispose();
+            }
         }
 
         void SetaEstadoDosAdicionais()
@@ -3160,7 +3170,7 @@ namespace MedProj.www.clientes.clientes
                     if (string.IsNullOrEmpty(c.IuguCustumerId))
                     {
                         c.IuguCustumerId = proxy.ObterCustomer(
-                            null, Convert.ToString(c.ID), titular.BeneficiarioEmail, titular.BeneficiarioNome, "233478a4-d2a3-4514-b9c2-6c70f5c2e63d");
+                            null, Convert.ToString(c.ID), titular.BeneficiarioEmail, titular.BeneficiarioNome, ConfigurationManager.AppSettings["ws_token"]);
 
                         c.AtualizarIuguCustomerId(null);
                     }
@@ -3171,7 +3181,7 @@ namespace MedProj.www.clientes.clientes
 
                     if (string.IsNullOrEmpty(c.IuguSubscriptionId))
                     {
-                        bool ok = proxy.ObterSubscription(c.IuguCustumerId, "233478a4-d2a3-4514-b9c2-6c70f5c2e63d", out msg);
+                        bool ok = proxy.ObterSubscription(c.IuguCustumerId, ConfigurationManager.AppSettings["ws_token"], out msg);
 
                         if (ok)
                         {
@@ -4375,6 +4385,12 @@ namespace MedProj.www.clientes.clientes
 
             string msg = "";
 
+            object pjId = null;
+            if (txtContratoPJId.Value != "" && txtContratoPJ.Text.Trim() != "")
+            {
+                pjId = txtContratoPJId.Value;
+            }
+
             if (ViewState[IDKey] != null)
             {
                 ////checa se houve alteracao de plano. se houve, grava historico
@@ -4409,7 +4425,7 @@ namespace MedProj.www.clientes.clientes
                 if (conferencia != null) { titular.Data = conferencia.PropostaData; }
                 contrato.Alteracao = DateTime.Now;
 
-                bool ret = ContratoFacade.Instance.Salvar(contrato, titular, this.Dependentes, fichas, usuarioLiberadorId, adicionaisContratados, conferencia, this.ValorTotalProposta, out msg);
+                bool ret = ContratoFacade.Instance.Salvar(contrato, titular, this.Dependentes, fichas, usuarioLiberadorId, adicionaisContratados, conferencia, this.ValorTotalProposta, out msg, pjId);
 
                 if (!ret)
                 {
@@ -4424,7 +4440,7 @@ namespace MedProj.www.clientes.clientes
             {
                 Conferencia conferencia = Session[ConferenciaObjKey] as Conferencia;
                 if (conferencia != null) { titular.Data = conferencia.PropostaData; }
-                bool ret = ContratoFacade.Instance.Salvar(contrato, titular, this.Dependentes, fichas, usuarioLiberadorId, adicionaisContratados, conferencia, this.ValorTotalProposta, out msg);
+                bool ret = ContratoFacade.Instance.Salvar(contrato, titular, this.Dependentes, fichas, usuarioLiberadorId, adicionaisContratados, conferencia, this.ValorTotalProposta, out msg, pjId);
 
                 if (!ret)
                 {

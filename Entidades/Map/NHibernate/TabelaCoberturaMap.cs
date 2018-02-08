@@ -55,6 +55,7 @@
             base.Id(c => c.ID).Column("itemcobertura_id").GeneratedBy.Identity();
 
             base.Map(c => c.Descricao).Column("itemcobertura_descricao");
+            base.Map(c => c.Status).Column("status_");
             base.Map(c => c.Valor).Column("itemcobertura_valor").Nullable();
 
             base.References(c => c.Tabela).Column("itemcobertura_tabelaId").Not.Nullable();

@@ -238,6 +238,12 @@
 
             obj.Valor = valorItem;
             obj.Descricao = txtDescricao.Text;
+
+            if (cboStatusItem.SelectedIndex == 0)
+                obj.Status = cboStatusItem.SelectedValue;
+            else
+                obj.Status = null;
+
             obj.Tabela = TabelaCoberturaFacade.Instancia.Carregar(idTabela);
 
             if (this.IdItemCobertura > 0) obj.ID = this.IdItemCobertura;
@@ -252,6 +258,7 @@
             txtDescricao.Text = "";
             txtValorItem.Text = "0,00";
             this.IdItemCobertura = 0;
+            cboStatusItem.SelectedIndex = 0;
         }
 
         protected void grid_PageIndexChanging(object sender, GridViewPageEventArgs e)
@@ -277,6 +284,9 @@
 
                 if (item.Valor.HasValue) txtValorItem.Text  = item.Valor.Value.ToString("N2");
                 else txtValorItem.Text                      = "0,00";
+
+                if (!string.IsNullOrEmpty(item.Status)) cboStatusItem.SelectedValue = item.Status;
+                else                                    cboStatusItem.SelectedIndex = 1;
             }
             else if (e.CommandName.Equals("Excluir"))
             {

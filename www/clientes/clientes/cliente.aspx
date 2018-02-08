@@ -154,6 +154,13 @@
                                             <label class="col-xs-2 control-label">Vigência</label>
                                             <div class="col-xs-2"><asp:TextBox SkinID="txtPadrao" runat="server" ID="txtVigencia" BackColor="lightgray" ReadOnly="false" Width="90px" onkeypress="filtro_SoNumeros(event); mascara_DATA(this, event);" MaxLength="10" /></div>
                                         </div>
+                                        <div class="form-group">
+                                            <label class="col-xs-2 control-label">Contrato PJ</label>
+                                            <div class="col-xs-9">
+                                                <asp:TextBox SkinID="txtPadrao" Width="100%" runat="server" ID="txtContratoPJ"  />
+                                                <input type="hidden" name="txtContratoPJId" id="txtContratoPJId" runat="server" />
+                                            </div>
+                                        </div>
                                         <br />
                                         <table cellpadding="2" width="100%" border="0" style="border: solid 0px gray">
                                             <tr runat="server" enableviewstate="false" visible="false">
@@ -1963,4 +1970,61 @@
     <style type="text/css">
         .ajax__calendar_container { z-index : 9999999999999999999000 ; }
     </style>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(configAutocomplete);
+
+            configAutocomplete(null, null);
+        });
+
+        //https://stackoverflow.com/questions/3693560/how-do-i-pass-an-extra-parameter-to-jquery-autocomplete-field
+
+        function configAutocomplete(sender, args) {
+            $("#<%= txtContratoPJ.ClientID %>").autocomplete
+            ({
+                source: function (request, response) {
+
+                    $.ajax({
+                        url: "../../proxy/proxyCarregaContrato.aspx?estip=" + $("#<%= cboEstipulante.ClientID %>").val(),
+                        dataType: "json",
+                        extraParams: { estip: function () { return $("#<%= cboEstipulante.ClientID %>").val(); } },
+                        data: {
+                            featureClass: "P",
+                            style: "full",
+                            maxRows: 12,
+                            name_startsWith: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data.Contratos, function (item) {
+                                //alert(item.Titular);
+                                return {
+
+                                    label: item.Titular,
+                                    value: item.Titular,
+                                    data: item
+                                }
+                            }));
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    showItem(ui.item ? ui.item : undefined);
+                },
+                search: function (event, ui) {
+                    showItem(ui.item ? ui.item : undefined);
+                }
+            });
+        }
+        function showItem(item) {
+            if (item != null && item != undefined) {
+                document.getElementById('<%= txtContratoPJId.ClientID %>').value = item.data.ID;
+            }
+            else {
+                document.getElementById('<%= txtContratoPJId.ClientID %>').value = '';
+            }
+        }
+    </script>
 </asp:Content>

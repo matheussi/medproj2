@@ -32,5 +32,6 @@
 
         public virtual string Descricao { get; set; }
         public virtual decimal? Valor { get; set; }
+        public virtual string Status { get; set; }
     }
 }

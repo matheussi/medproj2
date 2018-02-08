@@ -94,6 +94,16 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-xs-2 control-label">Status</label>
+                            <div class="col-xs-8">
+                                <asp:DropDownList ID="cboStatusItem" runat="server" Width="100%" SkinID="comboPadrao1">
+                                    <asp:ListItem Text="Contratado" Value="Contratado" Selected="True" />
+                                    <asp:ListItem Text="Inativo" Value="NaoContratado" />
+                                </asp:DropDownList>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-xs-2 control-label">Valor</label>
                             <div class="col-xs-2"><asp:TextBox ID="txtValorItem" onkeypress="filtro_SoNumeros(event);" runat="server" Width="80%" SkinID="txtPadrao" MaxLength="15" /></div>
                             <div class="col-xs=2"><asp:LinkButton id="cmdAdd" runat="server" OnClick="cmdAdd_Click" ToolTip="salvar..."><span class="glyphicon glyphicon-floppy-disk" /></asp:LinkButton></div>

@@ -126,6 +126,7 @@ namespace MedProj.www.adm.associadoPJ
             obj.Nome = txtDescricao.Text;
             obj.DataValidadeFixa = data;
             obj.MesesAPartirDaVigencia = meses;
+            obj.Ativo = true;
 
             if (cboBeneficiario.SelectedIndex <= 0) obj.BeneficiarioID = null;
             else                                    obj.BeneficiarioID = Convert.ToInt64(cboBeneficiario.SelectedValue);

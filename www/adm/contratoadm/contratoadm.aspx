@@ -37,6 +37,13 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-xs-2 control-label">Dia vencto.</label>
+                        <div class="col-xs-10">
+                            <asp:TextBox SkinID="txtPadrao" ID="txtDiaVencto" runat="server" Width="45" MaxLength="2" onkeypress="filtro_SoNumeros(event);" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-xs-2 control-label">Status</label>
                         <div class="col-xs-10" style="padding-top:7px"><asp:CheckBox ID="chkAtivo" Text="Ativo" Checked="true" runat="server" /></div>
                     </div>

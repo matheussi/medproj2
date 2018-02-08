@@ -283,6 +283,24 @@ namespace MedProj.www.clientes.clientes {
         protected global::System.Web.UI.WebControls.TextBox txtVigencia;
         
         /// <summary>
+        /// txtContratoPJ control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtContratoPJ;
+        
+        /// <summary>
+        /// txtContratoPJId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlInputHidden txtContratoPJId;
+        
+        /// <summary>
         /// cboAcomodacao control.
         /// </summary>
         /// <remarks>
