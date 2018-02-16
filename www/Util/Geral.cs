@@ -117,6 +117,15 @@ namespace MedProj.www.Util
             }
         }
 
+        Boolean HaItemSelecionado(DropDownList combo)
+        {
+            if (combo.Items.Count == 0) { return false; }
+
+            return combo.SelectedValue != "0" &&
+                   combo.SelectedValue != "-1" &&
+                   combo.SelectedValue != "";
+        }
+
         //-------------------------------------------------------------------------
 
         public static T ObterDataKeyValDoGrid<T>(GridView grid, GridViewCommandEventArgs e, int indice)
