@@ -117,7 +117,7 @@ namespace MedProj.www.Util
             }
         }
 
-        Boolean HaItemSelecionado(DropDownList combo)
+        public static Boolean HaItemSelecionado(DropDownList combo)
         {
             if (combo.Items.Count == 0) { return false; }
 
