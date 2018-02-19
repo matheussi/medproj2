@@ -42,11 +42,13 @@ namespace MedProj.www
                 liSelPrest.Visible = false;
                 pnlMenuAtendimento.Visible = true;
                 liConsultaAvancada.Visible = false;
+                pnlMenuRelatorio.Visible = false;
             }
             else
             {
                 pnlMenu.Visible = true;
                 pnlMenuAtendimento.Visible = true;
+                pnlMenuRelatorio.Visible = true;
                 liSelPrest.Visible = true;
                 liConsultaAvancada.Visible = true;
             }

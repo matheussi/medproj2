@@ -625,6 +625,33 @@ namespace MedProj.www {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor A12;
         
         /// <summary>
+        /// pnlMenuRelatorio control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlMenuRelatorio;
+        
+        /// <summary>
+        /// li25 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl li25;
+        
+        /// <summary>
+        /// A27 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor A27;
+        
+        /// <summary>
         /// title control.
         /// </summary>
         /// <remarks>

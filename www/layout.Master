@@ -233,6 +233,14 @@
                                     </ul>
                                 </li>
                             </asp:Panel>
+                            <asp:Panel ID="pnlMenuRelatorio" runat="server" Visible="false">
+                                <li class="sub-menu">
+                                    <a href="javascript:void(0);"><i style="color:#003761;font-size:13px" class="fa fa-cogs"></i><span style="color:#003761;font-size:13px">Relatórios</span><i class="arrow fa fa-angle-right pull-right"></i></a>
+                                    <ul>
+                                        <li runat="server" id="li25" enableviewstate="false"><a id="A27" style="color:white;font-size:13px" runat="server" enableviewstate="false" href="~/reports/associados.aspx">Associados</a></li>
+                                    </ul>
+                                </li>
+                            </asp:Panel>
                         </ul>
                     </div>
 
